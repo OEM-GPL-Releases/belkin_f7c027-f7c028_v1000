@@ -1,0 +1,124 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_770+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Connection Type';
+var menuSection	='WAN';
+var menuItem	='Connection Type';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+function Try_Submit() 
+{
+	return true;
+}
+function Init_Value() 
+{
+}
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+//-->  
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 onload=Init_Value() marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name)
+</SCRIPT>
+<FORM id="wan_form" name="wan_form" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wan_telstra.html">
+<input type="hidden" name="redirect_timer" value="45000">
+<input type="hidden" name="reboot" value="1">
+<input type="hidden" name="data1" value="wan_proto telstra_bigpond_ip telstra_bigpond_user_name telstra_bigpond_password bigpond_serverip_manual bigpond_state 
+ wan_alias1_enabled wan_alias2_enabled wan_alias3_enabled wan_alias4_enabled wan_alias5_enabled 
+ wan_ipaddr1 wan_ipaddr2 wan_ipaddr3 wan_ipaddr4 wan_ipaddr5 
+ wan_netmask1 wan_netmask2 wan_netmask3 wan_netmask4 wan_netmask5">
+
+<input type="hidden" name="wan_proto" value="hbeat">
+<input type="hidden" name="telstra_bigpond_user_name">
+<input type="hidden" name="telstra_bigpond_password">
+<input type="hidden" name="bigpond_serverip_manual">
+<input type="hidden" name="telstra_bigpond_ip">
+<input type="hidden" name="bigpond_state">
+<input type="hidden" name="wan_alias1_enabled" value=''>
+<input type="hidden" name="wan_alias2_enabled" value=''>
+<input type="hidden" name="wan_alias3_enabled" value=''>
+<input type="hidden" name="wan_alias4_enabled" value=''>
+<input type="hidden" name="wan_alias5_enabled" value=''>
+
+<input type="hidden" name="wan_ipaddr1" value=''>
+<input type="hidden" name="wan_ipaddr2" value=''>
+<input type="hidden" name="wan_ipaddr3" value=''>
+<input type="hidden" name="wan_ipaddr4" value=''>
+<input type="hidden" name="wan_ipaddr5" value=''>
+
+<input type="hidden" name="wan_netmask1" value=''>
+<input type="hidden" name="wan_netmask2" value=''>
+<input type="hidden" name="wan_netmask3" value=''>
+<input type="hidden" name="wan_netmask4" value=''>
+<input type="hidden" name="wan_netmask5" value=''>
+
+ <TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_770);</SCRIPT>
+<BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=0 cellPadding=0 width=600 align=left 
+      border=0>
+        <TBODY>
+    <TR>
+          <TD width=3>
+    </TR>
+
+		<TR>
+          <TD colSpan=3>
+            <SCRIPT>dw(str_1681);</SCRIPT>
+          <A onclick="window.open('glossary.html#telstra_bigpond','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"><B><FONT color=#0066FF>
+            <SCRIPT>dw(str_47);</SCRIPT>
+           </FONT></B></A>
+           <BR><BR><font color="#FF0000" face="Arial">
+		    <SCRIPT>dw(str_1682);</SCRIPT>:
+			<br>
+			<SCRIPT>dw(str_1683);</SCRIPT>
+			<br><br>
+			<SCRIPT>dw(str_1684);</SCRIPT>
+			<br>
+			<SCRIPT>dw(str_1685);</SCRIPT>
+			<br>
+			<SCRIPT>dw(str_1686);</SCRIPT>
+			<br><br>
+			<SCRIPT>dw(str_1687);</SCRIPT></font>
+		   </TD></TR>
+        <TR>
+        <TR>
+          <TD width=36>&nbsp;</TD>
+          <TD align=middle colSpan=2><BR><BR>
+            <SCRIPT>
+				dw('<input id="submitBtn_apply" type="submit" value="');dw(str_49);dw('" style="{width:160px;}" class="submitBtn" onClick="return Try_Submit();">');
+			</SCRIPT>
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></FORM></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

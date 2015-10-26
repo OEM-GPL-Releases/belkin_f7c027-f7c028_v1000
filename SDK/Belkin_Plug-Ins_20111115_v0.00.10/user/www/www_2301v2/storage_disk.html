@@ -1,0 +1,448 @@
+<HTML>
+<HEAD>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT language=JavaScript src="validate.js"></SCRIPT>
+<SCRIPT language=JavaScript src="dl.js"></SCRIPT>
+<SCRIPT language=JavaScript>
+<!--
+var havefwcheck='<%nvram_get("havefwcheck");%>';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+//-->
+
+strHtml='<title>'+usys1+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='System Settings';
+var menuSection	='Storage';
+var menuItem	='Storage Info';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+<%autofw_check();%>
+	
+var DataArray = new Array();
+var myData = [/*["/dev/scsi/host0/bus0/target0/lun0/disc","JetFlash TS128MJF2A1","TS128MJF2A1","FAT","1.121","0.119","0.096",""],
+["/dev/scsi/host0/bus0/target0/lun0/disc","JetFlash TS128MJF2A1","TS128MJF2A1","FAT","1.121","0.119","0.096",""],
+["/dev/scsi/host1/bus0/target0/lun0/disc","JetFlash TS128MJF2A2","TS128MJF2A2","FAT","0.121","0.119","0.096",""],
+*/
+<%disc_info();%>
+["","","","","","","",""]];
+
+
+var TBLHeader = "<table border=\"2\" cellpadding=\"0\" style=\"border-collapse: collapse; font-style:normal; font-variant:normal; font-weight:normal; font-size:10pt; font-family:Arial, Helvetica, sans-serif; color:#000000\" bordercolor=\"#ffffff\" id=\"table1\" width=\"408\">\
+              <tr bgcolor=#666666>\
+                <td height=\"25\" width=\"87\" align=\"center\" style=\"border-style:solid; border-width:1px; font-style:normal; font-variant:normal; font-weight:normal; font-size:10pt; font-family:Arial, Helvetica, sans-serif; color:#ffffff; word-break:break-all\" bordercolor=\"#ffffff\">\
+                <span style=\"font-weight: 700\">\
+				<font face=\"Arial\" style=\"font-size: 8pt\">Partition</font></span></td>\
+                <td height=\"25\" width=\"88\" align=\"center\" style=\"border-style:solid; border-width:1px; font-style:normal; font-variant:normal; font-weight:normal; font-size:10pt; font-family:Arial, Helvetica, sans-serif; color:#ffffff; word-break:break-all\" bordercolor=\"#ffffff\">\
+                <span style=\"font-weight: 700\">\
+				<font face=\"Arial\" style=\"font-size: 8pt\">File System</font></span></td>\
+                <td height=\"25\" width=\"69\" align=\"center\" style=\"border-style:solid; border-width:1px; font-style:normal; font-variant:normal; font-weight:normal; font-size:10pt; font-family:Arial, Helvetica, sans-serif; color:#ffffff; word-break:break-all\" bordercolor=\"#ffffff\">\
+                <span style=\"font-weight: 700\">\
+				<font face=\"Arial\" style=\"font-size: 8pt\">Capacity</font></span></td>\
+                <td height=\"25\" width=\"69\" align=\"center\" style=\"border-style:solid; border-width:1px; font-style:normal; font-variant:normal; font-weight:normal; font-size:10pt; font-family:Arial, Helvetica, sans-serif; color:#ffffff; word-break:break-all\" bordercolor=\"#ffffff\">\
+                <span style=\"font-weight: 700\">\
+				<font face=\"Arial\" style=\"font-size: 8pt\">Free Space</font></span></td>\
+                <!--td height=\"25\" align=\"center\" style=\"border-style:solid; border-width:1px; font-style:normal; font-variant:normal; font-weight:normal; font-size:10pt; font-family:Arial, Helvetica, sans-serif; color:#ffffff; word-break:break-all\" bordercolor=\"#ffffff\"-->\
+                <!--span style=\"font-weight: 700\"-->\
+				<!--font face=\"Arial\" style=\"font-size: 8pt\">Create Share</font></span></td-->\
+              </tr>" ;
+var TBLHeader_NODISK = "<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse: collapse\" bordercolor=\"#CCCCCC\" id=\"AutoNumber3\" width=\"410\">\
+                <tr bgcolor=\"#666666\">\
+                <td height=\"25\" width=\"80\" align=\"center\" style=\"border-left-style: solid; border-left-width: 1; border-right-style: solid; border-right-width: 1; border-top-style: solid; border-top-width: 1; border-bottom-style: none; border-bottom-width: medium; word-break:break-all\" bordercolor=\"#ffffff\">\
+                <span style=\"font-weight: 700\">\
+                <font face=\"Arial\" style=\"font-size: 8pt\">Disk</font></span></td>\
+                <td height=\"25\" width=\"160\" align=\"center\" style=\"border-left-style: solid; border-left-width: 1; border-right-style: solid; border-right-width: 1; border-top-style: solid; border-top-width: 1; border-bottom-style: none; border-bottom-width: medium; word-break:break-all\" bordercolor=\"#ffffff\">\
+                <span style=\"font-weight: 700\">\
+                <font face=\"Arial\" style=\"font-size: 8pt\">Make and Model</font></span></td>\
+                <td height=\"25\" width=\"80\" align=\"center\" style=\"border-left-style: solid; border-left-width: 1; border-right-style: solid; border-right-width: 1; border-top-style: solid; border-top-width: 1; border-bottom-style: none; border-bottom-width: medium; word-break:break-all\" bordercolor=\"#ffffff\">\
+                <span style=\"font-weight: 700\">\
+                <font face=\"Arial\" style=\"font-size: 8pt\">Physical Size</font></span></td>\
+                <td height=\"25\" width=\"88\" align=\"center\" style=\"border-left-style: solid; border-left-width: 1; border-right-style: solid; border-right-width: 1; border-top-style: solid; border-top-width: 1; border-bottom-style: none; border-bottom-width: medium; word-break:break-all\" bordercolor=\"#ffffff\">\
+                <span style=\"font-weight: 700\">\
+                <font face=\"Arial\" style=\"font-size: 8pt\">&nbsp;</font></span></td>\
+              </tr>" ;
+var TBLHeader_Space = "<table width=\"156\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"LeftText2\">"
+var TBLHeader_Share = "<table border=\"1\" cellpadding=\"0\" style=\"border-collapse: collapse; font-style:normal; font-variant:normal; font-weight:normal; font-size:10pt; font-family:Arial, Helvetica, sans-serif; color:#000000; table-layout: fixed;WORD-BREAK: break-all; WORD-WRAP: break-word\" bordercolor=\"#CCCCCC\" id=\"table2\" width=\"406\">\
+											<tr bgcolor=\"#666666\">\
+				                <td height=\"25\" width=\"80\" align=\"center\" style=\"border-style:solid; border-width:1px; font-style:normal; font-variant:normal; font-weight:normal; font-size:10pt; font-family:Arial, Helvetica, sans-serif; color:#ffffff; word-break:break-all\" bordercolor=\"#ffffff\">\
+				                <span style=\"font-weight: 700\">\
+								<font face=\"Arial\" style=\"font-size: 8pt\">Display Name</font></span></td>\
+				                <td height=\"25\" width=\"70\" align=\"center\" style=\"border-style:solid; border-width:1px; font-style:normal; font-variant:normal; font-weight:normal; font-size:10pt; font-family:Arial, Helvetica, sans-serif; color:#ffffff; word-break:break-all\" bordercolor=\"#ffffff\">\
+				                <span style=\"font-weight: 700\">\
+								<font face=\"Arial\" style=\"font-size: 8pt\">Partition</font></span></td>\
+				                <td height=\"25\" width=\"170\" align=\"center\" style=\"border-style:solid; border-width:1px; font-style:normal; font-variant:normal; font-weight:normal; font-size:10pt; font-family:Arial, Helvetica, sans-serif; color:#ffffff; word-break:break-all\" bordercolor=\"#ffffff\">\
+				                <span style=\"font-weight: 700\">\
+								<font face=\"Arial\" style=\"font-size: 8pt\">Shared Folder</font></span></td>\
+				                <!--td height=\"25\" width=\"38\" align=\"center\" style=\"border-style:solid; border-width:1px; font-style:normal; font-variant:normal; font-weight:normal; font-size:10pt; font-family:Arial, Helvetica, sans-serif; color:#ffffff; word-break:break-all\" bordercolor=\"#ffffff\">\
+				                <span style=\"font-weight: 700\">\
+								<font face=\"Arial\" style=\"font-size: 8pt\">Edit</font></span></td>\
+				                <td height=\"25\" width=\"48\" align=\"center\" style=\"border-style:solid; border-width:1px; font-style:normal; font-variant:normal; font-weight:normal; font-size:10pt; font-family:Arial, Helvetica, sans-serif; color:#ffffff; word-break:break-all\" bordercolor=\"#ffffff\">\
+				                <span style=\"font-weight: 700\">\
+								<font face=\"Arial\" style=\"font-size: 8pt\">Delete</font></span></td-->\
+				              </tr>"
+var TBLFooter = "</table>" ;
+var TRHeader =  "<tr bgcolor=\"#CCCCCC\">" ;
+var TRFooter = "</tr>" ;
+var TDHeader = "<td height=\"25\" align=\"center\" style=\"border-left-style: solid; border-left-width: 1; border-right-style: solid; border-right-width: 1; border-top-style: solid; border-top-width: 1; border-bottom-style: none; border-bottom-width: medium\" bordercolor=\"#ffffff\">\
+                <font face=\"Arial\" style=\"font-size: 8pt\">";
+var TDHeader_Double = "<td height=\"25\" align=\"center\" style=\"border-left-style: solid; border-left-width: 1px; border-right-style: solid; border-right-width: 1px; border-top-style: double; border-top-width: 3px; border-bottom-style: solid; border-bottom-width: 1px; font-style:normal; font-variant:normal; font-weight:normal; font-size:10pt; font-family:Arial, Helvetica, sans-serif; color:#000000\" bordercolor=\"#ffffff\">\
+								<font face=\"Arial\" style=\"font-size: 8pt\">";
+var TDFooter = "</font></td>" ;
+
+function Data(device, modellabel, partition, file_system, space, part_space, free_space, shares, mounton) 
+{
+	this.Device = device;
+	this.ModelLabel = modellabel;
+	this.Partition = partition;
+	this.File_System = file_system;
+	this.Space = space ;
+	this.Part_Space = part_space ;
+	this.Free_Space = free_space ;
+	this.Shares = shares;
+	this.MountON = mounton;
+}
+
+function FormatNumber(num,decimal){   
+	var tmpNumber1=num.toString();
+  var numlen=tmpNumber1.length; 
+  var decimalIdx=tmpNumber1.indexOf('.'); 
+  var Intlen;   
+  var decimallen;   
+  if(decimalIdx!=-1)   
+  	decimallen=numlen-decimalIdx-1;  
+  else  
+  	decimalIdx=0;   
+  var tmpNumber2;    
+  if(decimal!=0)   
+  {   
+  	tmpNumber2 = num*(Math.pow(10,decimal));   
+    tmpNumber2=Math.round(tmpNumber2)/(Math.pow(10,decimal));   
+  }   
+  else  
+    tmpNumber2 = tmpNumber1 + '.0';   
+  var decimalNum='';   
+  if(tmpNumber1.indexOf('.')!=-1)   
+  	decimalNum = tmpNumber2.toString().substring(tmpNumber2.toString().indexOf('.')+1,tmpNumber2.toString().indexOf('.')+decimal+1);//!L???I|?   
+ 	var rtndecimal=decimalNum;   
+  var IntNum;  
+  IntNum=tmpNumber2.toString().substring(tmpNumber2.toString().indexOf('.'),0);   
+  if(tmpNumber2.toString().indexOf('.')==-1)   
+  	IntNum = tmpNumber2.toString();   
+  if(tmpNumber2.toString().indexOf('.')==0)   
+    IntNum = '0';      
+  var lpcnt = Math.floor(IntNum.length/3);   
+  if(IntNum.substring(0,1)=='-')   
+  	lpcnt--;     
+  var tmpNumber3='';     
+	for(i=0;i<lpcnt;i++)   
+	{   
+		tmpNumber3=',' + IntNum.substring(IntNum.length,IntNum.length-3).toString() + tmpNumber3;   
+		IntNum=IntNum.substring(IntNum.length-3,0);   
+	}   
+    tmpNumber3 = IntNum + tmpNumber3;   
+    if(tmpNumber3.substring(0,1)==',')   
+    	tmpNumber3 = tmpNumber3.substring(1,tmpNumber3.length);   
+    return tmpNumber3 + '.' + rtndecimal; 
+}
+
+function DataShow_Disk() 
+{
+	var v = "";
+	var w = "<br>";
+	var Device = "";
+	var disk_index = 0;
+	var disk_size = 0;
+	var part_size = 0;
+	var free_part_size = 0;
+	var a = 0.0;
+	var space1 = 0;
+	
+	for (var i=0; i<DataArray.length; i++) 
+	{
+		if ( DataArray[i].Device != "")
+		{
+				disk_index++;
+				if ( Device != DataArray[i].Device ) {
+					
+if ( parseFloat(DataArray[i].Part_Space) > 0) {
+						w += "<input type=\"checkbox\" name=\"DiskIndex\" value=\""+ i + "\" onclick=\"SelectDisk(" + i + ");\">&nbsp;&nbsp;Disk: " + DataArray[i].ModelLabel + "<BR>";
+						
+						v += "<table border=\"0\">" +
+						"<tr><td width=\"360\" colspan=\"2\"><font face=\"Arial\" style=\"font-size: 8pt\">Disk: " + DataArray[i].ModelLabel + "</font></td>"+
+						"<td><input type=\"button\" value=\"Safely Remove Disk\" onClick=\"safely_remove_disk(" + i + ");\">" + 
+						"</td></tr></table>";
+						space1++;
+						v += TBLHeader ;
+						space1++;
+						if (DataArray[i].Partition=="")
+							DataArray[i].Partition = "Disk " + disk_index;
+						v +=  TRHeader + TDHeader + DataArray[i].Partition       + TDFooter + 
+								     TDHeader + DataArray[i].File_System     + TDFooter + 
+								     TDHeader + parseFloat(DataArray[i].Part_Space) + "GB" + TDFooter +
+								     TDHeader + parseFloat(DataArray[i].Free_Space) + "GB" + TDFooter +
+//								     TDHeader + "<input type=\"button\" value=\"Create Share\" onClick=\"create_shared(" + i + ");\" style=\"font-family: Arial; font-size: 8pt\">" + TDFooter +
+									  TRFooter ; 
+						space1++;
+						part_size += parseFloat(DataArray[i].Part_Space);
+						free_part_size += parseFloat(DataArray[i].Free_Space);
+						disk_size = parseFloat(DataArray[i].Space);
+						Device = DataArray[i].Device;
+						if ( DataArray[i+1].Device == "" || DataArray[i].Device != DataArray[i+1].Device ) {
+							if ( disk_size == part_size ) {
+
+							}
+							else {
+								a = disk_size - part_size;
+								a = FormatNumber(a, 3);
+
+								free_part_size += (disk_size - part_size);
+							}
+								free_part_size = FormatNumber((free_part_size-a), 3);
+								disk_size = FormatNumber((disk_size-a), 3);
+								v +=  TRHeader + TDHeader_Double + "<b>Total</b>" + TDFooter + 
+										     TDHeader_Double + "<b>*</b>" + TDFooter + 
+										     TDHeader_Double + "<b>" + disk_size + "GB" + "</b>" + TDFooter +
+										     TDHeader_Double + "<b>" + free_part_size + "GB" + "<b>" + TDFooter +
+											  TRFooter ; 
+							space1++;
+							part_size = 0;
+							free_part_size = 0;
+							v += TBLFooter ;
+						}
+					}
+					else if ( DataArray[i].Part_Space == "0") {
+						w += "<input type=\"checkbox\" name=\"DiskIndex\" value=\""+ i + "\" onclick=\"SelectDisk(" + i + ");\">&nbsp;&nbsp;Disk: " + DataArray[i].ModelLabel + "<BR>";
+						v += "<table border=\"0\">" +
+						"<tr><td width=\"360\" colspan=\"2\"><font face=\"Arial\" style=\"font-size: 8pt\">Disk: " + DataArray[i].ModelLabel + "</font></td>"+
+						"<td><input type=\"button\" value=\"Safely Remove Disk\" onClick=\"safely_remove_disk(" + i + ");\">" + 
+						"</td></tr></table>";
+						space1++;
+						v += TBLHeader ;
+						space1++;
+						Device = DataArray[i].Device;
+						disk_size = parseFloat(DataArray[i].Space);
+						part_size = 0;
+						free_part_size = parseFloat(DataArray[i].Space);
+						if ( disk_size == part_size ) {
+
+						}
+						else {
+							a = disk_size - part_size;
+							a = FormatNumber(a, 3);
+
+						}
+						free_part_size = FormatNumber(free_part_size, 3);
+						v +=  TRHeader + TDHeader_Double + "Total" + TDFooter + 
+								     TDHeader_Double + "*" + TDFooter + 
+								     TDHeader_Double + disk_size + "GB" + TDFooter +
+								     TDHeader_Double + free_part_size + "GB" + TDFooter +
+									  TRFooter ; 
+						space1++;
+						part_size = 0;
+						free_part_size = 0;
+						v += TBLFooter ;
+					}
+				}
+				else {
+					if ( DataArray[i].Free_Space == "*" ) {
+						if ( DataArray[i].Device != DataArray[i+1].Device ) {
+							v += TBLFooter;
+						}
+					}
+					else {
+						if (DataArray[i].Partition=="")
+							DataArray[i].Partition = "Disk " + disk_index;
+						v +=  TRHeader + TDHeader + DataArray[i].Partition       + TDFooter + 
+								     TDHeader + DataArray[i].File_System     + TDFooter + 
+								     TDHeader + parseFloat(DataArray[i].Part_Space) + "GB" + TDFooter +
+								     TDHeader + parseFloat(DataArray[i].Free_Space) + "GB" + TDFooter +
+									  TRFooter ; 
+						space1++;
+						part_size += parseFloat(DataArray[i].Part_Space);
+						free_part_size += parseFloat(DataArray[i].Free_Space);
+						if ( DataArray[i].Device != DataArray[i+1].Device ) {
+							if ( disk_size == part_size ) {
+
+							}
+							else {
+								a = disk_size - part_size;
+								a = FormatNumber(a, 3);
+
+								free_part_size += (disk_size - part_size);
+							}
+							free_part_size = FormatNumber(free_part_size, 3);
+								v +=  TRHeader + TDHeader_Double + "Total" + TDFooter + 
+										     TDHeader_Double + "*" + TDFooter + 
+										     TDHeader_Double + disk_size + "GB" + TDFooter +
+										     TDHeader_Double + free_part_size + "GB" + TDFooter +
+											  TRFooter ; 
+							space1++;
+							part_size = 0;
+							free_part_size = 0;
+							v += TBLFooter ;
+						}
+					}
+				}
+			}	 
+		
+	}
+	if(v=="") {
+
+		v = "<table border=\"0\">" +
+						"<tr><td width=\"360\" colspan=\"2\"><font face=\"Arial\" style=\"font-size: 8pt\">No disks are available.</font></td>"+
+						"<td><input type=\"button\" value=\"Safely Remove Disk\" onClick=\"safely_remove_disk(" + i + ");\" disabled>" + 
+						"</td></tr></table>";
+		space1++;
+		v += TBLHeader + TBLFooter;
+		space1++;
+		w = "No disks are available.";
+	}
+	else {
+		if(w!="")
+			w += "<BR><input type=\"button\" value=\"Format Disk\" onclick=\"EraseDisk();\">";
+		else
+			w = "No disks are available.";
+	}
+
+	layerWrite('myDiv', null, v); 
+//	layerWrite('myDiv2', null, w); 
+	space1++;
+}
+
+function safely_remove_disk(device_num)
+{
+	var f = document.forms[0];
+	f.device.value = DataArray[device_num].Device;
+	f.submit();
+}
+
+function SelectDisk(device_num)
+{
+}
+
+function EraseDisk()
+{
+}
+
+function claim_disk(device_name)
+{
+}
+
+function Disk_Summary()
+{
+}
+
+function window_refresh()
+{
+	location.reload();
+}
+
+function startreload()
+{
+	setTimeout('window_refresh()',3000);
+}
+
+function InitValue(passForm) 
+{
+	document.title = "Disk"; // title DE
+	for(var i=0 ; i<myData.length ; i++ )
+		DataArray[DataArray.length++] = new Data(myData[i][0], myData[i][1], myData[i][2], myData[i][3], myData[i][4], myData[i][5], myData[i][6], myData[i][7], myData[i][8]);
+		
+	DataShow_Disk();
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 onload="InitValue(document.forms[0]);" marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem);
+	showMenu(menuSection,menuItem,isAPmode)
+</SCRIPT>
+<form name="system" action="safely_remove_disk.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="storage_disk.htmll">
+<input type="hidden" name="redirect_timer" value="100">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="device" value="">
+<input type="hidden" name="dir_list" value="">
+
+
+ <TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(storage_disk3);</SCRIPT>
+ <BR><BR>
+	<table>
+	<tr>
+		<td>&nbsp;&nbsp;&nbsp;</td>	
+		<td>	
+			<table width="410" border="0" cellpadding="0" cellspacing="0">
+				 <tr>
+					  <td height="25">&nbsp;&nbsp;</td>
+					</tr>
+					
+					<TR><TD class=copy_1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            
+        	<!--	//The items on this page are unsupported.-->
+        		<SCRIPT>dw(wladv2);</SCRIPT>
+        		
+						</TD>
+			  </TR>
+					
+				<tr>
+					  <td height="25">&nbsp;&nbsp;</td>
+					</tr>
+						
+				 <tr> 
+					<td width="410" height="25" valign="middle" class="MainTd">
+						<DIV ID="myDiv"></DIV>
+					</td>
+				</tr>
+					<tr>
+					  <td height="25"></td>
+					</tr>
+				 <tr> 
+					<td width="410" height="25" valign="middle" class="MainTd">
+						<DIV ID="myDiv_Share"></DIV>
+					</td>
+				</tr>
+					<tr>
+					  <td height="25"></td>
+					</tr>
+					<tr>
+					  <td height="25" class="MainTd">
+						<DIV ID="myDiv2"></DIV></td>
+					</tr>
+      </table>
+      
+      <!-- Refresh button -->
+      <table cellpadding="0" cellspacing="0" style="border-collapse: collapse" border="1" bordercolor="#FFFFFF" id="AutoNumber4" width="410">
+								<tr>
+									<td colspan="3">&nbsp;</td>
+								</tr>
+								<TR>
+								<TD width=19>&nbsp;</TD>
+								<TD colSpan=2>
+								  <DIV align=right>
+									<SCRIPT>
+										strHtml='<input id="submitBtn_refresh" type="button" value="'+Refresh+'" style="{width:160px;}" onClick="window.location.reload();" class="submitBtn" onMouseOver="window.status=\'Refresh\'; return true;" onMouseOut="window.status=\'\'; return true;">&nbsp;&nbsp;';
+										dw(strHtml);
+									</SCRIPT>
+								  </DIV></TD></TR>
+			</table>
+			
+    </td>
+  </tr>
+</table>
+ </TD>
+            
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</form>
+
+</BODY></HTML>

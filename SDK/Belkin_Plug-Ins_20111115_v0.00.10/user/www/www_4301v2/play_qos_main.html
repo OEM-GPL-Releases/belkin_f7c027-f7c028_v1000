@@ -1,0 +1,1247 @@
+<HTML><HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=Content-Type content=text/html; charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT>assign_var();</SCRIPT>
+<!--
+<link type="text/css" media="screen" rel="stylesheet" href="colorbox.css" />
+-->
+<SCRIPT language=JavaScript src="qos_app.js"></SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<!--
+<SCRIPT language=JavaScript src="jquery.colorbox.js"></SCRIPT>
+-->
+<SCRIPT>
+strHtml='<title>'+str_1880+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='';
+var menuSection	='Play';
+var menuItem	='QoS';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+$(document).ready(function(){
+  //$("#google").colorbox({iframe:true, width:"50%", height:"50%"});
+  //$("#google").click();
+
+});
+
+
+function InitValue()
+{
+   
+   $('#qos_enabled').val('<%nvram_get("qos_enabled");%>');
+   $('#qos_profile').val('<%nvram_get("qos_profile");%>');
+   $('#qos_bandwidth_profile').val('<%nvram_get("qos_bandwidth_profile");%>');   
+	 var qos_profile='<%nvram_get("qos_profile");%>';
+	  
+	if ($('#qos_enabled').val()=='1')
+	   {
+       $('#qos_on').attr("checked", true);
+       $('#qos_profile').attr("disabled", false);
+       $('#qos_bandwidth_profile').attr("disabled",false); 
+     }
+  else
+      {
+       $('#qos_off').attr("checked", true);
+       $('#qos_profile').attr("disabled", true);
+       $('#qos_bandwidth_profile').attr("disabled",true);
+       $('#Add_Rule').hide();
+       $('#tr_qos_profile').hide();
+       $('#hr_qos_profile').hide();
+       $('#table_bandwidth_profile').hide();
+       $('#table_default').hide();       
+       $('#show_setting_table').hide();
+      }
+     
+   if ($('#qos_profile').val()=="Auto")
+       {
+     		  $('#qos_bandwidth_profile').val('Auto');
+          $('#qos_bandwidth_profile').attr("disabled",true);
+          $('#Add_Rule').hide();
+     	 }
+          
+   if ($('#qos_bandwidth_profile').val()=="Auto")
+        $('#Setting_Bandwidth').hide();
+        
+      $('#Add_Rule').val(str_1483);
+
+  /*
+   * init qos table
+   */   
+   init_qos_table();
+}
+
+
+function qos_on_off()
+{      
+  	if ($('#qos_on').attr("checked"))
+	   {
+       $('#qos_profile').attr("disabled", false);
+       $('#qos_bandwidth_profile').attr("disabled",false);
+        $('#tr_qos_profile').show();
+       $('#hr_qos_profile').show();
+       $('#table_bandwidth_profile').show();
+       $('#table_default').show();
+       $('#show_setting_table').show();
+     }
+  else
+      {
+         Change_Profile($('#qos_profile').val());  
+       $('#qos_profile').attr("disabled", true);
+       $('#qos_bandwidth_profile').attr("disabled",true);
+       $('#Add_Rule').hide();
+       $('#tr_qos_profile').hide();
+       $('#hr_qos_profile').hide();
+       $('#table_bandwidth_profile').hide();
+       $('#table_default').hide();
+       $('#show_setting_table').hide();
+      }
+} 
+
+function Change_Profile(profile_value)
+{
+  if (profile_value=="Auto")
+   {
+      $('#Add_Rule').hide();
+      $('#qos_bandwidth_profile').val('Auto');
+      $('#qos_bandwidth_profile').attr("disabled",true);
+   } 
+  else
+    {
+      $('#Add_Rule').show();
+      $('#qos_bandwidth_profile').attr("disabled",false);
+    }
+  
+  var qos_profile = $('#qos_profile').val();
+
+  /* remove tr array > 1 */
+  $("#show_setting_table tr:gt(0)").remove();
+
+  /* reset count default 0 */
+  Application_rule=0;
+  MAC_rule=0;
+  Edit_MAC_rule=0;
+  IP_rule=0;
+  TCP_UDP_rule=0;
+  total_count=0;
+             	
+  switch(qos_profile)
+  {
+    case "Auto":
+      init_qos_table(qos_profile);
+    break;
+    case "User_Defined_1":
+      init_qos_table(qos_profile);
+    break;
+    case "User_Defined_2":
+      init_qos_table(qos_profile);
+    break;          
+  }
+
+        
+}
+
+function Change_Bandwidth(Bandwidth_value)
+{
+  if (Bandwidth_value=="Auto")
+       $('#Setting_Bandwidth').hide();
+  else
+       $('#Setting_Bandwidth').show();
+}
+
+var qos_html_height = "0";
+
+function Qos_Bandwidth()
+{
+  self.frame_qos_bandwidth.location.href="qos_bandwidth.html";
+  
+  qos_html_height = $(document).height();
+  $('#block_background').css("display", "");
+  $('#block_background').css("height", qos_html_height);
+  $('#add_qos_bandwidth').show();
+
+}
+
+function show_support_game()
+{
+  self.frame_qos_bandwidth.location.href="qos_support_game.html";
+  
+  qos_html_height = $(document).height();
+  $('#block_background').css("display", "");
+  $('#block_background').css("height", qos_html_height);
+  $('#qos_games').show();
+}
+
+
+function EditRule(EditCategory, EditIndex, tr_index)
+{
+   qos_html_height = $(document).height();
+  $('#block_background').css("display", "");
+  $('#add_qos_tr').show();   
+   //console.log("EditCategory %s, Edit Rule index: %s, tr index: %s", EditCategory, EditIndex, tr_index);
+   document.getElementById('frame_qos_add').contentWindow.EditOneRule(EditCategory, EditIndex, tr_index); 
+}
+
+
+
+function AddRule()
+{
+  self.frame_qos_add.location.href="qos_add.html";
+  $('#block_background').css("display", "");
+  $('#add_qos_tr').show();
+  qos_html_height = $(document).height();
+  //console.log("window: %s, document: %s", $(window).height(), $(document).height());
+  //$("#google").colorbox({iframe:true, width:"50%", height:"70%"});
+  //$("#google").click();  
+}
+
+ 
+var Application_rule=0;
+var MAC_rule=0;
+var Edit_MAC_rule=0;
+var IP_rule=0;
+var TCP_UDP_rule=0;
+var total_count=0;
+
+/* 
+ * 2010.05.11 start output qos table   
+ */
+ 
+/*
+ * var show_qos_app =[<%show_qos_info("app", "Auto");%>];  
+ * var show_qos_mac =[<%show_qos_info("mac", "Auto");%>];
+ * var show_qos_ip =[<%show_qos_info("ip", "Auto");%>];
+ * var show_qos_tcpudp =[<%show_qos_info("tcpudp", "Auto");%>]; 
+ */ 
+function init_qos_table(qos_profile)
+{
+  var profile = (qos_profile == "" || typeof qos_profile == "undefined") ? '<%nvram_get("qos_profile");%>' : qos_profile;
+  var init_count = 0;
+  switch(profile)
+  {
+    case "Auto":
+      qos_profile="1";
+      init_count = "<%nvram_get("1_Appqos_rule_count");%>";
+      var init_app_count = (init_count == "") ? 0 : init_count;
+      init_count = "<%nvram_get("1_Macqos_rule_count");%>";
+      var init_mac_count = (init_count == "") ? 0 : init_count;
+      init_count = "<%nvram_get("1_IPqos_rule_count");%>";
+      var init_ip_count = (init_count == "") ? 0 : init_count;
+      init_count = "<%nvram_get("1_TCPUDPqos_rule_count");%>";
+      var init_tcpudp_count = (init_count == "") ? 0 : init_count;  
+      
+      /*
+      * init Voice_Device_Priority, Online_Games_Priority, Video_Priority value
+      */    
+      var init_Voice_Device_Priority = "<%nvram_get("1_Voice_Device_Priority");%>";
+      var init_Online_Games_Priority = "<%nvram_get("1_Online_Games_Priority");%>";
+      var init_Video_Priority = "<%nvram_get("1_Video_Priority");%>"; 
+  
+      /* init Default priority */
+      var temp_default_priority = "<%nvram_get("1_Default_Priority");%>";
+      $('#default_priority').html(temp_default_priority);
+        
+      /* init qos array */
+      var show_qos_app =[<%show_qos_info("app", "Auto");%>];  
+      var show_qos_mac =[<%show_qos_info("mac", "Auto");%>];
+      var show_qos_ip =[<%show_qos_info("ip", "Auto");%>];
+      var show_qos_tcpudp =[<%show_qos_info("tcpudp", "Auto");%>];     
+                 
+    break;
+    case "User_Defined_1":
+      qos_profile="2";
+      init_count = "<%nvram_get("2_Appqos_rule_count");%>";
+      var init_app_count = (init_count == "") ? 0 : init_count;
+      init_count = "<%nvram_get("2_Macqos_rule_count");%>";
+      var init_mac_count = (init_count == "") ? 0 : init_count;
+      init_count = "<%nvram_get("2_IPqos_rule_count");%>";
+      var init_ip_count = (init_count == "") ? 0 : init_count;
+      init_count = "<%nvram_get("2_TCPUDPqos_rule_count");%>";
+      var init_tcpudp_count = (init_count == "") ? 0 : init_count;  
+  
+      /*
+      * init Voice_Device_Priority, Online_Games_Priority, Video_Priority value
+      */    
+      var init_Voice_Device_Priority = "<%nvram_get("2_Voice_Device_Priority");%>";
+      var init_Online_Games_Priority = "<%nvram_get("2_Online_Games_Priority");%>";
+      var init_Video_Priority = "<%nvram_get("2_Video_Priority");%>";   
+  
+      /* init Default priority */
+      var temp_default_priority = "<%nvram_get("2_Default_Priority");%>";
+      $('#default_priority').html(temp_default_priority);
+  
+      /* init qos array */
+      var show_qos_app =[<%show_qos_info("app", "User_Defined_1");%>];  
+      var show_qos_mac =[<%show_qos_info("mac", "User_Defined_1");%>];
+      var show_qos_ip =[<%show_qos_info("ip", "User_Defined_1");%>];
+      var show_qos_tcpudp =[<%show_qos_info("tcpudp", "User_Defined_1");%>];   
+            
+    break;
+    case "User_Defined_2":
+      qos_profile="3";
+      init_count = "<%nvram_get("3_Appqos_rule_count");%>";
+      var init_app_count = (init_count == "") ? 0 : init_count;
+      init_count = "<%nvram_get("3_Macqos_rule_count");%>";
+      var init_mac_count = (init_count == "") ? 0 : init_count;
+      init_count = "<%nvram_get("3_IPqos_rule_count");%>";
+      var init_ip_count = (init_count == "") ? 0 : init_count;
+      init_count = "<%nvram_get("3_TCPUDPqos_rule_count");%>";
+      var init_tcpudp_count = (init_count == "") ? 0 : init_count;  
+  
+      /*
+      * init Voice_Device_Priority, Online_Games_Priority, Video_Priority value
+      */    
+      var init_Voice_Device_Priority = "<%nvram_get("3_Voice_Device_Priority");%>";
+      var init_Online_Games_Priority = "<%nvram_get("3_Online_Games_Priority");%>";
+      var init_Video_Priority = "<%nvram_get("3_Video_Priority");%>";    
+  
+      /* init Default priority */
+      var temp_default_priority = "<%nvram_get("3_Default_Priority");%>";
+      $('#default_priority').html(temp_default_priority);
+  
+      /* init qos array */
+      var show_qos_app =[<%show_qos_info("app", "User_Defined_2");%>];  
+      var show_qos_mac =[<%show_qos_info("mac", "User_Defined_2");%>];
+      var show_qos_ip =[<%show_qos_info("ip", "User_Defined_2");%>];
+      var show_qos_tcpudp =[<%show_qos_info("tcpudp", "User_Defined_2");%>];   
+       
+    break;
+    default:
+         qos_profile="1";
+      init_count = "<%nvram_get("1_Appqos_rule_count");%>";
+      var init_app_count = (init_count == "") ? 0 : init_count;
+      init_count = "<%nvram_get("1_Macqos_rule_count");%>";
+      var init_mac_count = (init_count == "") ? 0 : init_count;
+      init_count = "<%nvram_get("1_IPqos_rule_count");%>";
+      var init_ip_count = (init_count == "") ? 0 : init_count;
+      init_count = "<%nvram_get("1_TCPUDPqos_rule_count");%>";
+      var init_tcpudp_count = (init_count == "") ? 0 : init_count;  
+      
+      /*
+      * init Voice_Device_Priority, Online_Games_Priority, Video_Priority value
+      */    
+      var init_Voice_Device_Priority = "<%nvram_get("1_Voice_Device_Priority");%>";
+      var init_Online_Games_Priority = "<%nvram_get("1_Online_Games_Priority");%>";
+      var init_Video_Priority = "<%nvram_get("1_Video_Priority");%>"; 
+  
+      /* init qos array */
+      var show_qos_app =[<%show_qos_info("app", "Auto");%>];  
+      var show_qos_mac =[<%show_qos_info("mac", "Auto");%>];
+      var show_qos_ip =[<%show_qos_info("ip", "Auto");%>];
+      var show_qos_tcpudp =[<%show_qos_info("tcpudp", "Auto");%>];     
+                 
+      break;        
+  }
+  var i = 0;
+  
+  /*
+   *  Voice init    
+   */
+  if (init_Voice_Device_Priority != "")
+  {   
+    $('#show_setting_table tr:last').after('<tr id="QoS_rule' +total_count +'" height="25"><td></td><td id="QoS_Name'+total_count+'" class="TableListCol">'+ str_1487 +'</td><td id="QoS_Priority'+total_count+'" class="TableListCol">'+ init_Voice_Device_Priority +'</td><td id="QoS_Info'+total_count+'" class="TableListCol">---</td><td class="TableListCol"><input type="hidden" name=voice_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditVoice"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteVoice"><div id="voicerule1"></div></td></tr>');
+    $('#voicerule1').append('<input type="hidden" id="Voice_Device_name" name="Voice_Device_name[]" value="Voice_Device">');
+    $('#voicerule1').append('<input type="hidden" id="Voice_Device_Priority" name="Voice_Device_Priority[]" value="'+init_Voice_Device_Priority+'">');   
+    total_count++;
+  }
+  /*
+   *  Online_Games init    
+   */ 
+  if (init_Online_Games_Priority != "")      
+  {   
+    $('#show_setting_table tr:last').after('<tr id="QoS_rule' +total_count +'" height="25"><td></td><td id="QoS_Name'+total_count+'" class="TableListCol">'+ str_1486 +'</td><td id="QoS_Priority'+total_count+'" class="TableListCol">'+ init_Online_Games_Priority +'</td><td id="QoS_Info'+total_count+'" class="TableListCol"><input type="button" style="{width:100px;}" class="submitBtn" id="games" name="games" value="'+str_1484+'" onClick="show_support_game()"></td><td class="TableListCol"><input type="hidden" name=game_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditGame"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteGame"><div id="gamerule1"></div></td></tr>');
+    $('#gamerule1').append('<input type="hidden" id="Online_Games_name" name="Online_Games_name[]" value="Online_Games">');
+    $('#gamerule1').append('<input type="hidden" id="Online_Games_Priority" name="Online_Games_Priority[]" value="'+init_Online_Games_Priority+'">');      
+    total_count++;
+  }
+  /*
+   *  Video init    
+   */         
+  if (init_Video_Priority != "")
+  {  
+    $('#show_setting_table tr:last').after('<tr id="QoS_rule' +total_count +'" height="25"><td></td><td id="QoS_Name'+total_count+'" class="TableListCol">'+ str_1485 +'</td><td id="QoS_Priority'+total_count+'" class="TableListCol">'+ init_Video_Priority +'</td><td id="QoS_Info'+total_count+'" class="TableListCol">---</td><td class="TableListCol"><input type="hidden" name=video_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditVideo"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteVideo"><div id="videorule1"></div></td></tr>');
+    $('#videorule1').append('<input type="hidden" id="Video_name" name="Video_name[]" value="Video">');
+    $('#videorule1').append('<input type="hidden" id="Video_Priority" name="Video_Priority[]" value="'+init_Video_Priority+'">');
+    total_count++;
+  }
+  /*
+   *  New App init    
+   */ 
+  for(i=0; i<init_app_count; i++)
+  {
+    $('#show_setting_table tr:last').after('<tr id="QoS_rule' +total_count +'" height="25"><td></td><td id="QoS_Name'+total_count+'" class="TableListCol">'+ show_qos_app[i][0] +'</td><td id="QoS_Priority'+total_count+'" class="TableListCol">'+ show_qos_app[i][10] +'</td><td id="QoS_Info'+total_count+'" class="TableListCol">---</td><td class="TableListCol"><input type="hidden" name=app_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditApp"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteApp"><div id="apprule'+Application_rule+'"></div></td></tr>');     
+    
+    $('#apprule'+Application_rule).append('<input type="hidden" id="qos_App_name_'+Application_rule+'" name="qos_App_name[]" value="'+show_qos_app[i][0]+'">');     
+    $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_StartPortRange1_'+Application_rule+'" name="Appqos_StartPortRange1[]" value="'+show_qos_app[i][1]+'">');
+    $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_EndPortRange1_'+Application_rule+'"  name="Appqos_EndPortRange1[]" value="'+show_qos_app[i][2]+'">');
+    $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_Range1Protocol_'+Application_rule+'" name="Appqos_Range1Protocol[]" value="'+show_qos_app[i][3]+'">');
+    
+    $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_StartPortRange2_'+Application_rule+'" name="Appqos_StartPortRange2[]" value="'+show_qos_app[i][4]+'">');
+    $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_EndPortRange2_'+Application_rule+'" name="Appqos_EndPortRange2[]" value="'+show_qos_app[i][5]+'">');
+    $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_Range2Protocol_'+Application_rule+'" name="Appqos_Range2Protocol[]" value="'+show_qos_app[i][6]+'">');
+    
+    $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_StartPortRange3_'+Application_rule+'" name="Appqos_StartPortRange3[]" value="'+show_qos_app[i][7]+'">');
+    $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_EndPortRange3_'+Application_rule+'" name="Appqos_EndPortRange3[]" value="'+show_qos_app[i][8]+'">');
+    $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_Range3Protocol_'+Application_rule+'" name="Appqos_Range3Protocol[]" value="'+show_qos_app[i][9]+'">');
+    
+    $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_Priority_'+Application_rule+'" name="Appqos_Priority[]" value="'+ show_qos_app[i][10] +'">');
+    $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_TOS_'+Application_rule+'" name="Appqos_TOS[]" value="'+ show_qos_app[i][11] +'">');       
+    Application_rule++;
+    total_count++;
+  }
+
+  /*
+   *  Mac init    
+   */   
+  for(i=0; i<init_mac_count; i++)
+  {
+    $('#show_setting_table tr:last').after('<tr id="macrule' +MAC_rule+'" height="25"><td></td><td class="TableListCol">'+ show_qos_mac[i][0] +'</td><td class="TableListCol">'+ show_qos_mac[i][2] +'</td><td class="TableListCol">---</td><td class="TableListCol"><input type="hidden" name=mac_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditMAC"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteMac"><div id="MAC_rule'+MAC_rule+'"></div></td></tr>');     
+   
+    $('#MAC_rule'+MAC_rule).append('<input type="hidden"  name="MACqos_Name[]" value="'+show_qos_mac[i][0]+'">');     
+    $('#MAC_rule'+MAC_rule).append('<input type="hidden"  name="MACqos_Addr[]" value="'+show_qos_mac[i][1]+'">');                                                                                                                                                                                                           
+    $('#MAC_rule'+MAC_rule).append('<input type="hidden"  name="MACqos_Priority[]" value="'+show_qos_mac[i][2]+'">');
+    MAC_rule++;
+    total_count++;          
+  }
+  
+  /*
+   *  ip init    
+   */  
+  for(i=0; i<init_ip_count; i++)
+  {
+    $('#show_setting_table tr:last').after('<tr id="iprule' +IP_rule+'" height="25"><td></td><td class="TableListCol">'+ show_qos_ip[i][0] +'</td><td class="TableListCol">'+ show_qos_ip[i][5] +'</td><td class="TableListCol">---</td><td class="TableListCol"><input type="hidden" name=ip_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditIP"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteIP"><div id="IP_rule'+IP_rule+'"></div></td></tr>');     
+   
+    $('#IP_rule'+IP_rule).append('<input type="hidden"  name="IPqos_Name[]" value="'+show_qos_ip[i][0]+'">');     
+    $('#IP_rule'+IP_rule).append('<input type="hidden"  name="qos_LocalAddr[]" value="'+ show_qos_ip[i][1]+'">');
+    $('#IP_rule'+IP_rule).append('<input type="hidden"  name="qos_Local_IP_Addr2[]" value="'+ show_qos_ip[i][2]+'">');
+    $('#IP_rule'+IP_rule).append('<input type="hidden"  name="qos_RemoteAddr[]" value="'+show_qos_ip[i][3]+'">');
+    $('#IP_rule'+IP_rule).append('<input type="hidden"  name="qos_Remote_IP_Addr2[]" value="'+show_qos_ip[i][4]+'">');
+    $('#IP_rule'+IP_rule).append('<input type="hidden"  name="IPqos_Priority[]" value="'+show_qos_ip[i][5]+'">');
+    $('#IP_rule'+IP_rule).append('<input type="hidden"  name="IPqos_TOS[]" value="'+show_qos_ip[i][6]+'">');
+    IP_rule++;
+    total_count++;      
+  }
+  
+  /*
+   *  TCP & UDP init   
+   */ 
+     
+  for(i=0; i<init_tcpudp_count; i++)
+  {
+    $('#show_setting_table tr:last').after('<tr id="apprule' + TCP_UDP_rule +'" height="25"><td></td><td class="TableListCol">'+ show_qos_tcpudp[i][0] +'</td><td class="TableListCol">'+ show_qos_tcpudp[i][10] +'</td><td class="TableListCol">---</td><td class="TableListCol"><input type="hidden" name=tcpudp_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditTCPUDP"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteTCPUDP"><div id="TCP_UDP_rule'+TCP_UDP_rule+'"></div></td></tr>');     
+   
+    $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_name[]" value="'+ show_qos_tcpudp[i][0]+'">');     
+    $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_StartPortRange1[]" value="'+show_qos_tcpudp[i][1]+'">');
+    $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_EndPortRange1[]" value="'+show_qos_tcpudp[i][2]+'">');
+    $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_Range1Protocol[]" value="'+show_qos_tcpudp[i][3]+'">');
+    
+    $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_StartPortRange2[]" value="'+show_qos_tcpudp[i][4]+'">');
+    $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_EndPortRange2[]" value="'+show_qos_tcpudp[i][5]+'">');
+    $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_Range2Protocol[]" value="'+show_qos_tcpudp[i][6]+'">');
+    
+    $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_StartPortRange3[]" value="'+show_qos_tcpudp[i][7]+'">');
+    $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_EndPortRange3[]" value="'+show_qos_tcpudp[i][8]+'">');
+    $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_Range3Protocol[]" value="'+show_qos_tcpudp[i][9]+'">');
+    
+    $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_Priority[]" value="'+ show_qos_tcpudp[i][10] +'">');
+    TCP_UDP_rule++;
+    total_count++;       
+  }
+}
+
+/* 2010.05.11 end output qos table */
+
+
+function Add_input_name(table_Index)
+{                                       
+  var Edit_type=$("#Edit_type").val(); 
+  
+  //console.log("Add_input_name Edit_type= %s  table_index = %s", Edit_type, table_Index);
+  
+   if (Edit_type=='1')
+    {   
+      $('#Delete'+table_Index).click();
+    } 
+    $("#Edit_type").val('0'); 
+ 
+  var qos_category=$('#frame_qos_add').contents().find("#Addqos_Rule_Category").val(); 	           
+  var profile_file=$('#qos_profile').val();
+  var qos_profile="";
+  
+  if (profile_file=="Auto")
+      qos_profile="1";
+  else if (profile_file=="User_Defined_1") 
+      qos_profile="2";
+  else if (profile_file=="User_Defined_2") 
+      qos_profile="3";                                  
+                
+  switch(qos_category)
+   { 
+     case "Voice_Device":
+            var Voice_Priority=$('#frame_qos_add').contents().find("#Voice_Game_Video_Priority").val();     
+            $('#show_setting_table tr:last').after('<tr id="QoS_rule' +total_count +'" height="25"><td></td><td id="QoS_Name'+total_count+'" class="TableListCol">'+ str_1487 +'</td><td id="QoS_Priority'+total_count+'" class="TableListCol">'+ Voice_Priority +'</td><td id="QoS_Info'+total_count+'" class="TableListCol">---</td><td class="TableListCol"><input type="hidden" name=voice_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditVoice"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteVoice"><div id="voicerule1"></div></td></tr>');
+            $('#voicerule1').append('<input type="hidden" id="Voice_Device_name" name="Voice_Device_name[]" value="Voice_Device">');
+            $('#voicerule1').append('<input type="hidden" id="Voice_Device_Priority" name="Voice_Device_Priority[]" value="'+Voice_Priority+'">');
+     break;         
+     
+      case "Online_Games":
+            var Online_Games_Priority=$('#frame_qos_add').contents().find("#Voice_Game_Video_Priority").val();     
+            $('#show_setting_table tr:last').after('<tr id="QoS_rule' +total_count +'" height="25"><td></td><td id="QoS_Name'+total_count+'" class="TableListCol">'+ str_1486 +'</td><td id="QoS_Priority'+total_count+'" class="TableListCol">'+ Online_Games_Priority +'</td><td id="QoS_Info'+total_count+'" class="TableListCol"><input type="button" style="{width:100px;}" class="submitBtn" id="games" name="games" value="'+str_1484+'" onClick="show_support_game()"></td><td class="TableListCol"><input type="hidden" name=game_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditGame"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteGame"><div id="gamerule1"></div></td></tr>');
+            $('#gamerule1').append('<input type="hidden" id="Online_Games_name" name="Online_Games_name[]" value="Online_Games">');
+            $('#gamerule1').append('<input type="hidden" id="Online_Games_Priority" name="Online_Games_Priority[]" value="'+Online_Games_Priority+'">');      
+     break; 
+       
+      case "Video":
+            var Video_Priority=$('#frame_qos_add').contents().find("#Voice_Game_Video_Priority").val();
+            $('#show_setting_table tr:last').after('<tr id="QoS_rule' +total_count +'" height="25"><td></td><td id="QoS_Name'+total_count+'" class="TableListCol">'+ str_1485 +'</td><td id="QoS_Priority'+total_count+'" class="TableListCol">'+ Video_Priority +'</td><td id="QoS_Info'+total_count+'" class="TableListCol">---</td><td class="TableListCol"><input type="hidden" name=video_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditVideo"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteVideo"><div id="videorule1"></div></td></tr>');
+            $('#videorule1').append('<input type="hidden" id="Video_name" name="Video_name[]" value="Video">');
+            $('#videorule1').append('<input type="hidden" id="Video_Priority" name="Video_Priority[]" value="'+Video_Priority+'">');
+     break; 
+         
+      case "Applications":
+         //alert(total_count);
+         var Appset=$('#frame_qos_add').contents().find("#Appqos_select").val();  
+         if (Appset=="NewApp")    
+          {   
+            var Appqos_name=$('#frame_qos_add').contents().find("#Appqos_Name").val();
+            
+            var Appqos_StartPortRange1=$('#frame_qos_add').contents().find("#Appqos_StartPortRange1").val();
+            var Appqos_EndPortRange1=$('#frame_qos_add').contents().find("#Appqos_EndPortRange1").val();
+            var Appqos_Range1Protocol=$('#frame_qos_add').contents().find("#Appqos_Range1Protocol").val();
+            
+            var Appqos_StartPortRange2=$('#frame_qos_add').contents().find("#Appqos_StartPortRange2").val();
+            var Appqos_EndPortRange2=$('#frame_qos_add').contents().find("#Appqos_EndPortRange2").val();
+            var Appqos_Range2Protocol=$('#frame_qos_add').contents().find("#Appqos_Range2Protocol").val();
+            
+            var Appqos_StartPortRange3=$('#frame_qos_add').contents().find("#Appqos_StartPortRange3").val();
+            var Appqos_EndPortRange3=$('#frame_qos_add').contents().find("#Appqos_EndPortRange3").val();
+            var Appqos_Range3Protocol=$('#frame_qos_add').contents().find("#Appqos_Range3Protocol").val();
+            
+            var New_Appqos_Priority=$('#frame_qos_add').contents().find("#New_Appqos_Priority").val();
+            var Appqos_TOS=$('#frame_qos_add').contents().find("#Appqos_TOS").val(); 
+            
+        $('#show_setting_table tr:last').after('<tr id="QoS_rule' +total_count +'" height="25"><td></td><td id="QoS_Name'+total_count+'" class="TableListCol">'+ Appqos_name +'</td><td id="QoS_Priority'+total_count+'" class="TableListCol">'+ New_Appqos_Priority +'</td><td id="QoS_Info'+total_count+'" class="TableListCol">---</td><td class="TableListCol"><input type="hidden" name=app_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditApp"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteApp"><div id="apprule'+Application_rule+'"></div></td></tr>');     
+        
+        $('#apprule'+Application_rule).append('<input type="hidden" id="qos_App_name_'+Application_rule+'" name="qos_App_name[]" value="'+Appqos_name+'">');     
+        $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_StartPortRange1_'+Application_rule+'" name="Appqos_StartPortRange1[]" value="'+Appqos_StartPortRange1+'">');
+        $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_EndPortRange1_'+Application_rule+'"  name="Appqos_EndPortRange1[]" value="'+Appqos_EndPortRange1+'">');
+        $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_Range1Protocol_'+Application_rule+'" name="Appqos_Range1Protocol[]" value="'+Appqos_Range1Protocol+'">');
+        
+        $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_StartPortRange2_'+Application_rule+'" name="Appqos_StartPortRange2[]" value="'+Appqos_StartPortRange2+'">');
+        $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_EndPortRange2_'+Application_rule+'" name="Appqos_EndPortRange2[]" value="'+Appqos_EndPortRange2+'">');
+        $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_Range2Protocol_'+Application_rule+'" name="Appqos_Range2Protocol[]" value="'+Appqos_Range2Protocol+'">');
+        
+        $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_StartPortRange3_'+Application_rule+'" name="Appqos_StartPortRange3[]" value="'+Appqos_StartPortRange3+'">');
+        $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_EndPortRange3_'+Application_rule+'" name="Appqos_EndPortRange3[]" value="'+Appqos_EndPortRange3+'">');
+        $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_Range3Protocol_'+Application_rule+'" name="Appqos_Range3Protocol[]" value="'+Appqos_Range3Protocol+'">');
+        
+        $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_Priority_'+Application_rule+'" name="Appqos_Priority[]" value="'+ New_Appqos_Priority +'">');
+        $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_TOS_'+Application_rule+'" name="Appqos_TOS[]" value="'+ Appqos_TOS +'">');                         
+
+        }
+      else
+        {  
+         
+          var  Appqos_Priority=$('#frame_qos_add').contents().find("#Appqos_Priority").val();                    
+  
+        $('#show_setting_table tr:last').after('<tr id="QoS_rule' +total_count +'" height="25"><td></td><td id="QoS_Name'+total_count+'" class="TableListCol">'+ Appset +'</td><td id="QoS_Priority'+total_count+'" class="TableListCol">'+ Appqos_Priority +'</td><td id="QoS_Info'+total_count+'" class="TableListCol">---</td><td class="TableListCol"><input type="hidden" name=app_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditApp"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteApp"><div id="apprule'+Application_rule+'"></div></td></tr>');     
+        $('#apprule'+Application_rule).append('<input type="hidden" id="qos_App_name_'+ Application_rule +'" name="qos_App_name[]" value="'+Appset+'">');
+                 
+                      for (var port=0; port < 3; port++)
+                       {
+                          var name=port+1;
+                         if(typeof(getRange[Appset][port]) != "undefined")
+                          {
+                          $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_StartPortRange'+name+'_'+Application_rule +'" name="Appqos_StartPortRange'+name+'[]" value="'+getRange[Appset][port].port_start+'">');        
+                          $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_EndPortRange'+name+'_'+Application_rule +'" name="Appqos_EndPortRange'+name+'[]" value="'+getRange[Appset][port].port_end+'">');
+                          $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_Range'+name+'Protocol_'+ Application_rule +'" name="Appqos_Range'+name+'Protocol[]" value="'+getRange[Appset][port].type+'">');
+                         }
+                         else
+                         {
+                         $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_StartPortRange'+name+'_'+Application_rule+'" name="Appqos_StartPortRange'+name+'[]" value="">');        
+                         $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_EndPortRange'+name+'_'+Application_rule+'" name="Appqos_EndPortRange'+name+'[]" value="">');
+                         $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_Range'+name+'Protocol_'+ Application_rule +'" name="Appqos_Range'+name+'Protocol[]" value="">');
+                         }
+                       }     
+
+        $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_Priority_'+ Application_rule +'" name="Appqos_Priority[]" value="'+ Appqos_Priority +'">');
+        $('#apprule'+Application_rule).append('<input type="hidden" id="Appqos_TOS_'+ Application_rule +'" name="Appqos_TOS[]" value="'+ Appqos_TOS +'">');                                                                                                                                                                 
+        }     // end  if (Appset=="NewApp") 
+         Application_rule++;                    
+     break;
+     
+       case "MAC_Address":
+
+           var MAC_Name=$('#frame_qos_add').contents().find("#MAC_Name").val();
+           
+           var MAC_Addr=$('#frame_qos_add').contents().find("#MAC_addr1").val()+':'+$('#frame_qos_add').contents().find("#MAC_addr2").val()
+                      +':'+ $('#frame_qos_add').contents().find("#MAC_addr3").val()+':'+ $('#frame_qos_add').contents().find("#MAC_addr4").val()
+                      +':'+ $('#frame_qos_add').contents().find("#MAC_addr5").val()+':'+ $('#frame_qos_add').contents().find("#MAC_addr6").val();
+          
+           var MAC_Priority=$('#frame_qos_add').contents().find("#MAC_Priority").val();
+           
+        $('#show_setting_table tr:last').after('<tr id="macrule' +MAC_rule+'" height="25"><td></td><td class="TableListCol">'+ MAC_Name +'</td><td class="TableListCol">'+ MAC_Priority +'</td><td class="TableListCol">---</td><td class="TableListCol"><input type="hidden" name=mac_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditMAC"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteMac"><div id="MAC_rule'+MAC_rule+'"></div></td></tr>');     
+       
+        $('#MAC_rule'+MAC_rule).append('<input type="hidden"  name="MACqos_Name[]" value="'+MAC_Name+'">');     
+        $('#MAC_rule'+MAC_rule).append('<input type="hidden"  name="MACqos_Addr[]" value="'+MAC_Addr+'">');                                                                                                                                                                                                           
+        $('#MAC_rule'+MAC_rule).append('<input type="hidden"  name="MACqos_Priority[]" value="'+MAC_Priority+'">');
+          MAC_rule++;    
+       break;
+                                     
+        case "IP_Address":                     
+           var IP_Name=$('#frame_qos_add').contents().find("#IP_Name").val();                  
+           var LocalAddr=$('#frame_qos_add').contents().find("#LocalAddr").val();
+           var RemoteAddr=$('#frame_qos_add').contents().find("#RemoteAddr").val();
+           var IP_TOS=$('#frame_qos_add').contents().find("#IP_TOS").val();
+           var IP_Priority=$('#frame_qos_add').contents().find("#IP_Priority").val();
+           var Local_IP_Addr="";
+           var Local_IP_Addr2="";
+           var Remote_IP_Addr="";
+           var Remote_IP_Addr2="";
+           
+            if (LocalAddr=="LocalAny")
+                    Local_IP_Addr="All_Local_IPaddr";
+            if (LocalAddr=="LocalIP_addr")
+                    Local_IP_Addr=$('#frame_qos_add').contents().find("#IP_LocalAddr1").val()
+                                  +'.'+$('#frame_qos_add').contents().find("#IP_LocalAddr2").val()
+                                  +'.'+ $('#frame_qos_add').contents().find("#IP_LocalAddr3").val()
+                                  +'.'+ $('#frame_qos_add').contents().find("#IP_LocalAddr4").val();
+            if(LocalAddr=="LocalIP_range")
+              {
+                    Local_IP_Addr=$('#frame_qos_add').contents().find("#IP_Localrange1").val()
+                                 +'.'+$('#frame_qos_add').contents().find("#IP_Localrange2").val()
+                                 +'.'+ $('#frame_qos_add').contents().find("#IP_Localrange3").val()
+                                 +'.'+ $('#frame_qos_add').contents().find("#IP_Localrange4").val();
+                    Local_IP_Addr2=$('#frame_qos_add').contents().find("#IP_Localrange5").val();
+              }
+              
+            if (RemoteAddr=="RemoteAny")
+                    Remote_IP_Addr="All_Remote_IPaddr";
+            if (RemoteAddr=="RemoteIP_addr")
+                    Remote_IP_Addr=$('#frame_qos_add').contents().find("#IP_Remoteaddr1").val()
+                                  +'.'+$('#frame_qos_add').contents().find("#IP_Remoteaddr2").val()
+                                  +'.'+ $('#frame_qos_add').contents().find("#IP_Remoteaddr3").val()
+                                  +'.'+ $('#frame_qos_add').contents().find("#IP_Remoteaddr4").val();
+                                  
+            if(RemoteAddr=="RemoteIP_range")
+              {
+                    Remote_IP_Addr=$('#frame_qos_add').contents().find("#IP_Remoterange1").val()
+                                   +'.'+$('#frame_qos_add').contents().find("#IP_Remoterange2").val()
+                                   +'.'+ $('#frame_qos_add').contents().find("#IP_Remoterange3").val()
+                                   +'.'+ $('#frame_qos_add').contents().find("#IP_Remoterange4").val();
+                                   
+                    Remote_IP_Addr2=$('#frame_qos_add').contents().find("#IP_Remoterange5").val();
+              }
+                                   
+                
+        $('#show_setting_table tr:last').after('<tr id="iprule' +IP_rule+'" height="25"><td></td><td class="TableListCol">'+ IP_Name +'</td><td class="TableListCol">'+ IP_Priority +'</td><td class="TableListCol">---</td><td class="TableListCol"><input type="hidden" name=ip_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditIP"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteIP"><div id="IP_rule'+IP_rule+'"></div></td></tr>');     
+       
+        $('#IP_rule'+IP_rule).append('<input type="hidden"  name="IPqos_Name[]" value="'+IP_Name+'">');     
+        $('#IP_rule'+IP_rule).append('<input type="hidden"  name="qos_LocalAddr[]" value="'+ Local_IP_Addr+'">');
+        $('#IP_rule'+IP_rule).append('<input type="hidden"  name="qos_Local_IP_Addr2[]" value="'+ Local_IP_Addr2+'">');
+        $('#IP_rule'+IP_rule).append('<input type="hidden"  name="qos_RemoteAddr[]" value="'+Remote_IP_Addr+'">');
+        $('#IP_rule'+IP_rule).append('<input type="hidden"  name="qos_Remote_IP_Addr2[]" value="'+Remote_IP_Addr2+'">');
+        $('#IP_rule'+IP_rule).append('<input type="hidden"  name="IPqos_Priority[]" value="'+IP_Priority+'">');
+        $('#IP_rule'+IP_rule).append('<input type="hidden"  name="IPqos_TOS[]" value="'+IP_TOS+'">');
+        IP_rule++;
+       break;
+       
+        case "TCP_UDP":
+           
+            var TCPUDPqos_name=$('#frame_qos_add').contents().find("#TCP_UDP_Name").val();
+                        
+            var TCPUDPqos_StartPortRange1=$('#frame_qos_add').contents().find("#TCP_UDP_StartPortRange1").val();
+            var TCPUDPqos_EndPortRange1=$('#frame_qos_add').contents().find("#TCP_UDP_EndPortRange1").val();
+            var TCPUDPqos_Range1Protocol=$('#frame_qos_add').contents().find("#TCP_UDP_Range1Protocol").val();
+            
+            var TCPUDPqos_StartPortRange2=$('#frame_qos_add').contents().find("#TCP_UDP_StartPortRange2").val();
+            var TCPUDPqos_EndPortRange2=$('#frame_qos_add').contents().find("#TCP_UDP_EndPortRange2").val();
+            var TCPUDPqos_Range2Protocol=$('#frame_qos_add').contents().find("#TCP_UDP_Range2Protocol").val();
+            
+            var TCPUDPqos_StartPortRange3=$('#frame_qos_add').contents().find("#TCP_UDP_StartPortRange3").val();
+            var TCPUDPqos_EndPortRange3=$('#frame_qos_add').contents().find("#TCP_UDP_EndPortRange3").val();
+            var TCPUDPqos_Range3Protocol=$('#frame_qos_add').contents().find("#TCP_UDP_Range3Protocol").val();
+            
+            var TCPUDPqos_Priority=$('#frame_qos_add').contents().find("#New_TCP_UDP_Priority").val();
+
+            
+        $('#show_setting_table tr:last').after('<tr id="apprule' + TCP_UDP_rule +'" height="25"><td></td><td class="TableListCol">'+ TCPUDPqos_name +'</td><td class="TableListCol">'+ TCPUDPqos_Priority +'</td><td class="TableListCol">---</td><td class="TableListCol"><input type="hidden" name=tcpudp_rule_id[] value="'+total_count+'"><input type="button" value="Edit" name="EditTCPUDP"><input id="Delete'+total_count+'" type="button" value="Delete" name="DeleteTCPUDP"><div id="TCP_UDP_rule'+TCP_UDP_rule+'"></div></td></tr>');     
+       
+        $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_name[]" value="'+ TCPUDPqos_name+'">');     
+        $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_StartPortRange1[]" value="'+TCPUDPqos_StartPortRange1+'">');
+        $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_EndPortRange1[]" value="'+TCPUDPqos_EndPortRange1+'">');
+        $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_Range1Protocol[]" value="'+TCPUDPqos_Range1Protocol+'">');
+        
+        $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_StartPortRange2[]" value="'+TCPUDPqos_StartPortRange2+'">');
+        $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_EndPortRange2[]" value="'+TCPUDPqos_EndPortRange2+'">');
+        $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_Range2Protocol[]" value="'+TCPUDPqos_Range2Protocol+'">');
+        
+        $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_StartPortRange3[]" value="'+TCPUDPqos_StartPortRange3+'">');
+        $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_EndPortRange3[]" value="'+TCPUDPqos_EndPortRange3+'">');
+        $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_Range3Protocol[]" value="'+TCPUDPqos_Range3Protocol+'">');
+        
+        $('#TCP_UDP_rule'+TCP_UDP_rule).append('<input type="hidden"  name="TCPUDPqos_Priority[]" value="'+ TCPUDPqos_Priority +'">');
+        TCP_UDP_rule++;                          
+       break;
+       
+     default:
+       break; 
+  }   // end switch (qos_category)
+    
+    if (Edit_type == '0')
+      total_count++; 
+  
+  /* if add rule, do not remove form. add by emily*/
+  if(Edit_type == '1')
+  {
+    $('#block_background').css("display", "none");
+    $('#add_qos_tr').hide();
+  }
+  var h = $('#block_background').height() + 30;
+  $('#block_background').css("height", h);  
+
+  //$.fn.colorbox.close();  
+}
+                                                                    
+
+function Try_Submit()
+{    
+  
+     var  Voice_Device_Priority_array = document.getElementsByName("Voice_Device_Priority[]"); 
+     var  Online_Games_Priority_array = document.getElementsByName("Online_Games_Priority[]");
+     var  Video_Priority_array = document.getElementsByName("Video_Priority[]");
+     
+     var qos_App_name_array = document.getElementsByName("qos_App_name[]"); 
+     var Appqos_StartPortRange1_array = document.getElementsByName("Appqos_StartPortRange1[]");
+     var Appqos_EndPortRange1_array = document.getElementsByName("Appqos_EndPortRange1[]");
+     var Appqos_Range1Protocol_array = document.getElementsByName("Appqos_Range1Protocol[]");
+     var Appqos_StartPortRange2_array = document.getElementsByName("Appqos_StartPortRange2[]");
+     var Appqos_EndPortRange2_array = document.getElementsByName("Appqos_EndPortRange2[]");
+     var Appqos_Range2Protocol_array = document.getElementsByName("Appqos_Range2Protocol[]");
+     var Appqos_StartPortRange3_array = document.getElementsByName("Appqos_StartPortRange3[]");
+     var Appqos_EndPortRange3_array = document.getElementsByName("Appqos_EndPortRange3[]");
+     var Appqos_Range3Protocol_array = document.getElementsByName("Appqos_Range3Protocol[]"); 
+     var Appqos_Priority_array = document.getElementsByName("Appqos_Priority[]");
+     var Appqos_TOS_array = document.getElementsByName("Appqos_TOS[]");
+     
+     var MACqos_Name_array = document.getElementsByName("MACqos_Name[]");
+     var MACqos_Addr_array = document.getElementsByName("MACqos_Addr[]");
+     var MACqos_Priority_array = document.getElementsByName("MACqos_Priority[]");
+     
+     var IPqos_Name_array = document.getElementsByName("IPqos_Name[]");
+     var qos_LocalAddr_array = document.getElementsByName("qos_LocalAddr[]");
+     var qos_Local_IP_Addr2_array = document.getElementsByName("qos_Local_IP_Addr2[]");
+     var qos_RemoteAddr_array = document.getElementsByName("qos_RemoteAddr[]");
+     var qos_Remote_IP_Addr2_array = document.getElementsByName("qos_Remote_IP_Addr2[]");
+     var IPqos_Priority_array = document.getElementsByName("IPqos_Priority[]");
+     var IPqos_TOS_array = document.getElementsByName("IPqos_TOS[]");
+     
+     var TCPUDPqos_name_array = document.getElementsByName("TCPUDPqos_name[]"); 
+     var TCPUDPqos_StartPortRange1_array = document.getElementsByName("TCPUDPqos_StartPortRange1[]");
+     var TCPUDPqos_EndPortRange1_array = document.getElementsByName("TCPUDPqos_EndPortRange1[]");
+     var TCPUDPqos_Range1Protocol_array = document.getElementsByName("TCPUDPqos_Range1Protocol[]");
+     var TCPUDPqos_StartPortRange2_array = document.getElementsByName("TCPUDPqos_StartPortRange2[]");
+     var TCPUDPqos_EndPortRange2_array = document.getElementsByName("TCPUDPqos_EndPortRange2[]");
+     var TCPUDPqos_Range2Protocol_array = document.getElementsByName("TCPUDPqos_Range2Protocol[]");
+     var TCPUDPqos_StartPortRange3_array = document.getElementsByName("TCPUDPqos_StartPortRange3[]");
+     var TCPUDPqos_EndPortRange3_array = document.getElementsByName("TCPUDPqos_EndPortRange3[]");
+     var TCPUDPqos_Range3Protocol_array = document.getElementsByName("TCPUDPqos_Range3Protocol[]"); 
+     var TCPUDPqos_Priority_array = document.getElementsByName("TCPUDPqos_Priority[]");
+     
+     var voice_data1="";
+     var game_data1="";
+     var video_data1="";
+     var app_data1 = "";
+     var mac_data1="";
+     var ip_data1="";
+     var tcp_udp_data1="";
+     var app="";
+     var mac="";
+     var ip="";
+     var tcpudp="";
+     
+     var qos_profile_num="";
+     if ($('#qos_profile').val()=="Auto")
+            qos_profile_num=1;
+     else if($('#qos_profile').val()=="User_Defined_1")       
+            qos_profile_num=2;
+     else if($('#qos_profile').val()=="User_Defined_2")       
+            qos_profile_num=3;
+                   
+      if ($('#qos_on').attr("checked"))
+		   $('#qos_enabled').val('1');
+	     else if ($('#qos_off').attr("checked"))
+		   $('#qos_enabled').val('0');
+		   
+   
+      //console.log(typeof $('input[name=Voice_Device_Priority[]]'));
+
+        for (var voicecount=0; voicecount < $('input[name=Voice_Device_Priority[]]').length; voicecount++)                
+        {
+          $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Voice_Device_Priority" value="' + Voice_Device_Priority_array[voicecount].value + '">');     
+           voice_data1=' '+ qos_profile_num +'_Voice_Device_Priority';
+        }      
+
+    
+        for (var gamecount=0; gamecount < $('input[name=Online_Games_Priority[]]').length; gamecount++)                
+        {
+          $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Online_Games_Priority" value="' + Online_Games_Priority_array[gamecount].value + '">');     
+          game_data1=' '+ qos_profile_num +'_Online_Games_Priority';
+        }
+           
+        for (var videocount=0; videocount < $('input[name=Voice_Device_Priority[]]').length; videocount++)                
+        {
+          $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Video_Priority" value="' + Video_Priority_array[videocount].value + '">');     
+          video_data1=' '+ qos_profile_num +'_Video_Priority';
+        }
+    
+     for (var appcount=0; appcount < $('input[name=qos_App_name[]]').length; appcount++)                
+     {
+           app=appcount+1;
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Appqos_name_'+app+'" value="' + qos_App_name_array[appcount].value + '">');     
+      
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Appqos_StartPortRange1_'+app+'" value="' + Appqos_StartPortRange1_array[appcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Appqos_EndPortRange1_'+app+'" value="' + Appqos_EndPortRange1_array[appcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Appqos_Range1Protocol_'+app+'" value="' + Appqos_Range1Protocol_array[appcount].value+'">');
+           
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Appqos_StartPortRange2_'+app+'" value="' + Appqos_StartPortRange2_array[appcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Appqos_EndPortRange2_'+app+'" value="' + Appqos_EndPortRange2_array[appcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Appqos_Range2Protocol_'+app+'" value="' + Appqos_Range2Protocol_array[appcount].value+'">');
+        
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Appqos_StartPortRange3_'+app+'" value="' + Appqos_StartPortRange3_array[appcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Appqos_EndPortRange3_'+app+'" value="'+ Appqos_EndPortRange3_array[appcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Appqos_Range3Protocol_'+app+'" value="' +Appqos_Range3Protocol_array[appcount].value+'">');
+        
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Appqos_Priority_'+app+'" value="'+Appqos_Priority_array[appcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Appqos_TOS_'+app+'" value="'+Appqos_TOS_array[appcount].value+'">');
+        
+        app_data1 +=' '+ qos_profile_num+'_Appqos_name_'+app
+                   +' '+ qos_profile_num+'_Appqos_StartPortRange1_'+app
+                   +' '+ qos_profile_num+'_Appqos_EndPortRange1_'+app
+                   +' '+ qos_profile_num+'_Appqos_Range1Protocol_'+app
+                   +' '+ qos_profile_num+'_Appqos_StartPortRange2_'+app
+                   +' '+ qos_profile_num+'_Appqos_EndPortRange2_'+app
+                   +' '+ qos_profile_num+'_Appqos_Range2Protocol_'+app
+                   +' '+ qos_profile_num+'_Appqos_StartPortRange3_'+app
+                   +' '+ qos_profile_num+'_Appqos_EndPortRange3_'+app
+                   +' '+ qos_profile_num+'_Appqos_Range3Protocol_'+app
+                   +' '+ qos_profile_num+'_Appqos_Priority_'+app
+                   +' '+ qos_profile_num+'_Appqos_TOS_'+app; 
+                                                                                                                
+     } 
+                                                                                              
+      $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Appqos_rule_count" value="'+Application_rule+'">');  
+
+      
+         for (var maccount=0; maccount < $('input[name=MACqos_Name[]]').length; maccount++)                
+     {
+           mac=maccount+1;
+        
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_MACqos_Name_'+mac+'" value="' + MACqos_Name_array[maccount].value + '">');                             
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_MACqos_Addr_'+mac+'" value="' + MACqos_Addr_array[maccount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_MACqos_Priority_'+mac+'" value="' + MACqos_Priority_array[maccount].value+'">');             
+        
+         mac_data1 +=' '+ qos_profile_num+'_MACqos_Name_'+mac
+                    +' '+ qos_profile_num+'_MACqos_Addr_'+mac
+                    +' '+ qos_profile_num+'_MACqos_Priority_'+mac;
+                                                                                                                
+     }                                                                                              
+    $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_Macqos_rule_count" value="'+MAC_rule+'">');  
+
+    
+       for (var ipcount=0; ipcount < $('input[name=IPqos_Name[]]').length; ipcount++)                
+     {
+           ip=ipcount+1;
+        
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_IPqos_Name_'+ip+'" value="' + IPqos_Name_array[ipcount].value + '">');                             
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_qos_LocalAddr_'+ip+'" value="' + qos_LocalAddr_array[ipcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_qos_Local_IP_Addr2_'+ip+'" value="' + qos_Local_IP_Addr2_array[ipcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_qos_RemoteAddr_'+ip+'" value="' + qos_RemoteAddr_array[ipcount].value+'">');             
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_qos_Remote_IP_Addr2_'+ip+'" value="' + qos_Remote_IP_Addr2_array[ipcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_IPqos_Priority_'+ip+'" value="' + IPqos_Priority_array[ipcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_IPqos_TOS_'+ip+'" value="' + IPqos_TOS_array[ipcount].value+'">'); 
+        
+        ip_data1 +=' '+ qos_profile_num+'_IPqos_Name_'+ip
+                  +' '+ qos_profile_num+'_qos_LocalAddr_'+ip
+                  +' '+ qos_profile_num+'_qos_Local_IP_Addr2_'+ip
+                  +' '+ qos_profile_num+'_qos_RemoteAddr_'+ip
+                  +' '+ qos_profile_num+'_qos_Remote_IP_Addr2_'+ip
+                  +' '+ qos_profile_num+'_IPqos_Priority_'+ip
+                  +' '+ qos_profile_num+'_IPqos_TOS_'+ip;
+                                                                                                                
+     }
+                                                                                              
+    $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_IPqos_rule_count" value="'+IP_rule+'">');  
+
+
+      for (var tcpcount=0; tcpcount < $('input[name=TCPUDPqos_name[]]').length; tcpcount++)                
+     {
+           tcpudp=tcpcount+1;
+        
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_TCPUDPqos_name_'+tcpudp+'" value="' +  TCPUDPqos_name_array[tcpcount].value + '">');     
+      
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_TCPUDPqos_StartPortRange1_'+tcpudp+'" value="' + TCPUDPqos_StartPortRange1_array[tcpcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_TCPUDPqos_EndPortRange1_'+tcpudp+'" value="' + TCPUDPqos_EndPortRange1_array[tcpcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_TCPUDPqos_Range1Protocol_'+tcpudp+'" value="' + TCPUDPqos_Range1Protocol_array[tcpcount].value+'">');
+           
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_TCPUDPqos_StartPortRange2_'+tcpudp+'" value="' + TCPUDPqos_StartPortRange2_array[tcpcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_TCPUDPqos_EndPortRange2_'+tcpudp+'" value="' + TCPUDPqos_EndPortRange2_array[tcpcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_TCPUDPqos_Range2Protocol_'+tcpudp+'" value="' + TCPUDPqos_Range2Protocol_array[tcpcount].value+'">');
+        
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_TCPUDPqos_StartPortRange3_'+tcpudp+'" value="' + TCPUDPqos_StartPortRange3_array[tcpcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_TCPUDPqos_EndPortRange3_'+tcpudp+'" value="'+ TCPUDPqos_EndPortRange3_array[tcpcount].value+'">');
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_TCPUDPqos_Range3Protocol_'+tcpudp+'" value="' +TCPUDPqos_Range3Protocol_array[tcpcount].value+'">');
+        
+        $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_TCPUDPqos_Priority_'+tcpudp+'" value="'+TCPUDPqos_Priority_array[tcpcount].value+'">');
+       
+        
+        tcp_udp_data1 +=' '+ qos_profile_num+'_TCPUDPqos_name_'+tcpudp
+                      + ' '+ qos_profile_num+'_TCPUDPqos_StartPortRange1_'+tcpudp
+                      + ' '+ qos_profile_num+'_TCPUDPqos_EndPortRange1_'+tcpudp
+                      + ' '+ qos_profile_num+'_TCPUDPqos_Range1Protocol_'+tcpudp
+                      + ' '+ qos_profile_num+'_TCPUDPqos_StartPortRange2_'+tcpudp
+                      + ' '+ qos_profile_num+'_TCPUDPqos_EndPortRange2_'+tcpudp
+                      + ' '+ qos_profile_num+'_TCPUDPqos_Range2Protocol_'+tcpudp
+                      + ' '+ qos_profile_num+'_TCPUDPqos_StartPortRange3_'+tcpudp
+                      + ' '+ qos_profile_num+'_TCPUDPqos_EndPortRange3_'+tcpudp
+                      + ' '+ qos_profile_num+'_TCPUDPqos_Range3Protocol_'+tcpudp
+                      + ' '+ qos_profile_num+'_TCPUDPqos_Priority_'+tcpudp; 
+                                                                                                                
+     } 
+                                                                                             
+      $('#add_input_name').append('<input type="hidden" name="'+qos_profile_num+'_TCPUDPqos_rule_count" value="'+TCP_UDP_rule+'">');  
+
+           
+         var alldata1= $('#data1').val()
+                        + app_data1 + ' '+ qos_profile_num+'_Appqos_rule_count'
+                        +' '+ mac_data1 + ' '+ qos_profile_num+'_Macqos_rule_count'
+                        +' '+ ip_data1 + ' '+ qos_profile_num+'_IPqos_rule_count'
+                        +' '+ tcp_udp_data1 + ' '+ qos_profile_num+'_TCPUDPqos_rule_count'
+                        +' '+ qos_profile_num+'_Voice_Device_Priority'
+                        +' '+ qos_profile_num+'_Online_Games_Priority'
+                        +' '+ qos_profile_num+'_Video_Priority'
+                        + voice_data1 + game_data1 + video_data1 ;
+        
+        $('#data1').val(alldata1);
+        
+        $("input").each( 
+              function() 
+              { 
+                if(this.value == 'undefined')
+                {
+                  this.value = "";  
+                }
+              }); 
+              
+        if (total_count > 30)
+         {
+           alert(str_3244);
+           return false;                      
+         }
+                                                                                                                                                        
+        $('#qos_form').submit();     
+}                                                                                                       
+
+function sleep( seconds ) {
+	var timer = new Date();
+	var time = timer.getTime();
+	do
+		timer = new Date();
+	while( (timer.getTime() - time) < (seconds * 1000) );
+}
+
+$(":input[value=Edit]").live("click" ,function(){
+  
+  $('#block_background').css("display", "");  
+  if(this.id == "Setting_Bandwidth")
+  {
+    return true;    
+  }
+    
+
+  $('#add_qos_tr').show();
+
+      
+  var row_index=0;
+  var array_index=0;
+  
+  switch(this.name)                              
+  {
+    case "EditVoice":
+       array_index = $(":input[name=EditVoice]").index($(this));
+       row_index=$("input[name='voice_rule_id[]']")[array_index].value;                           
+      // console.log("voice priority = %s  tr_index= %s", $('#2_Voice_Device_Priority').val(), row_index);
+       EditRule('Voice_Device', array_index , row_index);     
+    break;
+    
+    case "EditGame":
+        array_index = $(":input[name=EditGame]").index($(this));
+        row_index=$("input[name='game_rule_id[]']")[array_index].value;                             
+      //  console.log("Game priority = %s  tr_index= %s", $('#2_Online_Games_Priority').val(), row_index);  
+        EditRule('Online_Games',array_index , row_index);       
+    break;
+    
+    case "EditVideo":
+        array_index = $(":input[name=EditVideo]").index($(this));
+        row_index=$("input[name='video_rule_id[]']")[array_index].value;                           
+      //  console.log("Edit priority = %s  tr_index= %s", $('#2_Video_Priority').val(), row_index); 
+        EditRule('Video',array_index , row_index); 
+       
+    break;        
+ 
+    case "EditApp":
+      array_index = $(":input[name=EditApp]").index($(this));
+      row_index=$("input[name='app_rule_id[]']")[array_index].value;                                                                
+      var Appset = $(':input[name=qos_App_name[]]')[array_index].value;
+
+      /* fixed: if Appset is not in (#Appqos_select select text) */
+      var check_array = ["MSN", "Yahoo", "Skype", "FTP", "Email", "SNMP", "Telnet", "WWW", "VPN", "IGMP"];      
+      var check = 0;
+      $.each(check_array, function(index, value){
+        //console.log("select Appset is %s ", value);
+        if(value == Appset)
+          check = 1;
+      });
+      Appset = (!check) ? "NewApp" : Appset; 
+           
+      EditRule(Appset, array_index , row_index);      
+    break;
+    
+    case "EditMAC":
+       array_index = $(":input[name=EditMAC]").index($(this));
+       row_index=$("input[name='mac_rule_id[]']")[array_index].value;
+       EditRule('MAC_Address', array_index , row_index);      
+    break;
+    
+    case "EditIP":
+       array_index = $(":input[name=EditIP]").index($(this));
+       row_index=$("input[name='ip_rule_id[]']")[array_index].value;
+       EditRule('IP_Address', array_index , row_index);      
+    break;
+    
+    case "EditTCPUDP":
+       array_index = $(":input[name=EditTCPUDP]").index($(this));
+       row_index=$("input[name='tcpudp_rule_id[]']")[array_index].value;
+       EditRule('TCP_UDP', array_index , row_index);      
+    break;
+  }
+  
+    
+});
+
+
+
+$(":input[value=Delete]").live("click" ,function(){
+   var removeEntry=this.name;
+ // console.log("Delete item %s", this.name);
+  $(this).parent().parent().remove();
+  
+    var qos_profile_num="";
+     if ($('#qos_profile').val()=="Auto")
+            qos_profile_num=1;
+     else if($('#qos_profile').val()=="User_Defined_1")       
+            qos_profile_num=2;
+     else if($('#qos_profile').val()=="User_Defined_2")       
+            qos_profile_num=3;
+            
+  switch (removeEntry)
+   {                         
+     case "DeleteApp":
+        Application_rule--;
+     break;
+     case "DeleteMac":
+        MAC_rule--;
+     break;
+     case "DeleteIP":
+       IP_rule--;
+     break;
+      case "DeleteTCPUDP":
+       TCP_UDP_rule--;
+     break;
+    
+   } 
+});
+
+function getW(){
+  var w;
+  if(document.innerWidth){ w=document.innerWidth;
+  } else if(document.documentElement.clientWidth){ w=document.documentElement.clientWidth;
+  } else if(document.body){ w=document.body.clientWidth; }
+  return w;
+}
+function getH(){
+  var h;
+  if(document.innerHeight){ h=document.innerHeight;
+  } else if(document.documentElement.clientHeight){ h=document.documentElement.clientHeight;
+  } else if(document.body){ h=document.body.clientHeight; }
+  return h;
+}
+function showMe(){
+  alert(getH());
+  alert(getW());
+}                                                                                          
+
+//-->
+</SCRIPT>
+</HEAD >
+<body onLoad="InitValue();" >
+<div id="block_background" style="display:none;position:absolute;width:101.5%;height:600;margin:0pt; padding:0pt; ;z-index:50;top:0pt;left:0pt;background-color:#000000;filter:alpha(opacity=50);-moz-opacity:0.5;opacity: 0.5;" ></div>
+<SCRIPT language="JavaScript">
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem,isAPmode);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name);
+</SCRIPT>
+  
+  <td  height="100%" width="99%" valign="top">
+  	    
+	     <table width="600" cellSpacing="0" cellPadding="0">
+				   	 <tr height="80"><td width="15" ></td>
+					     <td class="head_bold" ><SCRIPT>dw(str_1880);</SCRIPT>&nbsp;&nbsp;&gt;&nbsp;&nbsp;<SCRIPT>dw(str_1441);</SCRIPT></td>
+					 </tr>
+	    </table> 
+<form  id="qos_form" name="qos_form" method="post" action="qos.cgi">  					             
+	    <table width="600" cellSpacing="0" cellPadding="0">		  
+					  <tr height="50"><td width="20"></td>
+					      <td class="TextCol" width="300"><b><SCRIPT>dw(str_1444);</SCRIPT>&nbsp;&nbsp;&gt;</b></td>
+					      <td class="TextCol" width="120"><input type="radio" id="qos_on" value="on" name="qos_start" onClick="qos_on_off();"><SCRIPT>dw(str_71);</SCRIPT></td>
+						  <td class="TextCol" width="160"><input type="radio" id="qos_off" value="off" name="qos_start" onClick="qos_on_off();"><SCRIPT>dw(str_119);</SCRIPT></td>
+					  </tr>
+					  <tr  id="tr_qos_profile" height="50"><td  width="20"></td>
+					      <td class="TextCol" width="300"><b><SCRIPT>dw(str_1595);</SCRIPT>&nbsp;&nbsp;&gt;</b></td>
+					      <td class="TextCol" width="120"> 
+						  					<select id="qos_profile" class="select_AppTextCol" name="qos_profile" onChange="Change_Profile(this.options[this.options.selectedIndex].value);">
+												<SCRIPT>dw('<option  value="Auto">'+ str_377 +'</option>');
+														dw('<option value="User_Defined_1">'+ str_1579 +'1 </option>');
+														dw('<option value="User_Defined_2">'+ str_1579 +'2 </option>');</SCRIPT>
+											</select>
+						  </td>
+						  <td class="TextCol" width="160"></td>
+					  </tr>	
+					  <tr  id="hr_qos_profile" height="30"><td width="20"></td>
+						  <td colspan="3"><hr color=#666666  noshade></td>
+					  </tr>	  				    	 	  				    
+			  </table>
+					 
+      	<table id="table_bandwidth_profile" width="600" cellSpacing=0 cellPadding=0 >     	 			 				      
+             <tr height="30"><td width="20"></td>
+					      <td class=TextCol width="300"><b><SCRIPT>dw(str_1577);</SCRIPT>&nbsp;&nbsp;&gt;</b></td>          
+					      <td class=TextCol width="120"> 
+						  			<select id="qos_bandwidth_profile" class="select_AppTextCol" name="qos_bandwidth_profile"  onChange="Change_Bandwidth(this.options[this.options.selectedIndex].value);">
+												<SCRIPT>dw('<option value="Auto">'+ str_377 +'</option>');
+														dw('<option value="User_Defined_1">'+ str_1579 +'1 </option>');
+														dw('<option value="User_Defined_2">'+ str_1579 +'2 </option>');</SCRIPT>
+											</select>
+						    </td>
+						  <td class=TextCol width="160"><input type="button" style="{width:40 px;}" class="submitBtn" id="Setting_Bandwidth" name="Setting_Bandwidth" value="Edit" onClick="Qos_Bandwidth()"></td>
+					  </tr>
+					  
+					   <tr height="30"><td width="20"></td>
+					      <td class="TextCol" width="300"><b><SCRIPT>dw(str_1596);</SCRIPT>&nbsp;&nbsp;&gt;</b></td>
+					      <td class="TextCol" width="120"></td>
+						  <td class="TextCol" width="160"></td>
+					  </tr> 				    				  				  				
+			  </table>
+				
+					<table id="show_setting_table" width="700" cellSpacing="0" cellPadding="0" border="0">     	 			 				      		
+           <tr height="25">
+						    <td width="20"></td>
+					        <td class="TableListTopCol" width="150"><SCRIPT>dw(str_1597);</SCRIPT></td>
+					        <td class="TableListTopCol" width="100"><SCRIPT>dw(str_1555);</SCRIPT></td>
+						    <td class="TableListTopCol" width="280"><SCRIPT>dw(str_1598);</SCRIPT></td>
+							<td class="TableListTopCol" width="150"><SCRIPT>dw(str_1599);</SCRIPT></td>
+					  </tr>				  								
+			 </table>
+			 
+			 	<table id="table_default" width="700" cellSpacing="0" cellPadding="0" border="0">     	 			 				      		
+					  <tr id="default_row" height="25">
+					      <td  width="20"></td>
+					      <td class="TableListCol" width="150"><SCRIPT>dw(str_1575);</SCRIPT></td>
+					      <td id="default_priority" class="TableListCol" width="100"><!--SCRIPT>dw('<%nvram_get("1_Default_Priority");%>');</SCRIPT--></td>
+						  <td class="TableListCol" width="280"><SCRIPT>dw(str_1576);</SCRIPT></td>
+						  <td class="TableListCol" width="150">&nbsp;</td> 
+					  </tr>
+			 </table>
+
+        <table width="600" cellspacing=0 cellpadding=0>
+             <tr height="20"><td></td><td></td></tr>
+              <tr>
+                <td  width="20"></td>
+                <td><input type="button" style="{width:80 px;}" class="submitBtn" id="Add_Rule" name="Add_Rule" value="" onClick="AddRule()"></td>
+              </tr>
+              <tr height="30" align="center">
+                        <td width="20"></td>
+                        <td width="580" colspan="4"><script>
+								dw('<input id="submitBtn_clear" type="button" value="');
+								dw(str_48);
+								dw('" style="{width:175px;}" class="submitBtn" onclick="qos_form.reset();window.location.reload();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">');
+								dw('  <input id="submitBtn_apply" type="button" style="{width:175px;}" value="');
+								dw(str_49);
+								dw('" onClick="Try_Submit();" class="submitBtn">');
+							</script>
+                       </td>
+                </tr>
+      </table>
+      <!--
+      margin-left:50px;margin-top:50px
+      -->
+       <div id="add_qos_tr" style="position:absolute;z-index:60;display:none;margin-left:50px;margin-top:50px;">
+          <table cellspacing=0 cellpadding=0 class="qos_Table_border">         
+                  <tr>
+                      <td>  
+                        <iframe src="qos_add.html" width="550" height="350" id="frame_qos_add" name="frame_qos_add" frameborder="0" marginheight="0" scrolling="no">
+    				            </iframe>
+                      </td>
+                  </tr>
+          </table>
+       </div>
+       <div id="add_qos_bandwidth" style="position:absolute;z-index:70;display:none;left:300px;top:50px">
+          <table cellspacing=0 cellpadding=0 class="qos_Table_border">         
+                  <tr>
+                      <td>  
+                        <iframe src="qos_bandwidth.html" width="650" height="520" id="frame_qos_bandwidth" name="frame_qos_bandwidth" frameborder="0" marginheight="0" scrolling="no">
+    				            </iframe>
+                      </td>
+                  </tr>
+          </table>
+       </div>
+       
+         <div id="qos_games" style="position:absolute;z-index:70;display:none;left:300px;top:50px">
+          <table cellspacing=0 cellpadding=0 class="qos_Table_border">         
+                  <tr>
+                      <td>  
+                        <iframe src="qos_support_game.html" width="650" height="430" id="frame_qos_games" name="frame_qos_games" frameborder="0" marginheight="0" scrolling="no">
+    				            </iframe>
+                      </td>
+                  </tr>
+          </table>
+       </div>       
+              
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">            
+<input type="hidden" name="next_page" value="play_qos_main.html">
+<input type="hidden" name="redirect_timer" value="15">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" id="data1" name="data1" value="qos_enabled qos_profile qos_bandwidth_profile">
+<input type="hidden" id="qos_enabled" name="qos_enabled" value="<%nvram_get("qos_enabled");%>"> 
+<input type="hidden" id="Edit_type" name="Edit_type" value="0">
+<div id="add_input_name"></div>
+</form>
+<SCRIPT language=JavaScript>
+
+showTail();
+</SCRIPT>
+ 
+    

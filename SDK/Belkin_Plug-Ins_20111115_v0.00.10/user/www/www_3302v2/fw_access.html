@@ -1,0 +1,1869 @@
+<HTML>
+<HEAD>
+<link rel="stylesheet" type="text/css" href="tabcontent.css" />
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="expires" CONTENT="0"> 
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language="javascript" src="showMenu.js"></SCRIPT>
+<SCRIPT language="javascript" src="tabcontent.js"></SCRIPT>
+<SCRIPT language="javascript" src="fw_access.js"></SCRIPT>
+<SCRIPT language="javascript" src="dl.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_116+' '+str_1710+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Access Control';
+var menuSection	='Fire';
+var menuItem	='Access Control';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+<%autofw_check();%>
+
+var editmac="";
+
+var DataArray = new Array();
+var portData = [["None",  "5", ""],
+	["DNS",   "2", "53"],
+	["Ping",  "3", ""],
+	["HTTP",  "0", "80"],
+	["HTTPS", "0", "443"],
+	["FTP", "0", "21"],
+	["POP3",  "0", "110"],
+	["IMAP",  "2", "143"],									
+	["SMTP",  "0", "587"],
+	["NNTP",  "2", "563"],
+	["Telnet","2", "23"],												
+	["SNMP",  "2", "161"],											
+	["TFTP",  "1", "69"],							
+	["IKE",   "1", "4500"],				
+	["TFTP",   "1", "69"],
+	["User-Defined",  "2", ""]];
+
+var TBLHeader = "<table class=\"copy_1\" cellspacing=\"1\" cellpadding=\"5\" width=\"680\" align=\"center\" border=\"0\">\
+				<tbody>\
+				<tr bgcolor=#666666>\
+				<th width=\"95\" nowrap bgcolor=\"#666666\" class=formText><font color=\"#FFFFFF\">"+str_1733+" </font><font color=#ffffff> </font></th>\
+				<th width=\"82\" nowrap class=formText><font color=#ffffff>"+ str_1731 +"</font></th>\
+				<th width=\"143\" nowrap class=formText><font color=#ffffff> "+str_14+" </font></th>\
+				<th width=\"143\" nowrap class=formText><font color=#ffffff> "+str_320+" </font></th>\
+				<th width=\"143\" nowrap class=formText><font color=#ffffff> "+str_1734 +"</font></th>\
+				<th width=\"55\" nowrap class=formText><font color=#ffffff> "+str_1599+"</font></th>\
+				</tr>\
+                " ;
+
+var TBLFooter = " </tbody></table>" ;
+var TDHeader =  "<th nowrap class=formText>" ;
+var TDFooter = "</th>" ;
+	 
+
+var TRHeader = "<tr bgcolor=\"#CCCCCC\">" ;
+var TRFooter = "</tr>" ;
+var Degree=21;
+function Data(interfx, name , ip, mac, onList) 
+{
+	this.Interface = interfx;
+	this.Name = name;
+	this.IP = ip ;
+	this.MAC = mac ;
+	this.OnList = onList ;
+}
+function select_pro(type,i)
+{
+	if(type==3 || type==4)
+	{
+		eval("f.portrange"+i).disabled= true;
+		eval("f.portrange"+i).value= "";
+
+	}
+	else
+	{
+		eval("f.portrange"+i).disabled= false;
+	}
+}
+function DataShow(type) {
+	var f = document.forms[0];
+	var v = "";
+	var count=1; 
+	v += TBLHeader ;
+	
+	
+		for (var i=1; i<Degree; i++) 
+		{                                 
+			
+			if(eval("f.ar_mac"+i).value=="00:00:00:00:00:00")
+			{
+				member = "<input id= \"submitBtn_edit\" type=\"button\" value=\""+str_1574+" "+count+"\"onClick=\"EditClientList('00:00:00:00:00:00');\">" ;
+				del_button = "<input id= \"submitBtn_delete\" type=\"button\" value=\""+str_114+"\"onClick=\"DeleteClientList('00:00:00:00:00:00');\">" ;
+			}
+			else
+			{
+				member = "<input id= \"submitBtn_edit\" type=\"button\" value=\""+str_1574+" "+count+"\"onClick=\"EditClientList('"+eval("f.ar_mac"+i).value +"');\">" ;
+				del_button = "<input id= \"submitBtn_delete\" type=\"button\" value=\""+str_114+"\"onClick=\"DeleteClientList(\'"+eval("f.ar_mac"+i).value +"\');\">" ;
+			}
+
+			Add_btn = "<input id= \"submitBtn_add\" type=\"button\" value=\""+str_113+"\"  name=\"Add_Button\"  onClick=\"self.open('clienttable.html','inLogTable','alwaysRaised,resizable,scrollbars,width=680,height=320').focus();\">" ;
+			if(eval("f.ar_mac"+i).value!="")
+			{
+
+					count++;
+					if (eval("f.ar_enabled"+i).value=='0')
+					{
+						status_radio ="<input type=\"radio\" name=\"status_radio"+i+"\" value=\"on\" onClick=\"con_tx("+i+",1);\">";
+   					    status_radio2 ="<input type=\"radio\" name=\"status_radio"+i+"\" value=\"off\" onClick=\"con_tx("+i+",0);\" checked>";
+						eval("f.ar_enabled"+i).value='0';
+					}
+					else
+					{
+						status_radio ="<input type=\"radio\" name=\"status_radio"+i+"\" value=\"on\" onClick=\"con_tx("+i+",1);\" checked>";
+						status_radio2 ="<input type=\"radio\" name=\"status_radio"+i+"\" value=\"off\" onClick=\"con_tx("+i+",0);\">";
+						eval("f.ar_enabled"+i).value='1';
+
+					}
+					
+					if (eval("f.ar_type"+i).value=='0')
+					{
+						res_radio ="<input type=\"radio\" name=\"res_radio"+i+"\" value=\"on\" onClick=\"res_radio_tx("+i+",0);\" checked>";
+						res_radio2 ="<input type=\"radio\" name=\"res_radio"+i+"\" value=\"off\" onClick=\"res_radio_tx("+i+",1);\"  >";
+						eval("f.ar_type"+i).value='0';
+
+						Block_All_tab.style.display="none";
+						Allow_All_tab.style.display="";
+
+						Block_Url_tab.style.display="none";
+						Allow_Url_tab.style.display="";
+					}
+					else
+					{
+						res_radio ="<input type=\"radio\" name=\"res_radio"+i+"\" value=\"on\" onClick=\"res_radio_tx("+i+",0);\" >";
+   					   res_radio2 ="<input type=\"radio\" name=\"res_radio"+i+"\" value=\"off\" onClick=\"res_radio_tx("+i+",1);\" checked>";
+						eval("f.ar_type"+i).value='1';						
+
+						Block_All_tab.style.display="";
+						Allow_All_tab.style.display="none";
+
+						Block_Url_tab.style.display="";
+						Allow_Url_tab.style.display="none";
+					}
+					v +=  TRHeader+  TDHeader + member + TDFooter + 
+								TDHeader + eval("f.ar_name"+i).value    + TDFooter ;
+					if(eval("f.ar_mac"+i).value=="00:00:00:00:00:00")
+					{
+							v +=  TDHeader +""+ TDFooter ;
+					}
+					else
+					{
+							v +=  TDHeader + eval("f.ar_mac"+i).value     + TDFooter ;
+					}
+
+					v += 		TDHeader + status_radio+ str_317+ status_radio2+ str_318+ TDFooter +
+								TDHeader + res_radio+str_1759+res_radio2+str_1760+TDFooter +
+							    TDHeader + del_button   + TDFooter +
+								TRFooter ;		
+				
+									
+			}			
+		}	
+	
+	if(count>20)
+		Add_btn = "<input id= \"submitBtn_add\" type=\"button\" value=\""+str_113+"\"  name=\"Add_Button\" disabled onClick=\"self.open('clienttable.html','inLogTable','alwaysRaised,resizable,scrollbars,width=680,height=320').focus();\">" ;
+
+					
+	v += 	TRHeader + TDFooter + 
+			TDHeader  + TDFooter + 
+			TDHeader  + TDFooter +
+			TDHeader  + TDFooter +
+			TDHeader  + TDFooter +
+			TDHeader  + TDFooter +
+			TDHeader + Add_btn	  + TDFooter +TRFooter ;		
+		
+
+	v += TBLFooter ;
+	
+	if(type==1)
+		layerWrite('myDiv', null, v);
+	else
+	{
+		layerWrite('myDiv', null, '');
+		pettabs.style.display="none";
+		tabs.style.display="none";
+	}
+}
+function con_tx(index, enabled)
+{
+		eval("f.ar_enabled"+index).value=enabled;
+}
+function res_radio_tx(index, enabled)
+{
+		 
+		if((eval("f.ar_mac"+index).value==editmac) && editmac!="")
+		{
+			if(enabled==1)
+			{
+				Block_All_tab.style.display="";
+				Allow_All_tab.style.display="none";
+
+				Block_Url_tab.style.display="";
+				Allow_Url_tab.style.display="none";
+			}
+			else
+			{
+				Block_All_tab.style.display="none";
+				Allow_All_tab.style.display="";
+
+				Block_Url_tab.style.display="none";
+				Allow_Url_tab.style.display="";
+			}
+		}
+		
+		eval("f.ar_type"+index).value=enabled;
+
+}
+function SelPortService(protocol, tmp)
+{
+	f=document.forms[0];
+	for( i=0 ; i<portData.length ; i++ )	{
+		if(portData[i][0]==protocol)
+		{
+			eval("f.portrange"+tmp).value=portData[i][2];
+			eval("f.select_pro"+tmp).selectedIndex=portData[i][1];
+		
+	
+			if(protocol=="User-Defined")
+			{
+				eval("f.select_pro"+tmp).disabled=false;
+				eval("f.portrange"+tmp).disabled=false;
+			}
+			else
+			{			
+				eval("f.select_pro"+tmp).disabled=true;
+				eval("f.portrange"+tmp).disabled=true;
+			}
+			break;
+		}
+	}
+
+	
+}
+
+function getLayer(layerID) 
+{
+	if (self.parent.document.getElementById)
+		return self.parent.document.getElementById(layerID);
+	else if (self.parent.document.all)
+		return self.parent.document.all[layerID];
+	else 
+		return null;
+}
+function DeleteClientList(mac)
+{
+
+	    f=document.forms[0];
+		editmac=mac;
+		data1="";
+		
+		if(!window.confirm(str_1764)) return;
+		
+		for (var index=1; index<21; index++) 
+		{   
+			if(eval("f.ar_mac"+index).value==mac )
+			{
+
+		
+				if(eval("f.ar_mac"+index).value=="00:00:00:00:00:00" )
+				{
+							f.ar_hotel_mac_enabled.value="";		
+							f.ar_hotel_mac_index.value="";		
+				}
+
+				eval("f.ar_mac"+index).value="";
+				eval("f.ar_enabled"+index).value="";
+				eval("f.ar_type"+index).value="";		
+				eval("f.ar_name"+index).value="";		
+		
+				break;
+			}
+		}
+		InitValue();
+		//f.submit();
+
+}
+
+function EditClientList(mac)
+{
+		f=document.forms[0];
+		editmac=mac;
+		pettabs.style.display="";
+		tabs.style.display="";
+		for (var i=1; i<Degree; i++) 
+		{   
+			if(eval("f.ar_mac"+i).value==mac )
+			{
+				
+				load_time(i);			
+				load_time(i);			
+				load_service(i);	
+				ShowWeb(f, i, "url");
+				ShowWeb(f, i, "text");			
+				
+				if (eval("f.ar_port_all"+i).value==1)
+						f.All_Services.checked=1;
+					else
+						f.All_Services.checked=0;
+
+				if (eval("f.ar_url_all"+i).value==1)
+						f.all_url.checked=1;
+					else
+						f.all_url.checked=0;
+
+				all_services();
+				all_url_function();
+
+				if(eval("f.ar_type"+i).value==1)
+				{
+					Block_All_tab.style.display="";
+					Allow_All_tab.style.display="none";
+	
+					Block_Url_tab.style.display="";
+					Allow_Url_tab.style.display="none";
+				}
+				else
+				{
+					Block_All_tab.style.display="none";
+					Allow_All_tab.style.display="";
+	
+					Block_Url_tab.style.display="none";
+					Allow_Url_tab.style.display="";
+				}
+
+				break;
+			}
+		}
+
+}
+function load_service(index)
+{
+		f=document.forms[0];
+		for (var z=1; z<6; z++) 
+		{   
+			if(eval("f.ar_port_name"+index+"_"+z).value=="")
+				eval("f.select"+z).selectedIndex=0;
+			else
+				eval("f.select"+z).value=eval("f.ar_port_name"+index+"_"+z).value;
+				
+			
+			SelPortService(eval("f.select"+z).value,z)
+			
+			if(eval("f.ar_port_proto"+index+"_"+z).value=="")
+				eval("f.select_pro"+z).selectedIndex=0;
+			else
+				eval("f.select_pro"+z).selectedIndex=eval("f.ar_port_proto"+index+"_"+z).value;
+			
+			if(eval("f.ar_port_range"+index+"_"+z).value !="")
+			{
+				var port_range=eval("f.ar_port_range"+index+"_"+z).value.split(":");
+
+				if(port_range[0]==port_range[1])
+				{
+					eval("f.portrange"+z).value=port_range[0];
+				}
+				else
+				{
+					eval("f.portrange"+z).value=port_range[0]+'-'+port_range[1];
+				}
+			}
+		}
+}
+function load_time(index)
+{
+	passForm=document.forms[0];
+	//Init 
+	passForm.start_hour.selectedIndex=0;
+	passForm.start_min.selectedIndex=0;
+	passForm.end_hour.selectedIndex=0;
+	passForm.end_min.selectedIndex=0;
+	
+
+	if (eval("passForm.ar_time_type"+index).value==1){  
+		passForm.time[1].checked=1;
+		passForm.start_hour.disabled = false;	
+		passForm.start_min.disabled = false;	
+		passForm.end_hour.disabled = false;		
+		passForm.end_min.disabled = false;		
+	}	
+	else{
+		passForm.time[0].checked=1;
+		passForm.start_hour.disabled = true;	
+		passForm.start_min.disabled = true;		
+		passForm.end_hour.disabled = true;		
+		passForm.end_min.disabled = true;		
+	}
+	// ar_time_start selected
+
+	if (eval("passForm.ar_time_start"+index).value!="") {
+		var time_start=eval("passForm.ar_time_start"+index).value.split(":");
+		passForm.start_hour.selectedIndex=parseInt(time_start[0],10);
+		passForm.start_min.selectedIndex=(parseInt(time_start[1],10)/5);
+	}
+
+	if (eval("passForm.ar_time_stop"+index).value!="") {
+		var time_end=eval("passForm.ar_time_stop"+index).value.split(":");
+		passForm.end_hour.selectedIndex=parseInt(time_end[0],10);
+		passForm.end_min.selectedIndex=(parseInt(time_end[1],10)/5);
+	}
+	// ar_time_day checked
+	if (eval("passForm.ar_time_day"+index).value=="128" || eval("passForm.ar_time_day"+index).value=="") {
+		passForm.days_8.checked=1;
+		for(index=1;index<8;index++){
+			eval("passForm.days_"+index).checked=0;
+			eval("passForm.days_"+index).disabled=1;  
+		}
+	}
+	else {
+		var days_index=eval("passForm.ar_time_day"+index).value;
+		for(j=0;j<8;j++) {
+			if((days_index >> j & 0x1)) {
+				if(j==0)
+					passForm.days_7.checked=1;
+				else if(j==7)
+					passForm.days_8.checked=1;
+				else
+					eval("passForm.days_"+j).checked=1;
+			}			
+			else {
+				if(j==0)
+					passForm.days_7.checked=0;
+				else if(j==7)
+					passForm.days_8.checked=0;
+				else
+					eval("passForm.days_"+j).checked=0;
+			}	
+		}
+	}
+
+	if(passForm.days_8.checked==0 && passForm.days_1.disabled==1){  
+		for(index=1;index<8;index++){
+			eval("passForm.days_"+index).checked=0;
+			eval("passForm.days_"+index).disabled=0;
+		}
+	}
+
+}
+
+function InitValue(passForm) 
+{
+   f=document.forms[0];
+   f.landing_passwd.value='<%nvram_get("landing_passwd");%>';
+   
+   
+	if(f.ar_enabled.value=="1")
+	{
+		DataShow(1);
+		f.enblAccessControl[0].checked=1;
+		f.enblAccessControl[1].checked=0;
+	}
+	else	
+	{
+		DataShow(0);
+		f.enblAccessControl[0].checked=0;
+		f.enblAccessControl[1].checked=1;
+	}
+	for( i=0 ; i<portData.length ; i++ )	{
+		DataArray[DataArray.length++] = new Data(portData[i][0], portData[i][1], portData[i][2]);
+	}
+	
+	pettabs.style.display="none";
+	tabs.style.display="none";
+}
+function CheckDay(passForm,day_index)
+{
+	var i,j=0;
+
+	if (day_index!=8)
+		passForm.days_8.checked=0;
+	else {
+		for(i=1;i<8;i++){
+			eval("passForm.days_"+i).checked=0;
+			eval("passForm.days_"+i).disabled=1;  
+		}
+		
+	}
+	
+	for(i=1;i<8;i++) {
+		if(eval("passForm.days_"+i).checked==1)
+			j++;
+	}
+	if(j==7 ) {
+		for(i=1;i<8;i++){
+			eval("passForm.days_"+i).checked=0;
+			eval("passForm.days_"+i).disabled=1; 
+		}
+		
+		passForm.days_8.checked=1;
+	}
+
+	
+	if(passForm.days_8.checked==0 && passForm.days_1.disabled==1){  
+		for(i=1;i<8;i++){
+			eval("passForm.days_"+i).checked=0;
+			eval("passForm.days_"+i).disabled=0;
+		}
+	}
+}
+function timecheck(t){
+
+
+	 passform=document.forms[0];
+	if (t == '0'){
+		passform.start_hour.disabled = false;
+		passform.start_min.disabled = false;
+		passform.end_hour.disabled = false;
+		passform.end_min.disabled = false;
+	}
+	else{
+		passform.start_hour.disabled = true;
+		passform.start_min.disabled = true;
+		passform.end_hour.disabled = true;
+		passform.end_min.disabled = true;
+	}
+
+}
+function Checkportrange(obj,index,z)
+{
+	var data = obj.value;
+	var checkchar=0;
+	for (var i=0;i<data.length;i++)
+	{
+	 	if (data.charAt(i)=='-')
+		{
+			checkchar=1;
+	 		continue;	
+		}
+		if (!((data.charAt(i)>='0') && (data.charAt(i)<='9'))) 
+		{
+			alert(str_85);
+			obj.focus();
+			return 0;
+		}
+	}
+	if(checkchar==1)
+	{
+		var port = obj.value.split("-");
+		
+		if(port.length>2)
+		{
+			alert(str_88);
+			return;
+		}
+		
+		for (var i=0;i<port.length;i++)
+		{
+			if(!portrange(port[i]))
+				return ;
+		}
+		eval("f.ar_port_range"+index+"_"+z).value=port[0]+":"+port[1];
+				
+		
+	}
+	else
+	{
+		
+		if(!portrange(data))
+			return ;
+		eval("f.ar_port_range"+index+"_"+z).value=obj.value+":"+obj.value;
+	}
+
+	return 1;
+}
+function all_services()
+{
+	f=document.forms[0];
+	if(f.All_Services.checked==true)
+	{
+	   for (var z=1; z<6; z++) 
+	   {   
+			eval("f.select"+z).disabled=true;
+			eval("f.select_pro"+z).disabled=true;
+			eval("f.portrange"+z).disabled=true;							
+	   }
+	}
+	else
+	{
+ 		for (var z=1; z<6; z++) 
+		{ 
+			if(eval("f.select"+z).value=="User-Defined")
+			{
+				eval("f.select"+z).disabled=false;
+				eval("f.select_pro"+z).disabled=false;
+				eval("f.portrange"+z).disabled=false;	
+			}
+			else
+			{
+				eval("f.select"+z).disabled=false;
+				eval("f.select_pro"+z).disabled=true;
+				eval("f.portrange"+z).disabled=true;	
+			}
+
+			if(eval("f.select_pro"+z).selectedIndex==3 || eval("f.select_pro"+z).selectedIndex==4)
+			{
+				eval("f.portrange"+z).disabled= true;
+				eval("f.portrange"+z).value= "";
+		
+			}
+	   }
+
+	}
+}
+function all_url_function()
+{
+	f=document.forms[0];
+	if(f.all_url.checked==true)
+	{
+		for (var i=0; i<10; i++) 
+		{
+			   f.urladdr[i].disabled=true;
+		}
+	}
+	else
+	{
+		for (var i=0; i<10; i++) 
+		{
+			   f.urladdr[i].disabled=false;
+		}
+	}
+}
+function portrange(obj)
+{
+	
+	if ( !( obj<65536 && obj>0)|| isNaN(obj) )		
+	{
+		alert(str_88);
+		return false;
+	}
+	return true;
+}
+
+function Clear_Submit()
+{
+
+	window.location.href ="fw_access.html";
+}
+function Try_Submit()
+{
+
+ 	var k=0,x=0;
+	f=document.forms[0];
+	data1="ar_enabled ar_hotel_mac_enabled"+" "+"ar_hotel_mac_index"+" ";
+	
+
+		if(f.enblAccessControl[0].checked==true)
+		{
+			f.ar_enabled.value="1";
+		}
+		else
+		{
+			f.ar_enabled.value="0";
+		}
+
+
+		if(editmac!="" && f.time[1].checked==1)
+		{	
+			if(!CheckTimeRange(f))
+				return;
+		}
+		for (var i=1; i<Degree; i++) 
+		{
+				
+				data1+="ar_mac"+i +" "+"ar_name"+i +" "+"ar_enabled"+i +" "+"ar_type"+i+" ";
+				
+				
+		}
+		for (var i=1; i<Degree; i++) 
+		{   
+
+				if((eval("f.ar_mac"+i).value==editmac) && editmac!="")
+				{
+				
+					if (f.time[0].checked==1)
+						eval("f.ar_time_type"+i).value=0;
+					else
+						eval("f.ar_time_type"+i).value=1;
+
+					eval("f.ar_time_start"+i).value=f.start_hour.value+":"+f.start_min.value+":00";
+					eval("f.ar_time_stop"+i).value=f.end_hour.value+":"+f.end_min.value+":00";
+
+					for(z=1;z<8;z++) {
+						if(eval("passForm.days_"+z).checked==1)
+							x++;
+					}
+					if(x==0 ) {
+						for(z=1;z<8;z++){
+							eval("passForm.days_"+z).checked=0;
+							eval("passForm.days_"+z).disabled=1; 
+						}
+						
+						passForm.days_8.checked=1;
+					}
+
+
+					if (f.days_8.checked==1)
+						eval("f.ar_time_day"+i).value="128";
+					else 
+					{
+						eval("f.ar_time_day"+i).value="";
+						for(j=1;j<8;j++) 
+						{
+							if (eval("f.days_"+j).checked==1) 
+							{				
+								k+=parseInt(eval("f.days_"+j).value,10);
+							}
+						}
+						eval("f.ar_time_day"+i).value=k;
+					}
+				
+					if (f.All_Services.checked==1)
+						eval("f.ar_port_all"+i).value=1;
+					else
+						eval("f.ar_port_all"+i).value=0;
+
+					if (f.all_url.checked==1)
+						eval("f.ar_url_all"+i).value=1;
+					else
+						eval("f.ar_url_all"+i).value=0;
+
+
+ 			  		 data1+="ar_url_all"+i+" "+"ar_port_all"+i+" "+"ar_time_day"+i +" "+"ar_time_type"+i+" "+"ar_time_start"+i+" "+"ar_time_stop"+i+" ";
+					
+			 
+
+					   for (var z=1; z<6; z++) 
+					   {   
+							
+								eval("f.ar_port_name"+i+"_"+z).value=eval("f.select"+z).value;
+								eval("f.ar_port_proto"+i+"_"+z).value=eval("f.select_pro"+z).value;
+								
+								if(eval("f.select"+z).value=="User-Defined")
+								{
+										if(eval("f.select_pro"+z).selectedIndex!=3 && eval("f.select_pro"+z).selectedIndex!=4)
+										{
+											if(eval("f.portrange"+z).value=="")
+											{
+												if (f.All_Services.checked==0)
+												{
+													alert(str_85);
+													return;
+												}
+											}
+											if (f.All_Services.checked==0)
+											{
+												if (!(Checkportrange(eval("f.portrange"+z),i,z)))
+												return ;
+											}
+										}
+
+								}
+								else
+								{
+								
+									if(eval("f.portrange"+z).value!="")
+										eval("f.ar_port_range"+i+"_"+z).value=eval("f.portrange"+z).value+":"+eval("f.portrange"+z).value;
+									else
+										eval("f.ar_port_range"+i+"_"+z).value="";
+								}
+								 data1+="ar_port_name"+i+"_"+z +" "+"ar_port_proto"+i+"_"+z +" "+"ar_port_range"+i+"_"+z+" "+"landing_passwd"+"";
+				
+									//web filter
+									if (!CombineWeb(f, i, "url"))
+										return;
+									if (!CombineWeb(f, i, "text"))
+										return;
+		
+						}
+				
+ 					    data1+="URL"+i+" "+"Text"+i+" ";
+				
+				
+				break;
+
+				
+			}
+
+	 }
+			f.data1.value=data1;
+			f.submit();
+	
+}
+//-->
+</SCRIPT>
+
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 marginheight="0" marginwidth="0"  onLoad="InitValue(document.forms[0]);">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem);
+	showMenu(menuSection,menuItem,isAPmode)
+</SCRIPT>
+  
+<form name="fw_clientip" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="fw_access.html">
+<input type="hidden" name="redirect_timer" value="200">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="data1" value="">
+<input type="hidden" name="restart" value="firewall">
+<input type="hidden" name="ar_enabled" value="<%nvram_get("ar_enabled");%>">
+<input type="hidden" name="ar_enabled1" value="<%nvram_get("ar_enabled1");%>">
+<input type="hidden" name="ar_enabled2" value="<%nvram_get("ar_enabled2");%>">
+<input type="hidden" name="ar_enabled3" value="<%nvram_get("ar_enabled3");%>">
+<input type="hidden" name="ar_enabled4" value="<%nvram_get("ar_enabled4");%>">
+<input type="hidden" name="ar_enabled5" value="<%nvram_get("ar_enabled5");%>">
+<input type="hidden" name="ar_enabled6" value="<%nvram_get("ar_enabled6");%>">
+<input type="hidden" name="ar_enabled7" value="<%nvram_get("ar_enabled7");%>">
+<input type="hidden" name="ar_enabled8" value="<%nvram_get("ar_enabled8");%>">
+<input type="hidden" name="ar_enabled9" value="<%nvram_get("ar_enabled9");%>">
+<input type="hidden" name="ar_enabled10" value="<%nvram_get("ar_enabled10");%>">
+<input type="hidden" name="ar_enabled11" value="<%nvram_get("ar_enabled11");%>">
+<input type="hidden" name="ar_enabled12" value="<%nvram_get("ar_enabled12");%>">
+<input type="hidden" name="ar_enabled13" value="<%nvram_get("ar_enabled13");%>">
+<input type="hidden" name="ar_enabled14" value="<%nvram_get("ar_enabled14");%>">
+<input type="hidden" name="ar_enabled15" value="<%nvram_get("ar_enabled15");%>">
+<input type="hidden" name="ar_enabled16" value="<%nvram_get("ar_enabled16");%>">
+<input type="hidden" name="ar_enabled17" value="<%nvram_get("ar_enabled17");%>">
+<input type="hidden" name="ar_enabled18" value="<%nvram_get("ar_enabled18");%>">
+<input type="hidden" name="ar_enabled19" value="<%nvram_get("ar_enabled19");%>">
+<input type="hidden" name="ar_enabled20" value="<%nvram_get("ar_enabled20");%>">
+<input type="hidden" name="ar_hotel_mac_enabled" value="<%nvram_get("ar_hotel_mac_enabled");%>">
+<input type="hidden" name="ar_hotel_mac_index" value="<%nvram_get("ar_hotel_mac_index");%>">
+
+<input type="hidden" name="ar_name1" value="<%nvram_get("ar_name1");%>">
+<input type="hidden" name="ar_name2" value="<%nvram_get("ar_name2");%>">
+<input type="hidden" name="ar_name3" value="<%nvram_get("ar_name3");%>">
+<input type="hidden" name="ar_name4" value="<%nvram_get("ar_name4");%>">
+<input type="hidden" name="ar_name5" value="<%nvram_get("ar_name5");%>">
+<input type="hidden" name="ar_name6" value="<%nvram_get("ar_name6");%>">
+<input type="hidden" name="ar_name7" value="<%nvram_get("ar_name7");%>">
+<input type="hidden" name="ar_name8" value="<%nvram_get("ar_name8");%>">
+<input type="hidden" name="ar_name9" value="<%nvram_get("ar_name9");%>">
+<input type="hidden" name="ar_name10" value="<%nvram_get("ar_name10");%>">
+<input type="hidden" name="ar_name11" value="<%nvram_get("ar_name11");%>">
+<input type="hidden" name="ar_name12" value="<%nvram_get("ar_name12");%>">
+<input type="hidden" name="ar_name13" value="<%nvram_get("ar_name13");%>">
+<input type="hidden" name="ar_name14" value="<%nvram_get("ar_name14");%>">
+<input type="hidden" name="ar_name15" value="<%nvram_get("ar_name15");%>">
+<input type="hidden" name="ar_name16" value="<%nvram_get("ar_name16");%>">
+<input type="hidden" name="ar_name17" value="<%nvram_get("ar_name17");%>">
+<input type="hidden" name="ar_name18" value="<%nvram_get("ar_name18");%>">
+<input type="hidden" name="ar_name19" value="<%nvram_get("ar_name19");%>">
+<input type="hidden" name="ar_name20" value="<%nvram_get("ar_name20");%>">
+
+<input type="hidden" name="ar_type1" value="<%nvram_get("ar_type1");%>">
+<input type="hidden" name="ar_type2" value="<%nvram_get("ar_type2");%>">
+<input type="hidden" name="ar_type3" value="<%nvram_get("ar_type3");%>">
+<input type="hidden" name="ar_type4" value="<%nvram_get("ar_type4");%>">
+<input type="hidden" name="ar_type5" value="<%nvram_get("ar_type5");%>">
+<input type="hidden" name="ar_type6" value="<%nvram_get("ar_type6");%>">
+<input type="hidden" name="ar_type7" value="<%nvram_get("ar_type7");%>">
+<input type="hidden" name="ar_type8" value="<%nvram_get("ar_type8");%>">
+<input type="hidden" name="ar_type9" value="<%nvram_get("ar_type9");%>">
+<input type="hidden" name="ar_type10" value="<%nvram_get("ar_type10");%>">
+<input type="hidden" name="ar_type11" value="<%nvram_get("ar_type11");%>">
+<input type="hidden" name="ar_type12" value="<%nvram_get("ar_type12");%>">
+<input type="hidden" name="ar_type13" value="<%nvram_get("ar_type13");%>">
+<input type="hidden" name="ar_type14" value="<%nvram_get("ar_type14");%>">
+<input type="hidden" name="ar_type15" value="<%nvram_get("ar_type15");%>">
+<input type="hidden" name="ar_type16" value="<%nvram_get("ar_type16");%>">
+<input type="hidden" name="ar_type17" value="<%nvram_get("ar_type17");%>">
+<input type="hidden" name="ar_type18" value="<%nvram_get("ar_type18");%>">
+<input type="hidden" name="ar_type19" value="<%nvram_get("ar_type19");%>">
+<input type="hidden" name="ar_type20" value="<%nvram_get("ar_type20");%>">
+
+<input type="hidden" name="ar_time_type1" value="<%nvram_get("ar_time_type1");%>">
+<input type="hidden" name="ar_time_type2" value="<%nvram_get("ar_time_type2");%>">
+<input type="hidden" name="ar_time_type3" value="<%nvram_get("ar_time_type3");%>">
+<input type="hidden" name="ar_time_type4" value="<%nvram_get("ar_time_type4");%>">
+<input type="hidden" name="ar_time_type5" value="<%nvram_get("ar_time_type5");%>">
+<input type="hidden" name="ar_time_type6" value="<%nvram_get("ar_time_type6");%>">
+<input type="hidden" name="ar_time_type7" value="<%nvram_get("ar_time_type7");%>">
+<input type="hidden" name="ar_time_type8" value="<%nvram_get("ar_time_type8");%>">
+<input type="hidden" name="ar_time_type9" value="<%nvram_get("ar_time_type9");%>">
+<input type="hidden" name="ar_time_type10" value="<%nvram_get("ar_time_type10");%>">
+<input type="hidden" name="ar_time_type11" value="<%nvram_get("ar_time_type11");%>">
+<input type="hidden" name="ar_time_type12" value="<%nvram_get("ar_time_type12");%>">
+<input type="hidden" name="ar_time_type13" value="<%nvram_get("ar_time_type13");%>">
+<input type="hidden" name="ar_time_type14" value="<%nvram_get("ar_time_type14");%>">
+<input type="hidden" name="ar_time_type15" value="<%nvram_get("ar_time_type15");%>">
+<input type="hidden" name="ar_time_type16" value="<%nvram_get("ar_time_type16");%>">
+<input type="hidden" name="ar_time_type17" value="<%nvram_get("ar_time_type17");%>">
+<input type="hidden" name="ar_time_type18" value="<%nvram_get("ar_time_type18");%>">
+<input type="hidden" name="ar_time_type19" value="<%nvram_get("ar_time_type19");%>">
+<input type="hidden" name="ar_time_type20" value="<%nvram_get("ar_time_type20");%>">
+
+
+<input type="hidden" name="ar_time_start1" value="<%nvram_get("ar_time_start1");%>">
+<input type="hidden" name="ar_time_start2" value="<%nvram_get("ar_time_start2");%>">
+<input type="hidden" name="ar_time_start3" value="<%nvram_get("ar_time_start3");%>">
+<input type="hidden" name="ar_time_start4" value="<%nvram_get("ar_time_start4");%>">
+<input type="hidden" name="ar_time_start5" value="<%nvram_get("ar_time_start5");%>">
+<input type="hidden" name="ar_time_start6" value="<%nvram_get("ar_time_start6");%>">
+<input type="hidden" name="ar_time_start7" value="<%nvram_get("ar_time_start7");%>">
+<input type="hidden" name="ar_time_start8" value="<%nvram_get("ar_time_start8");%>">
+<input type="hidden" name="ar_time_start9" value="<%nvram_get("ar_time_start9");%>">
+<input type="hidden" name="ar_time_start10" value="<%nvram_get("ar_time_start10");%>">
+<input type="hidden" name="ar_time_start11" value="<%nvram_get("ar_time_start11");%>">
+<input type="hidden" name="ar_time_start12" value="<%nvram_get("ar_time_start12");%>">
+<input type="hidden" name="ar_time_start13" value="<%nvram_get("ar_time_start13");%>">
+<input type="hidden" name="ar_time_start14" value="<%nvram_get("ar_time_start14");%>">
+<input type="hidden" name="ar_time_start15" value="<%nvram_get("ar_time_start15");%>">
+<input type="hidden" name="ar_time_start16" value="<%nvram_get("ar_time_start16");%>">
+<input type="hidden" name="ar_time_start17" value="<%nvram_get("ar_time_start17");%>">
+<input type="hidden" name="ar_time_start18" value="<%nvram_get("ar_time_start18");%>">
+<input type="hidden" name="ar_time_start19" value="<%nvram_get("ar_time_start19");%>">
+<input type="hidden" name="ar_time_start20" value="<%nvram_get("ar_time_start20");%>">
+
+<input type="hidden" name="ar_time_stop1" value="<%nvram_get("ar_time_stop1");%>">
+<input type="hidden" name="ar_time_stop2" value="<%nvram_get("ar_time_stop2");%>">
+<input type="hidden" name="ar_time_stop3" value="<%nvram_get("ar_time_stop3");%>">
+<input type="hidden" name="ar_time_stop4" value="<%nvram_get("ar_time_stop4");%>">
+<input type="hidden" name="ar_time_stop5" value="<%nvram_get("ar_time_stop5");%>">
+<input type="hidden" name="ar_time_stop6" value="<%nvram_get("ar_time_stop6");%>">
+<input type="hidden" name="ar_time_stop7" value="<%nvram_get("ar_time_stop7");%>">
+<input type="hidden" name="ar_time_stop8" value="<%nvram_get("ar_time_stop8");%>">
+<input type="hidden" name="ar_time_stop9" value="<%nvram_get("ar_time_stop9");%>">
+<input type="hidden" name="ar_time_stop10" value="<%nvram_get("ar_time_stop10");%>">
+<input type="hidden" name="ar_time_stop11" value="<%nvram_get("ar_time_stop11");%>">
+<input type="hidden" name="ar_time_stop12" value="<%nvram_get("ar_time_stop12");%>">
+<input type="hidden" name="ar_time_stop13" value="<%nvram_get("ar_time_stop13");%>">
+<input type="hidden" name="ar_time_stop14" value="<%nvram_get("ar_time_stop14");%>">
+<input type="hidden" name="ar_time_stop15" value="<%nvram_get("ar_time_stop15");%>">
+<input type="hidden" name="ar_time_stop16" value="<%nvram_get("ar_time_stop16");%>">
+<input type="hidden" name="ar_time_stop17" value="<%nvram_get("ar_time_stop17");%>">
+<input type="hidden" name="ar_time_stop18" value="<%nvram_get("ar_time_stop18");%>">
+<input type="hidden" name="ar_time_stop19" value="<%nvram_get("ar_time_stop19");%>">
+<input type="hidden" name="ar_time_stop20" value="<%nvram_get("ar_time_stop20");%>">
+
+<input type="hidden" name="ar_time_day1" value="<%nvram_get("ar_time_day1");%>">
+<input type="hidden" name="ar_time_day2" value="<%nvram_get("ar_time_day2");%>">
+<input type="hidden" name="ar_time_day3" value="<%nvram_get("ar_time_day3");%>">
+<input type="hidden" name="ar_time_day4" value="<%nvram_get("ar_time_day4");%>">
+<input type="hidden" name="ar_time_day5" value="<%nvram_get("ar_time_day5");%>">
+<input type="hidden" name="ar_time_day6" value="<%nvram_get("ar_time_day6");%>">
+<input type="hidden" name="ar_time_day7" value="<%nvram_get("ar_time_day7");%>">
+<input type="hidden" name="ar_time_day8" value="<%nvram_get("ar_time_day8");%>">
+<input type="hidden" name="ar_time_day9" value="<%nvram_get("ar_time_day9");%>">
+<input type="hidden" name="ar_time_day10" value="<%nvram_get("ar_time_day10");%>">
+<input type="hidden" name="ar_time_day11" value="<%nvram_get("ar_time_day11");%>">
+<input type="hidden" name="ar_time_day12" value="<%nvram_get("ar_time_day12");%>">
+<input type="hidden" name="ar_time_day13" value="<%nvram_get("ar_time_day13");%>">
+<input type="hidden" name="ar_time_day14" value="<%nvram_get("ar_time_day14");%>">
+<input type="hidden" name="ar_time_day15" value="<%nvram_get("ar_time_day15");%>">
+<input type="hidden" name="ar_time_day16" value="<%nvram_get("ar_time_day16");%>">
+<input type="hidden" name="ar_time_day17" value="<%nvram_get("ar_time_day17");%>">
+<input type="hidden" name="ar_time_day18" value="<%nvram_get("ar_time_day18");%>">
+<input type="hidden" name="ar_time_day19" value="<%nvram_get("ar_time_day19");%>">
+<input type="hidden" name="ar_time_day20" value="<%nvram_get("ar_time_day20");%>">
+
+
+
+<input type="hidden" name="ar_port_range1_1" value="<%nvram_get("ar_port_range1_1");%>">
+<input type="hidden" name="ar_port_range1_2" value="<%nvram_get("ar_port_range1_2");%>">
+<input type="hidden" name="ar_port_range1_3" value="<%nvram_get("ar_port_range1_3");%>">
+<input type="hidden" name="ar_port_range1_4" value="<%nvram_get("ar_port_range1_4");%>">
+<input type="hidden" name="ar_port_range1_5" value="<%nvram_get("ar_port_range1_5");%>">
+<input type="hidden" name="ar_port_range2_1" value="<%nvram_get("ar_port_range2_1");%>">
+<input type="hidden" name="ar_port_range2_2" value="<%nvram_get("ar_port_range2_2");%>">
+<input type="hidden" name="ar_port_range2_3" value="<%nvram_get("ar_port_range2_3");%>">
+<input type="hidden" name="ar_port_range2_4" value="<%nvram_get("ar_port_range2_4");%>">
+<input type="hidden" name="ar_port_range2_5" value="<%nvram_get("ar_port_range2_5");%>">
+<input type="hidden" name="ar_port_range3_1" value="<%nvram_get("ar_port_range3_1");%>">
+<input type="hidden" name="ar_port_range3_2" value="<%nvram_get("ar_port_range3_2");%>">
+<input type="hidden" name="ar_port_range3_3" value="<%nvram_get("ar_port_range3_3");%>">
+<input type="hidden" name="ar_port_range3_4" value="<%nvram_get("ar_port_range3_4");%>">
+<input type="hidden" name="ar_port_range3_5" value="<%nvram_get("ar_port_range3_5");%>">
+<input type="hidden" name="ar_port_range4_1" value="<%nvram_get("ar_port_range4_1");%>">
+<input type="hidden" name="ar_port_range4_2" value="<%nvram_get("ar_port_range4_2");%>">
+<input type="hidden" name="ar_port_range4_3" value="<%nvram_get("ar_port_range4_3");%>">
+<input type="hidden" name="ar_port_range4_4" value="<%nvram_get("ar_port_range4_4");%>">
+<input type="hidden" name="ar_port_range4_5" value="<%nvram_get("ar_port_range4_5");%>">
+<input type="hidden" name="ar_port_range5_1" value="<%nvram_get("ar_port_range5_1");%>">
+<input type="hidden" name="ar_port_range5_2" value="<%nvram_get("ar_port_range5_2");%>">
+<input type="hidden" name="ar_port_range5_3" value="<%nvram_get("ar_port_range5_3");%>">
+<input type="hidden" name="ar_port_range5_4" value="<%nvram_get("ar_port_range5_4");%>">
+<input type="hidden" name="ar_port_range5_5" value="<%nvram_get("ar_port_range5_5");%>">
+<input type="hidden" name="ar_port_range6_1" value="<%nvram_get("ar_port_range6_1");%>">
+<input type="hidden" name="ar_port_range6_2" value="<%nvram_get("ar_port_range6_2");%>">
+<input type="hidden" name="ar_port_range6_3" value="<%nvram_get("ar_port_range6_3");%>">
+<input type="hidden" name="ar_port_range6_4" value="<%nvram_get("ar_port_range6_4");%>">
+<input type="hidden" name="ar_port_range6_5" value="<%nvram_get("ar_port_range6_5");%>">
+<input type="hidden" name="ar_port_range7_1" value="<%nvram_get("ar_port_range7_1");%>">
+<input type="hidden" name="ar_port_range7_2" value="<%nvram_get("ar_port_range7_2");%>">
+<input type="hidden" name="ar_port_range7_3" value="<%nvram_get("ar_port_range7_3");%>">
+<input type="hidden" name="ar_port_range7_4" value="<%nvram_get("ar_port_range7_4");%>">
+<input type="hidden" name="ar_port_range7_5" value="<%nvram_get("ar_port_range7_5");%>">
+<input type="hidden" name="ar_port_range8_1" value="<%nvram_get("ar_port_range8_1");%>">
+<input type="hidden" name="ar_port_range8_2" value="<%nvram_get("ar_port_range8_2");%>">
+<input type="hidden" name="ar_port_range8_3" value="<%nvram_get("ar_port_range8_3");%>">
+<input type="hidden" name="ar_port_range8_4" value="<%nvram_get("ar_port_range8_4");%>">
+<input type="hidden" name="ar_port_range8_5" value="<%nvram_get("ar_port_range8_5");%>">
+<input type="hidden" name="ar_port_range9_1" value="<%nvram_get("ar_port_range9_1");%>">
+<input type="hidden" name="ar_port_range9_2" value="<%nvram_get("ar_port_range9_2");%>">
+<input type="hidden" name="ar_port_range9_3" value="<%nvram_get("ar_port_range9_3");%>">
+<input type="hidden" name="ar_port_range9_4" value="<%nvram_get("ar_port_range9_4");%>">
+<input type="hidden" name="ar_port_range9_5" value="<%nvram_get("ar_port_range9_5");%>">
+<input type="hidden" name="ar_port_range10_1" value="<%nvram_get("ar_port_range10_1");%>">
+<input type="hidden" name="ar_port_range10_2" value="<%nvram_get("ar_port_range10_2");%>">
+<input type="hidden" name="ar_port_range10_3" value="<%nvram_get("ar_port_range10_3");%>">
+<input type="hidden" name="ar_port_range10_4" value="<%nvram_get("ar_port_range10_4");%>">
+<input type="hidden" name="ar_port_range10_5" value="<%nvram_get("ar_port_range10_5");%>">
+<input type="hidden" name="ar_port_range11_1" value="<%nvram_get("ar_port_range11_1");%>">
+<input type="hidden" name="ar_port_range11_2" value="<%nvram_get("ar_port_range11_2");%>">
+<input type="hidden" name="ar_port_range11_3" value="<%nvram_get("ar_port_range11_3");%>">
+<input type="hidden" name="ar_port_range11_4" value="<%nvram_get("ar_port_range11_4");%>">
+<input type="hidden" name="ar_port_range11_5" value="<%nvram_get("ar_port_range11_5");%>">
+<input type="hidden" name="ar_port_range12_1" value="<%nvram_get("ar_port_range12_1");%>">
+<input type="hidden" name="ar_port_range12_2" value="<%nvram_get("ar_port_range12_2");%>">
+<input type="hidden" name="ar_port_range12_3" value="<%nvram_get("ar_port_range12_3");%>">
+<input type="hidden" name="ar_port_range12_4" value="<%nvram_get("ar_port_range12_4");%>">
+<input type="hidden" name="ar_port_range12_5" value="<%nvram_get("ar_port_range12_5");%>">
+<input type="hidden" name="ar_port_range13_1" value="<%nvram_get("ar_port_range13_1");%>">
+<input type="hidden" name="ar_port_range13_2" value="<%nvram_get("ar_port_range13_2");%>">
+<input type="hidden" name="ar_port_range13_3" value="<%nvram_get("ar_port_range13_3");%>">
+<input type="hidden" name="ar_port_range13_4" value="<%nvram_get("ar_port_range13_4");%>">
+<input type="hidden" name="ar_port_range13_5" value="<%nvram_get("ar_port_range13_5");%>">
+<input type="hidden" name="ar_port_range14_1" value="<%nvram_get("ar_port_range14_1");%>">
+<input type="hidden" name="ar_port_range14_2" value="<%nvram_get("ar_port_range14_2");%>">
+<input type="hidden" name="ar_port_range14_3" value="<%nvram_get("ar_port_range14_3");%>">
+<input type="hidden" name="ar_port_range14_4" value="<%nvram_get("ar_port_range14_4");%>">
+<input type="hidden" name="ar_port_range14_5" value="<%nvram_get("ar_port_range14_5");%>">
+<input type="hidden" name="ar_port_range15_1" value="<%nvram_get("ar_port_range15_1");%>">
+<input type="hidden" name="ar_port_range15_2" value="<%nvram_get("ar_port_range15_2");%>">
+<input type="hidden" name="ar_port_range15_3" value="<%nvram_get("ar_port_range15_3");%>">
+<input type="hidden" name="ar_port_range15_4" value="<%nvram_get("ar_port_range15_4");%>">
+<input type="hidden" name="ar_port_range15_5" value="<%nvram_get("ar_port_range15_5");%>">
+<input type="hidden" name="ar_port_range16_1" value="<%nvram_get("ar_port_range16_1");%>">
+<input type="hidden" name="ar_port_range16_2" value="<%nvram_get("ar_port_range16_2");%>">
+<input type="hidden" name="ar_port_range16_3" value="<%nvram_get("ar_port_range16_3");%>">
+<input type="hidden" name="ar_port_range16_4" value="<%nvram_get("ar_port_range16_4");%>">
+<input type="hidden" name="ar_port_range16_5" value="<%nvram_get("ar_port_range16_5");%>">
+<input type="hidden" name="ar_port_range17_1" value="<%nvram_get("ar_port_range17_1");%>">
+<input type="hidden" name="ar_port_range17_2" value="<%nvram_get("ar_port_range17_2");%>">
+<input type="hidden" name="ar_port_range17_3" value="<%nvram_get("ar_port_range17_3");%>">
+<input type="hidden" name="ar_port_range17_4" value="<%nvram_get("ar_port_range17_4");%>">
+<input type="hidden" name="ar_port_range17_5" value="<%nvram_get("ar_port_range17_5");%>">
+<input type="hidden" name="ar_port_range18_1" value="<%nvram_get("ar_port_range18_1");%>">
+<input type="hidden" name="ar_port_range18_2" value="<%nvram_get("ar_port_range18_2");%>">
+<input type="hidden" name="ar_port_range18_3" value="<%nvram_get("ar_port_range18_3");%>">
+<input type="hidden" name="ar_port_range18_4" value="<%nvram_get("ar_port_range18_4");%>">
+<input type="hidden" name="ar_port_range18_5" value="<%nvram_get("ar_port_range18_5");%>">
+<input type="hidden" name="ar_port_range19_1" value="<%nvram_get("ar_port_range19_1");%>">
+<input type="hidden" name="ar_port_range19_2" value="<%nvram_get("ar_port_range19_2");%>">
+<input type="hidden" name="ar_port_range19_3" value="<%nvram_get("ar_port_range19_3");%>">
+<input type="hidden" name="ar_port_range19_4" value="<%nvram_get("ar_port_range19_4");%>">
+<input type="hidden" name="ar_port_range19_5" value="<%nvram_get("ar_port_range19_5");%>">
+<input type="hidden" name="ar_port_range20_1" value="<%nvram_get("ar_port_range20_1");%>">
+<input type="hidden" name="ar_port_range20_2" value="<%nvram_get("ar_port_range20_2");%>">
+<input type="hidden" name="ar_port_range20_3" value="<%nvram_get("ar_port_range20_3");%>">
+<input type="hidden" name="ar_port_range20_4" value="<%nvram_get("ar_port_range20_4");%>">
+<input type="hidden" name="ar_port_range20_5" value="<%nvram_get("ar_port_range20_5");%>">
+
+<input type="hidden" name="ar_port_all1" value="<%nvram_get("ar_port_all1");%>">
+<input type="hidden" name="ar_port_all2" value="<%nvram_get("ar_port_all2");%>">
+<input type="hidden" name="ar_port_all3" value="<%nvram_get("ar_port_all3");%>">
+<input type="hidden" name="ar_port_all4" value="<%nvram_get("ar_port_all4");%>">
+<input type="hidden" name="ar_port_all5" value="<%nvram_get("ar_port_all5");%>">
+<input type="hidden" name="ar_port_all6" value="<%nvram_get("ar_port_all6");%>">
+<input type="hidden" name="ar_port_all7" value="<%nvram_get("ar_port_all7");%>">
+<input type="hidden" name="ar_port_all8" value="<%nvram_get("ar_port_all8");%>">
+<input type="hidden" name="ar_port_all9" value="<%nvram_get("ar_port_all9");%>">
+<input type="hidden" name="ar_port_all10" value="<%nvram_get("ar_port_all10");%>">
+<input type="hidden" name="ar_port_all11" value="<%nvram_get("ar_port_all11");%>">
+<input type="hidden" name="ar_port_all12" value="<%nvram_get("ar_port_all12");%>">
+<input type="hidden" name="ar_port_all13" value="<%nvram_get("ar_port_all13");%>">
+<input type="hidden" name="ar_port_all14" value="<%nvram_get("ar_port_all14");%>">
+<input type="hidden" name="ar_port_all15" value="<%nvram_get("ar_port_all15");%>">
+<input type="hidden" name="ar_port_all16" value="<%nvram_get("ar_port_all16");%>">
+<input type="hidden" name="ar_port_all17" value="<%nvram_get("ar_port_all17");%>">
+<input type="hidden" name="ar_port_all18" value="<%nvram_get("ar_port_all18");%>">
+<input type="hidden" name="ar_port_all19" value="<%nvram_get("ar_port_all19");%>">
+<input type="hidden" name="ar_port_all20" value="<%nvram_get("ar_port_all20");%>">
+
+
+<input type="hidden" name="ar_url_all1" value="<%nvram_get("ar_url_all1");%>">
+<input type="hidden" name="ar_url_all2" value="<%nvram_get("ar_url_all2");%>">
+<input type="hidden" name="ar_url_all3" value="<%nvram_get("ar_url_all3");%>">
+<input type="hidden" name="ar_url_all4" value="<%nvram_get("ar_url_all4");%>">
+<input type="hidden" name="ar_url_all5" value="<%nvram_get("ar_url_all5");%>">
+<input type="hidden" name="ar_url_all6" value="<%nvram_get("ar_url_all6");%>">
+<input type="hidden" name="ar_url_all7" value="<%nvram_get("ar_url_all7");%>">
+<input type="hidden" name="ar_url_all8" value="<%nvram_get("ar_url_all8");%>">
+<input type="hidden" name="ar_url_all9" value="<%nvram_get("ar_url_all9");%>">
+<input type="hidden" name="ar_url_all10" value="<%nvram_get("ar_url_all10");%>">
+<input type="hidden" name="ar_url_all11" value="<%nvram_get("ar_url_all11");%>">
+<input type="hidden" name="ar_url_all12" value="<%nvram_get("ar_url_all12");%>">
+<input type="hidden" name="ar_url_all13" value="<%nvram_get("ar_url_all13");%>">
+<input type="hidden" name="ar_url_all14" value="<%nvram_get("ar_url_all14");%>">
+<input type="hidden" name="ar_url_all15" value="<%nvram_get("ar_url_all15");%>">
+<input type="hidden" name="ar_url_all16" value="<%nvram_get("ar_url_all16");%>">
+<input type="hidden" name="ar_url_all17" value="<%nvram_get("ar_url_all17");%>">
+<input type="hidden" name="ar_url_all18" value="<%nvram_get("ar_url_all18");%>">
+<input type="hidden" name="ar_url_all19" value="<%nvram_get("ar_url_all19");%>">
+<input type="hidden" name="ar_url_all20" value="<%nvram_get("ar_url_all20");%>">
+
+<input type="hidden" name="ar_port_name1_1" value="<%nvram_get("ar_port_name1_1");%>">
+<input type="hidden" name="ar_port_name1_2" value="<%nvram_get("ar_port_name1_2");%>">
+<input type="hidden" name="ar_port_name1_3" value="<%nvram_get("ar_port_name1_3");%>">
+<input type="hidden" name="ar_port_name1_4" value="<%nvram_get("ar_port_name1_4");%>">
+<input type="hidden" name="ar_port_name1_5" value="<%nvram_get("ar_port_name1_5");%>">
+<input type="hidden" name="ar_port_name2_1" value="<%nvram_get("ar_port_name2_1");%>">
+<input type="hidden" name="ar_port_name2_2" value="<%nvram_get("ar_port_name2_2");%>">
+<input type="hidden" name="ar_port_name2_3" value="<%nvram_get("ar_port_name2_3");%>">
+<input type="hidden" name="ar_port_name2_4" value="<%nvram_get("ar_port_name2_4");%>">
+<input type="hidden" name="ar_port_name2_5" value="<%nvram_get("ar_port_name2_5");%>">
+<input type="hidden" name="ar_port_name3_1" value="<%nvram_get("ar_port_name3_1");%>">
+<input type="hidden" name="ar_port_name3_2" value="<%nvram_get("ar_port_name3_2");%>">
+<input type="hidden" name="ar_port_name3_3" value="<%nvram_get("ar_port_name3_3");%>">
+<input type="hidden" name="ar_port_name3_4" value="<%nvram_get("ar_port_name3_4");%>">
+<input type="hidden" name="ar_port_name3_5" value="<%nvram_get("ar_port_name3_5");%>">
+<input type="hidden" name="ar_port_name4_1" value="<%nvram_get("ar_port_name4_1");%>">
+<input type="hidden" name="ar_port_name4_2" value="<%nvram_get("ar_port_name4_2");%>">
+<input type="hidden" name="ar_port_name4_3" value="<%nvram_get("ar_port_name4_3");%>">
+<input type="hidden" name="ar_port_name4_4" value="<%nvram_get("ar_port_name4_4");%>">
+<input type="hidden" name="ar_port_name4_5" value="<%nvram_get("ar_port_name4_5");%>">
+<input type="hidden" name="ar_port_name5_1" value="<%nvram_get("ar_port_name5_1");%>">
+<input type="hidden" name="ar_port_name5_2" value="<%nvram_get("ar_port_name5_2");%>">
+<input type="hidden" name="ar_port_name5_3" value="<%nvram_get("ar_port_name5_3");%>">
+<input type="hidden" name="ar_port_name5_4" value="<%nvram_get("ar_port_name5_4");%>">
+<input type="hidden" name="ar_port_name5_5" value="<%nvram_get("ar_port_name5_5");%>">
+<input type="hidden" name="ar_port_name6_1" value="<%nvram_get("ar_port_name6_1");%>">
+<input type="hidden" name="ar_port_name6_2" value="<%nvram_get("ar_port_name6_2");%>">
+<input type="hidden" name="ar_port_name6_3" value="<%nvram_get("ar_port_name6_3");%>">
+<input type="hidden" name="ar_port_name6_4" value="<%nvram_get("ar_port_name6_4");%>">
+<input type="hidden" name="ar_port_name6_5" value="<%nvram_get("ar_port_name6_5");%>">
+<input type="hidden" name="ar_port_name7_1" value="<%nvram_get("ar_port_name7_1");%>">
+<input type="hidden" name="ar_port_name7_2" value="<%nvram_get("ar_port_name7_2");%>">
+<input type="hidden" name="ar_port_name7_3" value="<%nvram_get("ar_port_name7_3");%>">
+<input type="hidden" name="ar_port_name7_4" value="<%nvram_get("ar_port_name7_4");%>">
+<input type="hidden" name="ar_port_name7_5" value="<%nvram_get("ar_port_name7_5");%>">
+<input type="hidden" name="ar_port_name8_1" value="<%nvram_get("ar_port_name8_1");%>">
+<input type="hidden" name="ar_port_name8_2" value="<%nvram_get("ar_port_name8_2");%>">
+<input type="hidden" name="ar_port_name8_3" value="<%nvram_get("ar_port_name8_3");%>">
+<input type="hidden" name="ar_port_name8_4" value="<%nvram_get("ar_port_name8_4");%>">
+<input type="hidden" name="ar_port_name8_5" value="<%nvram_get("ar_port_name8_5");%>">
+<input type="hidden" name="ar_port_name9_1" value="<%nvram_get("ar_port_name9_1");%>">
+<input type="hidden" name="ar_port_name9_2" value="<%nvram_get("ar_port_name9_2");%>">
+<input type="hidden" name="ar_port_name9_3" value="<%nvram_get("ar_port_name9_3");%>">
+<input type="hidden" name="ar_port_name9_4" value="<%nvram_get("ar_port_name9_4");%>">
+<input type="hidden" name="ar_port_name9_5" value="<%nvram_get("ar_port_name9_5");%>">
+<input type="hidden" name="ar_port_name10_1" value="<%nvram_get("ar_port_name10_1");%>">
+<input type="hidden" name="ar_port_name10_2" value="<%nvram_get("ar_port_name10_2");%>">
+<input type="hidden" name="ar_port_name10_3" value="<%nvram_get("ar_port_name10_3");%>">
+<input type="hidden" name="ar_port_name10_4" value="<%nvram_get("ar_port_name10_4");%>">
+<input type="hidden" name="ar_port_name10_5" value="<%nvram_get("ar_port_name10_5");%>">
+<input type="hidden" name="ar_port_name11_1" value="<%nvram_get("ar_port_name11_1");%>">
+<input type="hidden" name="ar_port_name11_2" value="<%nvram_get("ar_port_name11_2");%>">
+<input type="hidden" name="ar_port_name11_3" value="<%nvram_get("ar_port_name11_3");%>">
+<input type="hidden" name="ar_port_name11_4" value="<%nvram_get("ar_port_name11_4");%>">
+<input type="hidden" name="ar_port_name11_5" value="<%nvram_get("ar_port_name11_5");%>">
+<input type="hidden" name="ar_port_name12_1" value="<%nvram_get("ar_port_name12_1");%>">
+<input type="hidden" name="ar_port_name12_2" value="<%nvram_get("ar_port_name12_2");%>">
+<input type="hidden" name="ar_port_name12_3" value="<%nvram_get("ar_port_name12_3");%>">
+<input type="hidden" name="ar_port_name12_4" value="<%nvram_get("ar_port_name12_4");%>">
+<input type="hidden" name="ar_port_name12_5" value="<%nvram_get("ar_port_name12_5");%>">
+<input type="hidden" name="ar_port_name13_1" value="<%nvram_get("ar_port_name13_1");%>">
+<input type="hidden" name="ar_port_name13_2" value="<%nvram_get("ar_port_name13_2");%>">
+<input type="hidden" name="ar_port_name13_3" value="<%nvram_get("ar_port_name13_3");%>">
+<input type="hidden" name="ar_port_name13_4" value="<%nvram_get("ar_port_name13_4");%>">
+<input type="hidden" name="ar_port_name13_5" value="<%nvram_get("ar_port_name13_5");%>">
+<input type="hidden" name="ar_port_name14_1" value="<%nvram_get("ar_port_name14_1");%>">
+<input type="hidden" name="ar_port_name14_2" value="<%nvram_get("ar_port_name14_2");%>">
+<input type="hidden" name="ar_port_name14_3" value="<%nvram_get("ar_port_name14_3");%>">
+<input type="hidden" name="ar_port_name14_4" value="<%nvram_get("ar_port_name14_4");%>">
+<input type="hidden" name="ar_port_name14_5" value="<%nvram_get("ar_port_name14_5");%>">
+<input type="hidden" name="ar_port_name15_1" value="<%nvram_get("ar_port_name15_1");%>">
+<input type="hidden" name="ar_port_name15_2" value="<%nvram_get("ar_port_name15_2");%>">
+<input type="hidden" name="ar_port_name15_3" value="<%nvram_get("ar_port_name15_3");%>">
+<input type="hidden" name="ar_port_name15_4" value="<%nvram_get("ar_port_name15_4");%>">
+<input type="hidden" name="ar_port_name15_5" value="<%nvram_get("ar_port_name15_5");%>">
+<input type="hidden" name="ar_port_name16_1" value="<%nvram_get("ar_port_name16_1");%>">
+<input type="hidden" name="ar_port_name16_2" value="<%nvram_get("ar_port_name16_2");%>">
+<input type="hidden" name="ar_port_name16_3" value="<%nvram_get("ar_port_name16_3");%>">
+<input type="hidden" name="ar_port_name16_4" value="<%nvram_get("ar_port_name16_4");%>">
+<input type="hidden" name="ar_port_name16_5" value="<%nvram_get("ar_port_name16_5");%>">
+<input type="hidden" name="ar_port_name17_1" value="<%nvram_get("ar_port_name17_1");%>">
+<input type="hidden" name="ar_port_name17_2" value="<%nvram_get("ar_port_name17_2");%>">
+<input type="hidden" name="ar_port_name17_3" value="<%nvram_get("ar_port_name17_3");%>">
+<input type="hidden" name="ar_port_name17_4" value="<%nvram_get("ar_port_name17_4");%>">
+<input type="hidden" name="ar_port_name17_5" value="<%nvram_get("ar_port_name17_5");%>">
+<input type="hidden" name="ar_port_name18_1" value="<%nvram_get("ar_port_name18_1");%>">
+<input type="hidden" name="ar_port_name18_2" value="<%nvram_get("ar_port_name18_2");%>">
+<input type="hidden" name="ar_port_name18_3" value="<%nvram_get("ar_port_name18_3");%>">
+<input type="hidden" name="ar_port_name18_4" value="<%nvram_get("ar_port_name18_4");%>">
+<input type="hidden" name="ar_port_name18_5" value="<%nvram_get("ar_port_name18_5");%>">
+<input type="hidden" name="ar_port_name19_1" value="<%nvram_get("ar_port_name19_1");%>">
+<input type="hidden" name="ar_port_name19_2" value="<%nvram_get("ar_port_name19_2");%>">
+<input type="hidden" name="ar_port_name19_3" value="<%nvram_get("ar_port_name19_3");%>">
+<input type="hidden" name="ar_port_name19_4" value="<%nvram_get("ar_port_name19_4");%>">
+<input type="hidden" name="ar_port_name19_5" value="<%nvram_get("ar_port_name19_5");%>">
+<input type="hidden" name="ar_port_name20_1" value="<%nvram_get("ar_port_name20_1");%>">
+<input type="hidden" name="ar_port_name20_2" value="<%nvram_get("ar_port_name20_2");%>">
+<input type="hidden" name="ar_port_name20_3" value="<%nvram_get("ar_port_name20_3");%>">
+<input type="hidden" name="ar_port_name20_4" value="<%nvram_get("ar_port_name20_4");%>">
+<input type="hidden" name="ar_port_name20_5" value="<%nvram_get("ar_port_name20_5");%>">
+
+
+<input type="hidden" name="ar_port_proto1_1" value="<%nvram_get("ar_port_proto1_1");%>">
+<input type="hidden" name="ar_port_proto1_2" value="<%nvram_get("ar_port_proto1_2");%>">
+<input type="hidden" name="ar_port_proto1_3" value="<%nvram_get("ar_port_proto1_3");%>">
+<input type="hidden" name="ar_port_proto1_4" value="<%nvram_get("ar_port_proto1_4");%>">
+<input type="hidden" name="ar_port_proto1_5" value="<%nvram_get("ar_port_proto1_5");%>">
+<input type="hidden" name="ar_port_proto2_1" value="<%nvram_get("ar_port_proto2_1");%>">
+<input type="hidden" name="ar_port_proto2_2" value="<%nvram_get("ar_port_proto2_2");%>">
+<input type="hidden" name="ar_port_proto2_3" value="<%nvram_get("ar_port_proto2_3");%>">
+<input type="hidden" name="ar_port_proto2_4" value="<%nvram_get("ar_port_proto2_4");%>">
+<input type="hidden" name="ar_port_proto2_5" value="<%nvram_get("ar_port_proto2_5");%>">
+<input type="hidden" name="ar_port_proto3_1" value="<%nvram_get("ar_port_proto3_1");%>">
+<input type="hidden" name="ar_port_proto3_2" value="<%nvram_get("ar_port_proto3_2");%>">
+<input type="hidden" name="ar_port_proto3_3" value="<%nvram_get("ar_port_proto3_3");%>">
+<input type="hidden" name="ar_port_proto3_4" value="<%nvram_get("ar_port_proto3_4");%>">
+<input type="hidden" name="ar_port_proto3_5" value="<%nvram_get("ar_port_proto3_5");%>">
+<input type="hidden" name="ar_port_proto4_1" value="<%nvram_get("ar_port_proto4_1");%>">
+<input type="hidden" name="ar_port_proto4_2" value="<%nvram_get("ar_port_proto4_2");%>">
+<input type="hidden" name="ar_port_proto4_3" value="<%nvram_get("ar_port_proto4_3");%>">
+<input type="hidden" name="ar_port_proto4_4" value="<%nvram_get("ar_port_proto4_4");%>">
+<input type="hidden" name="ar_port_proto4_5" value="<%nvram_get("ar_port_proto4_5");%>">
+<input type="hidden" name="ar_port_proto5_1" value="<%nvram_get("ar_port_proto5_1");%>">
+<input type="hidden" name="ar_port_proto5_2" value="<%nvram_get("ar_port_proto5_2");%>">
+<input type="hidden" name="ar_port_proto5_3" value="<%nvram_get("ar_port_proto5_3");%>">
+<input type="hidden" name="ar_port_proto5_4" value="<%nvram_get("ar_port_proto5_4");%>">
+<input type="hidden" name="ar_port_proto5_5" value="<%nvram_get("ar_port_proto5_5");%>">
+<input type="hidden" name="ar_port_proto6_1" value="<%nvram_get("ar_port_proto6_1");%>">
+<input type="hidden" name="ar_port_proto6_2" value="<%nvram_get("ar_port_proto6_2");%>">
+<input type="hidden" name="ar_port_proto6_3" value="<%nvram_get("ar_port_proto6_3");%>">
+<input type="hidden" name="ar_port_proto6_4" value="<%nvram_get("ar_port_proto6_4");%>">
+<input type="hidden" name="ar_port_proto6_5" value="<%nvram_get("ar_port_proto6_5");%>">
+<input type="hidden" name="ar_port_proto7_1" value="<%nvram_get("ar_port_proto7_1");%>">
+<input type="hidden" name="ar_port_proto7_2" value="<%nvram_get("ar_port_proto7_2");%>">
+<input type="hidden" name="ar_port_proto7_3" value="<%nvram_get("ar_port_proto7_3");%>">
+<input type="hidden" name="ar_port_proto7_4" value="<%nvram_get("ar_port_proto7_4");%>">
+<input type="hidden" name="ar_port_proto7_5" value="<%nvram_get("ar_port_proto7_5");%>">
+<input type="hidden" name="ar_port_proto8_1" value="<%nvram_get("ar_port_proto8_1");%>">
+<input type="hidden" name="ar_port_proto8_2" value="<%nvram_get("ar_port_proto8_2");%>">
+<input type="hidden" name="ar_port_proto8_3" value="<%nvram_get("ar_port_proto8_3");%>">
+<input type="hidden" name="ar_port_proto8_4" value="<%nvram_get("ar_port_proto8_4");%>">
+<input type="hidden" name="ar_port_proto8_5" value="<%nvram_get("ar_port_proto8_5");%>">
+<input type="hidden" name="ar_port_proto9_1" value="<%nvram_get("ar_port_proto9_1");%>">
+<input type="hidden" name="ar_port_proto9_2" value="<%nvram_get("ar_port_proto9_2");%>">
+<input type="hidden" name="ar_port_proto9_3" value="<%nvram_get("ar_port_proto9_3");%>">
+<input type="hidden" name="ar_port_proto9_4" value="<%nvram_get("ar_port_proto9_4");%>">
+<input type="hidden" name="ar_port_proto9_5" value="<%nvram_get("ar_port_proto9_5");%>">
+<input type="hidden" name="ar_port_proto10_1" value="<%nvram_get("ar_port_proto10_1");%>">
+<input type="hidden" name="ar_port_proto10_2" value="<%nvram_get("ar_port_proto10_2");%>">
+<input type="hidden" name="ar_port_proto10_3" value="<%nvram_get("ar_port_proto10_3");%>">
+<input type="hidden" name="ar_port_proto10_4" value="<%nvram_get("ar_port_proto10_4");%>">
+<input type="hidden" name="ar_port_proto10_5" value="<%nvram_get("ar_port_proto10_5");%>">
+<input type="hidden" name="ar_port_proto11_1" value="<%nvram_get("ar_port_proto11_1");%>">
+<input type="hidden" name="ar_port_proto11_2" value="<%nvram_get("ar_port_proto11_2");%>">
+<input type="hidden" name="ar_port_proto11_3" value="<%nvram_get("ar_port_proto11_3");%>">
+<input type="hidden" name="ar_port_proto11_4" value="<%nvram_get("ar_port_proto11_4");%>">
+<input type="hidden" name="ar_port_proto11_5" value="<%nvram_get("ar_port_proto11_5");%>">
+<input type="hidden" name="ar_port_proto12_1" value="<%nvram_get("ar_port_proto12_1");%>">
+<input type="hidden" name="ar_port_proto12_2" value="<%nvram_get("ar_port_proto12_2");%>">
+<input type="hidden" name="ar_port_proto12_3" value="<%nvram_get("ar_port_proto12_3");%>">
+<input type="hidden" name="ar_port_proto12_4" value="<%nvram_get("ar_port_proto12_4");%>">
+<input type="hidden" name="ar_port_proto12_5" value="<%nvram_get("ar_port_proto12_5");%>">
+<input type="hidden" name="ar_port_proto13_1" value="<%nvram_get("ar_port_proto13_1");%>">
+<input type="hidden" name="ar_port_proto13_2" value="<%nvram_get("ar_port_proto13_2");%>">
+<input type="hidden" name="ar_port_proto13_3" value="<%nvram_get("ar_port_proto13_3");%>">
+<input type="hidden" name="ar_port_proto13_4" value="<%nvram_get("ar_port_proto13_4");%>">
+<input type="hidden" name="ar_port_proto13_5" value="<%nvram_get("ar_port_proto13_5");%>">
+<input type="hidden" name="ar_port_proto14_1" value="<%nvram_get("ar_port_proto14_1");%>">
+<input type="hidden" name="ar_port_proto14_2" value="<%nvram_get("ar_port_proto14_2");%>">
+<input type="hidden" name="ar_port_proto14_3" value="<%nvram_get("ar_port_proto14_3");%>">
+<input type="hidden" name="ar_port_proto14_4" value="<%nvram_get("ar_port_proto14_4");%>">
+<input type="hidden" name="ar_port_proto14_5" value="<%nvram_get("ar_port_proto14_5");%>">
+<input type="hidden" name="ar_port_proto15_1" value="<%nvram_get("ar_port_proto15_1");%>">
+<input type="hidden" name="ar_port_proto15_2" value="<%nvram_get("ar_port_proto15_2");%>">
+<input type="hidden" name="ar_port_proto15_3" value="<%nvram_get("ar_port_proto15_3");%>">
+<input type="hidden" name="ar_port_proto15_4" value="<%nvram_get("ar_port_proto15_4");%>">
+<input type="hidden" name="ar_port_proto15_5" value="<%nvram_get("ar_port_proto15_5");%>">
+<input type="hidden" name="ar_port_proto16_1" value="<%nvram_get("ar_port_proto16_1");%>">
+<input type="hidden" name="ar_port_proto16_2" value="<%nvram_get("ar_port_proto16_2");%>">
+<input type="hidden" name="ar_port_proto16_3" value="<%nvram_get("ar_port_proto16_3");%>">
+<input type="hidden" name="ar_port_proto16_4" value="<%nvram_get("ar_port_proto16_4");%>">
+<input type="hidden" name="ar_port_proto16_5" value="<%nvram_get("ar_port_proto16_5");%>">
+<input type="hidden" name="ar_port_proto17_1" value="<%nvram_get("ar_port_proto17_1");%>">
+<input type="hidden" name="ar_port_proto17_2" value="<%nvram_get("ar_port_proto17_2");%>">
+<input type="hidden" name="ar_port_proto17_3" value="<%nvram_get("ar_port_proto17_3");%>">
+<input type="hidden" name="ar_port_proto17_4" value="<%nvram_get("ar_port_proto17_4");%>">
+<input type="hidden" name="ar_port_proto17_5" value="<%nvram_get("ar_port_proto17_5");%>">
+<input type="hidden" name="ar_port_proto18_1" value="<%nvram_get("ar_port_proto18_1");%>">
+<input type="hidden" name="ar_port_proto18_2" value="<%nvram_get("ar_port_proto18_2");%>">
+<input type="hidden" name="ar_port_proto18_3" value="<%nvram_get("ar_port_proto18_3");%>">
+<input type="hidden" name="ar_port_proto18_4" value="<%nvram_get("ar_port_proto18_4");%>">
+<input type="hidden" name="ar_port_proto18_5" value="<%nvram_get("ar_port_proto18_5");%>">
+<input type="hidden" name="ar_port_proto19_1" value="<%nvram_get("ar_port_proto19_1");%>">
+<input type="hidden" name="ar_port_proto19_2" value="<%nvram_get("ar_port_proto19_2");%>">
+<input type="hidden" name="ar_port_proto19_3" value="<%nvram_get("ar_port_proto19_3");%>">
+<input type="hidden" name="ar_port_proto19_4" value="<%nvram_get("ar_port_proto19_4");%>">
+<input type="hidden" name="ar_port_proto19_5" value="<%nvram_get("ar_port_proto19_5");%>">
+<input type="hidden" name="ar_port_proto20_1" value="<%nvram_get("ar_port_proto20_1");%>">
+<input type="hidden" name="ar_port_proto20_2" value="<%nvram_get("ar_port_proto20_2");%>">
+<input type="hidden" name="ar_port_proto20_3" value="<%nvram_get("ar_port_proto20_3");%>">
+<input type="hidden" name="ar_port_proto20_4" value="<%nvram_get("ar_port_proto20_4");%>">
+<input type="hidden" name="ar_port_proto20_5" value="<%nvram_get("ar_port_proto20_5");%>">
+
+<input type="hidden" name="ar_mac1" value="<%nvram_get("ar_mac1");%>">
+<input type="hidden" name="ar_mac2" value="<%nvram_get("ar_mac2");%>">
+<input type="hidden" name="ar_mac3" value="<%nvram_get("ar_mac3");%>">
+<input type="hidden" name="ar_mac4" value="<%nvram_get("ar_mac4");%>">
+<input type="hidden" name="ar_mac5" value="<%nvram_get("ar_mac5");%>">
+<input type="hidden" name="ar_mac6" value="<%nvram_get("ar_mac6");%>">
+<input type="hidden" name="ar_mac7" value="<%nvram_get("ar_mac7");%>">
+<input type="hidden" name="ar_mac8" value="<%nvram_get("ar_mac8");%>">
+<input type="hidden" name="ar_mac9" value="<%nvram_get("ar_mac9");%>">
+<input type="hidden" name="ar_mac10" value="<%nvram_get("ar_mac10");%>">
+<input type="hidden" name="ar_mac11" value="<%nvram_get("ar_mac11");%>">
+<input type="hidden" name="ar_mac12" value="<%nvram_get("ar_mac12");%>">
+<input type="hidden" name="ar_mac13" value="<%nvram_get("ar_mac13");%>">
+<input type="hidden" name="ar_mac14" value="<%nvram_get("ar_mac14");%>">
+<input type="hidden" name="ar_mac15" value="<%nvram_get("ar_mac15");%>">
+<input type="hidden" name="ar_mac16" value="<%nvram_get("ar_mac16");%>">
+<input type="hidden" name="ar_mac17" value="<%nvram_get("ar_mac17");%>">
+<input type="hidden" name="ar_mac18" value="<%nvram_get("ar_mac18");%>">
+<input type="hidden" name="ar_mac19" value="<%nvram_get("ar_mac19");%>">
+<input type="hidden" name="ar_mac20" value="<%nvram_get("ar_mac20");%>">
+
+
+<input type="hidden" name="URL1" value="<%nvram_get("URL1");%>">
+<input type="hidden" name="URL2" value="<%nvram_get("URL2");%>">
+<input type="hidden" name="URL3" value="<%nvram_get("URL3");%>">
+<input type="hidden" name="URL4" value="<%nvram_get("URL4");%>">
+<input type="hidden" name="URL5" value="<%nvram_get("URL5");%>">
+<input type="hidden" name="URL6" value="<%nvram_get("URL6");%>">
+<input type="hidden" name="URL7" value="<%nvram_get("URL7");%>">
+<input type="hidden" name="URL8" value="<%nvram_get("URL8");%>">
+<input type="hidden" name="URL9" value="<%nvram_get("URL9");%>">
+<input type="hidden" name="URL10" value="<%nvram_get("URL10");%>">
+<input type="hidden" name="URL11" value="<%nvram_get("URL11");%>">
+<input type="hidden" name="URL12" value="<%nvram_get("URL12");%>">
+<input type="hidden" name="URL13" value="<%nvram_get("URL13");%>">
+<input type="hidden" name="URL14" value="<%nvram_get("URL14");%>">
+<input type="hidden" name="URL15" value="<%nvram_get("URL15");%>">
+<input type="hidden" name="URL16" value="<%nvram_get("URL16");%>">
+<input type="hidden" name="URL17" value="<%nvram_get("URL17");%>">
+<input type="hidden" name="URL18" value="<%nvram_get("URL18");%>">
+<input type="hidden" name="URL19" value="<%nvram_get("URL19");%>">
+<input type="hidden" name="URL20" value="<%nvram_get("URL20");%>">
+
+<input type="hidden" name="Text1" value="<%nvram_get("Text1");%>">
+<input type="hidden" name="Text2" value="<%nvram_get("Text2");%>">
+<input type="hidden" name="Text3" value="<%nvram_get("Text3");%>">
+<input type="hidden" name="Text4" value="<%nvram_get("Text4");%>">
+<input type="hidden" name="Text5" value="<%nvram_get("Text5");%>">
+<input type="hidden" name="Text6" value="<%nvram_get("Text6");%>">
+<input type="hidden" name="Text7" value="<%nvram_get("Text7");%>">
+<input type="hidden" name="Text8" value="<%nvram_get("Text8");%>">
+<input type="hidden" name="Text9" value="<%nvram_get("Text9");%>">
+<input type="hidden" name="Text10" value="<%nvram_get("Text10");%>">
+<input type="hidden" name="Text11" value="<%nvram_get("Text11");%>">
+<input type="hidden" name="Text12" value="<%nvram_get("Text12");%>">
+<input type="hidden" name="Text13" value="<%nvram_get("Text13");%>">
+<input type="hidden" name="Text14" value="<%nvram_get("Text14");%>">
+<input type="hidden" name="Text15" value="<%nvram_get("Text15");%>">
+<input type="hidden" name="Text16" value="<%nvram_get("Text16");%>">
+<input type="hidden" name="Text17" value="<%nvram_get("Text17");%>">
+<input type="hidden" name="Text18" value="<%nvram_get("Text18");%>">
+<input type="hidden" name="Text19" value="<%nvram_get("Text19");%>">
+<input type="hidden" name="Text20" value="<%nvram_get("Text20");%>">
+
+
+<TD class="head_bold" height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_116+' '+str_1710);</SCRIPT>
+<table width="680" border="0">
+<tr height="15"><td colspan="2"></td></tr>
+  <tr>
+    <td width="32">&nbsp;</td>
+    <td width="638"><span class="copy_1"><SCRIPT>dw(str_1762);</SCRIPT><a onclick="window.open('glossary.html#access_control','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" href="javascript:void(0);"> <font color="#0066FF"> <b>
+    <SCRIPT>dw(str_47);</SCRIPT>
+    </b> </FONT></A><BR></span></td>
+  </tr>
+</table>
+<table width="680" border="0">
+  <tr>
+    <td width="680"></td>
+    <td width="680" rowspan="2"  class="copy_1"> 
+      <table width="701" border="0" cellspacing="0" cellpadding="0" >
+          <tr>
+            <td width="29"></td>
+            <td class="copy_1"><script>dw(str_1710+" "+str_346);</script>
+&nbsp;&gt;</td>
+<td class="copy_1"><input type='radio' name='enblAccessControl' value="ON" onClick='DataShow("1")'>
+                <script>dw(str_317);</script>
+&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type='radio' name='enblAccessControl' value="OFF" onClick='DataShow("0")' >
+        <script>dw(str_318);</script>    <BR>        </td>
+            </tr>
+            <tr height="15"><td colspan="3"></td></tr>
+            <tr>
+            <td width="29"></td>
+            <td class="copy_1"><script>dw(str_2103);</script>&nbsp;&gt;</td>
+            <td class="copy_1">&nbsp;&nbsp;<input type="text" name="landing_passwd" maxlength="12" value=""></td>
+            </tr>
+            <tr height="15"><td colspan="3"></td></tr>
+            
+      </table>      <DIV ID="myDiv"></DIV></td>
+  </tr> <tr>
+    <td width="43">&nbsp;</td>
+    </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td> <div id="pettabs" class="indentmenu">
+<ul>
+<li class="copy_1"><a href="#" rel="dog1"><b><script>dw(str_1735);</script></b></a></li>
+<li class="copy_1"><a href="#" rel="dog2"><b><script>dw(str_1736);</script></b></a></li>
+<li class="copy_1"><a href="#" rel="dog3"><b><script>dw(str_1765);</script></b></a></li>
+<li class="copy_1"><a href="#" rel="dog4" id="myfavorite"><b><script>dw(str_1766);</script></b></a></li>
+</ul>
+<br style="clear: left" />
+</div>
+
+<div id="tabs" style="border:1px solid gray; width:600px; height: 400px; padding: 5px; margin-bottom:1em;"  >
+<div id="dog1" class="tabcontent">
+<span class="head_bold"><script>dw(str_1735);</script></span>
+<table width="415" height="25" border=0 cellpadding="0" cellspacing="0" >
+					  
+					  <td width="41" class="MainTd">&nbsp;<span class="copy_1"><script>dw(str_1743);</script></span></td>
+					  <td width="90" class="MainTd">&nbsp;</td>
+					  <td width="284" class="MainTd">&nbsp;</td>
+					
+					 
+		      </table>
+				
+				<table width="523" height="25" border=0 cellpadding="0" cellspacing="0" >
+					  
+					  <td width="41" class="MainTd">&nbsp;</td>
+					  <td width="111" class="copy_1">&nbsp;<script>dw(str_1744);</script>
+					    <INPUT onClick="CheckDay(document.forms[0], 8);" type=checkbox value=128 name=days_8 ></td>
+					  <td width="371" class="copy_1"> <script>dw(str_1745);</script>		    
+					    <INPUT onClick="CheckDay(document.forms[0], 7);" type=checkbox value=1 name=days_7>	<script>dw(str_1746);</script>
+			          <INPUT onClick="CheckDay(document.forms[0], 1);"  type=checkbox value=2 name=days_1>
+				      <script>dw(str_1747);</script>
+				      <INPUT onClick="CheckDay(document.forms[0], 2);" type=checkbox value=4 name=days_2>
+					  <script>dw(str_1748);</script>
+					  <INPUT onClick="CheckDay(document.forms[0], 3);" type=checkbox value=8 name=days_3>
+				    
+                <script>dw(str_1749);</script>
+                <INPUT onClick="CheckDay(document.forms[0], 4);" type=checkbox value=16 name=days_4>
+                <script>dw(str_1750);</script>                
+                <INPUT onClick="CheckDay(document.forms[0], 5);"  type=checkbox value=32 name=days_5>
+&nbsp;<script>dw(str_1751);</script>
+<INPUT onClick="CheckDay(document.forms[0], 6);" type=checkbox value=64 name=days_6>
+                      &nbsp;                        </font>                 </td>
+					
+					 
+			    </table>
+					  <table width="555" height="25" border=0 cellpadding="0" cellspacing="0" >
+					  
+					  <td width="41" class="MainTd">&nbsp;</td>
+					 <td width="111" class="copy_1">&nbsp;
+					   <input type="radio" name="time" value="0" onClick="timecheck(1);"></td> 
+					  <td width="403" class="copy_1">&nbsp;<script>dw(str_1753);</script>
+					    <input type="radio" name="time" value="0" onClick="timecheck(0);">
+					    <script>dw(str_1592);</script>&gt;
+					    <select name="start_hour" onClick="javascript:document.forms[0].time[1].checked=true;"  style="font-size:8pt;font-family:Arial">
+        <option value="00" selected>0</option>
+        <OPTION value="01">1</OPTION>
+		<OPTION value="02">2</OPTION>
+		<OPTION value="03">3</OPTION>
+		<OPTION value="04">4</OPTION>
+		<OPTION value="05">5</OPTION> 
+        <OPTION value="06">6</OPTION>
+		<OPTION value="07">7</OPTION>
+		<OPTION value="08">8</OPTION>
+		<OPTION value="09">9</OPTION>
+		<OPTION value="10">10</OPTION>
+		<OPTION value="11">11</OPTION>
+		<OPTION value="12">12</OPTION>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+        <option value="17">17</option>
+        <option value="18">18</option>
+        <option value="19">19</option>
+        <option value="20">20</option>
+        <option value="21">21</option>
+        <option value="22">22</option>
+        <option value="23">23</option>
+          </select>: <select name="start_min" onClick="javascript:document.forms[0].time[1].checked=true;"  style="font-size:8pt;font-family:Arial">
+            <option value="00" selected>0</option>
+            <option value="05">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="35">35</option>
+            <option value="40">40</option>
+            <option value="45">45</option>
+            <option value="50">50</option>
+            <option value="55">55</option>
+          </select>
+          <script>dw(str_1593);</script>&gt;
+          <select name="end_hour" onClick="javascript:document.forms[0].time[1].checked=true;"  style="font-size:8pt;font-family:Arial">
+        <option value="00" selected>0</option>
+        <OPTION value="01">1</OPTION>
+		<OPTION value="02">2</OPTION>
+		<OPTION value="03">3</OPTION>
+		<OPTION value="04">4</OPTION>
+		<OPTION value="05">5</OPTION> 
+        <OPTION value="06">6</OPTION>
+		<OPTION value="07">7</OPTION>
+		<OPTION value="08">8</OPTION>
+		<OPTION value="09">9</OPTION>
+		<OPTION value="10">10</OPTION>
+		<OPTION value="11">11</OPTION>
+		<OPTION value="12">12</OPTION>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+        <option value="17">17</option>
+        <option value="18">18</option>
+        <option value="19">19</option>
+        <option value="20">20</option>
+        <option value="21">21</option>
+        <option value="22">22</option>
+        <option value="23">23</option>
+          </select>:
+		  <select name="end_min" onClick="javascript:document.forms[0].time[1].checked=true;" style="font-size:8pt;font-family:Arial">
+            <option value="00" selected>0</option>
+            <option value="05">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="35">35</option>
+            <option value="40">40</option>
+            <option value="45">45</option>
+            <option value="50">50</option>
+            <option value="55">55</option>
+          </select>		  </td>
+					
+					 
+					  </table>
+</div>
+<div id="dog2" class="tabcontent">
+  <span class="head_bold">
+	<SCRIPT>dw(str_1756);</SCRIPT>
+ </span>
+ <span class="copy_1">
+		<SPAN id="Block_All_tab"><script>dw(str_3241);</script></SPAN>	<SPAN id="Allow_All_tab"><script>dw(str_1768);</script></SPAN><input name="All_Services" type="checkbox" value="" onClick="all_services();"></span>
+  <table width="537" border="0" align="left" cellpadding="5" cellspacing="1" class="copy_1">
+    <tbody>
+      <tr bgcolor=#666666>
+        <th width="42" nowrap bgcolor="#666666" class=formText><font color="#FFFFFF"><script>dw(str_1738);</script></font> </th>
+        <th width="92" nowrap class=formText><font color=#ffffff> <script>dw(str_1736);</script></font></th>
+        <th width="369" nowrap bgcolor="#666666" class=formText><font color="#FFFFFF"><script>dw(str_1739);</script> </font> </th>
+        </tr>
+      <tr>
+        <th height="24" nowrap bgcolor="#cccccc" class=formText>1</th>
+        <th nowrap bgcolor="#cccccc" class=formText>			<select name="select1" id="select1" onChange="SelPortService(this.value,1);">
+          <option value="None"><script>dw(str_1411);</script></option>
+          <option value="DNS">DNS</option>
+          <option value="Ping">Ping</option>  		  		  		  		  		  		  		  		   
+          <option value="HTTP">HTTP</option>					
+          <option value="HTTPS">HTTPS</option>
+          <option value="FTP">FTP</option>
+          <option value="POP3">POP3</option>
+          <option value="IMAP">IMAP</option>
+          <option value="SMTP">SMTP</option>
+          <option value="NNTP">NNTP</option>
+          <option value="Telnet">Telnet</option>		  		  		  		  		  		  		  
+          <option value="SNMP">SNMP</option>		  		  		  		  		  		  		  
+          <option value="TFTP">TFTP</option>		  		  		  		  		  		  		  		  		  
+          <option value="IKE">IKE</option>		  		  		  		  		  		  		  		  
+          <option value="User-Defined"><script>dw(str_1579);</script></option>		  		  		  		  		  		  		  		  		  
+        </select></th>
+        <th nowrap class=formText><div align="left">
+          <select name="select_pro1" id="select_pro1" onChange="select_pro(this.value,1);">
+            <option value="0">TCP</option>
+            <option value="1">UDP</option>
+            <option value="2">TCP&amp;UDP</option>
+            <option value="3">ICMP</option>
+            <option value="4">IGMP</option>
+            <option value="5"><script>dw(str_1411);</script></option>
+          </select>
+          <input name="portrange1" type="text" id="portrange1" size="40" maxlength="20" disabled>
+        </div></th>
+      </tr>
+      <tr>
+        <th height="24" nowrap bgcolor="#cccccc" class=formText>2</th>
+        <th nowrap bgcolor="#cccccc" class=formText>		
+		 <select name="select2" id="select2" onChange="SelPortService(this.value,2);">
+          <option value="None"><script>dw(str_1411);</script></option>
+          <option value="DNS">DNS</option>
+          <option value="Ping">Ping</option>  		  		  		  		  		  		  		  		   
+          <option value="HTTP">HTTP</option>					
+          <option value="HTTPS">HTTPS</option>
+          <option value="FTP">FTP</option>
+          <option value="POP3">POP3</option>
+          <option value="IMAP">IMAP</option>
+          <option value="SMTP">SMTP</option>
+          <option value="NNTP">NNTP</option>
+          <option value="Telnet">Telnet</option>		  		  		  		  		  		  		  
+          <option value="SNMP">SNMP</option>		  		  		  		  		  		  		  
+          <option value="TFTP">TFTP</option>		  		  		  		  		  		  		  		  		  
+          <option value="IKE">IKE</option>		  		  		  		  		  		  		  		  
+          <option value="User-Defined"><script>dw(str_1579);</script></option>		  		  
+        </select></th>
+        <th nowrap class=formText><div align="left">
+          <select name="select_pro2" id="select_pro2"  onChange="select_pro(this.value,2);">
+            <option value="0">TCP</option>
+            <option value="1">UDP</option>
+            <option value="2">TCP&amp;UDP</option>
+            <option value="3">ICMP</option>
+            <option value="4">IGMP</option>
+            <option value="5"><script>dw(str_1411);</script></option>
+          </select>
+          <input name="portrange2" type="text" size="40" maxlength="20" disabled>
+        </div></th>
+      </tr>
+      <tr>
+        <th height="24" nowrap bgcolor="#cccccc" class=formText>3</th>
+        <th nowrap bgcolor="#cccccc" class=formText>
+		<select name="select3" id="select3" onChange="SelPortService(this.value,3);" >
+          <option value="None"><script>dw(str_1411);</script></option>
+          <option value="DNS">DNS</option>
+          <option value="Ping">Ping</option>  		  		  		  		  		  		  		  		   
+          <option value="HTTP">HTTP</option>					
+          <option value="HTTPS">HTTPS</option>
+          <option value="FTP">FTP</option>
+          <option value="POP3">POP3</option>
+          <option value="IMAP">IMAP</option>
+          <option value="SMTP">SMTP</option>
+          <option value="NNTP">NNTP</option>
+          <option value="Telnet">Telnet</option>		  		  		  		  		  		  		  
+          <option value="SNMP">SNMP</option>		  		  		  		  		  		  		  
+          <option value="TFTP">TFTP</option>		  		  		  		  		  		  		  		  		  
+          <option value="IKE">IKE</option>		  		  		  		  		  		  		  		  
+          <option value="User-Defined"><script>dw(str_1579);</script></option>		  		  
+        </select></th>
+        <th nowrap class=formText><div align="left">
+          <select name="select_pro3" id="select_pro3"  onChange="select_pro(this.value,3);">
+            <option value="0">TCP</option>
+            <option value="1">UDP</option>
+            <option value="2">TCP&amp;UDP</option>
+            <option value="3">ICMP</option>
+            <option value="4">IGMP</option>
+            <option value="5"><script>dw(str_1411);</script></option>
+          </select>
+          <input name="portrange3" type="text" size="40" maxlength="20" disabled>
+        </div></th>
+      </tr>
+      <tr>
+        <th height="24" nowrap bgcolor="#cccccc" class=formText>4</th>
+        <th nowrap bgcolor="#cccccc" class=formText>
+		<select name="select4" id="select4" onChange="SelPortService(this.value,4);">
+          <option value="None"><script>dw(str_1411);</script></option>
+          <option value="DNS">DNS</option>
+          <option value="Ping">Ping</option>  		  		  		  		  		  		  		  		   
+          <option value="HTTP">HTTP</option>					
+          <option value="HTTPS">HTTPS</option>
+          <option value="FTP">FTP</option>
+          <option value="POP3">POP3</option>
+          <option value="IMAP">IMAP</option>
+          <option value="SMTP">SMTP</option>
+          <option value="NNTP">NNTP</option>
+          <option value="Telnet">Telnet</option>		  		  		  		  		  		  		  
+          <option value="SNMP">SNMP</option>		  		  		  		  		  		  		  
+          <option value="TFTP">TFTP</option>		  		  		  		  		  		  		  		  		  
+          <option value="IKE">IKE</option>		  		  		  		  		  		  		  		  
+          <option value="User-Defined"><script>dw(str_1579);</script></option>		  		  
+        </select></th>
+        <th nowrap class=formText><div align="left">
+          <select name="select_pro4" id="select_pro4"  onChange="select_pro(this.value,4);">
+            <option value="0">TCP</option>
+            <option value="1">UDP</option>
+            <option value="2">TCP&amp;UDP</option>
+            <option value="3">ICMP</option>
+            <option value="4">IGMP</option>
+            <option value="5"><script>dw(str_1411);</script></option>
+          </select>
+          <input name="portrange4" type="text" size="40" maxlength="20" disabled>
+        </div></th>
+      </tr>
+      <tr>
+        <th height="24" nowrap bgcolor="#cccccc" class=formText>5</th>
+        <th nowrap bgcolor="#cccccc" class=formText>
+		<select name="select5" id="select5" onChange="SelPortService(this.value,5);">
+          <option value="None"><script>dw(str_1411);</script></option>
+          <option value="DNS">DNS</option>
+          <option value="Ping">Ping</option>  		  		  		  		  		  		  		  		   
+          <option value="HTTP">HTTP</option>					
+          <option value="HTTPS">HTTPS</option>
+          <option value="FTP">FTP</option>
+          <option value="POP3">POP3</option>
+          <option value="IMAP">IMAP</option>
+          <option value="SMTP">SMTP</option>
+          <option value="NNTP">NNTP</option>
+          <option value="Telnet">Telnet</option>		  		  		  		  		  		  		  
+          <option value="SNMP">SNMP</option>		  		  		  		  		  		  		  
+          <option value="TFTP">TFTP</option>		  		  		  		  		  		  		  		  		  
+          <option value="IKE">IKE</option>		  		  		  		  		  		  		  		  
+          <option value="User-Defined"><script>dw(str_1579);</script></option>		  		  
+        </select></th>
+        <th nowrap class=formText><div align="left">
+          <select name="select_pro5" id="select_pro5"  onChange="select_pro(this.value,5);">
+            <option value="0">TCP</option>
+            <option value="1">UDP</option>
+            <option value="2">TCP&amp;UDP</option>
+            <option value="3">ICMP</option>
+            <option value="4">IGMP</option>
+            <option value="5"><script>dw(str_1411);</script></option>
+          </select>
+          <input name="portrange5" type="text" size="40" maxlength="20" disabled>
+        </div></th>
+        </tr>
+    </tbody>
+  </table>
+</div>
+<p>
+<p>
+<p>
+
+<div id="dog3" class="tabcontent">
+<SPAN class="head_bold">
+<script>dw(str_1754);</script>
+</SPAN>
+<SPAN id="Block_Url_tab"  class="copy_1"><script>dw(str_3231);</script></SPAN><SPAN id="Allow_Url_tab"  class="copy_1"><script>dw(str_3230);</script></SPAN><input name="all_url" type="checkbox" value="" onClick="all_url_function();"></span>
+<table width="435" border="0" align="left" cellpadding="5" cellspacing="1" class="copy_1">
+    <tbody>
+      <tr bgcolor=#666666>
+        <th width="42" nowrap bgcolor="#666666" class=formText><font color="#FFFFFF"><script>dw(str_1738);</script></font> </th>
+        <th width="370" nowrap class=formText><font color="#FFFFFF"><script>dw(str_1740);</script> </font>  </th>
+        </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>1</th>
+        <th nowrap class=formText><input name="urladdr" type="text" id="urladdr" size="50" maxlength="50"></th>
+        </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>2</th>
+        <th nowrap class=formText><input name="urladdr" type="text" id="urladdr" size="50" maxlength="50"></th>
+        </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>3</th>
+        <th nowrap class=formText><input name="urladdr" type="text" id="urladdr" size="50" maxlength="50"></th>
+      </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>4</th>
+        <th nowrap class=formText><input name="urladdr" type="text" id="urladdr" size="50" maxlength="50"></th>
+      </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>5</th>
+        <th nowrap class=formText><input name="urladdr" type="text" id="urladdr" size="50" maxlength="50"></th>
+        </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>6</th>
+        <th nowrap class=formText><input name="urladdr" type="text" id="urladdr" size="50" maxlength="50"></th>
+        </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>7</th>
+        <th nowrap class=formText><input name="urladdr" type="text" id="urladdr" size="50" maxlength="50"></th>
+        </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>8</th>
+        <th nowrap class=formText><input name="urladdr" type="text" id="urladdr" size="50" maxlength="50"></th>
+        </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>9</th>
+        <th nowrap class=formText><input name="urladdr" type="text" id="urladdr" size="50" maxlength="50"></th>
+        </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>10</th>
+        <th nowrap class=formText><input name="urladdr" type="text" id="urladdr" size="50" maxlength="50"></th>
+        </tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="dog4" class="tabcontent">
+<span class="head_bold"><script>dw(str_1755);</script></span>
+<table width="444" border="0" align="left" cellpadding="5" cellspacing="1" class="copy_1">
+    <tbody>
+      <tr bgcolor=#666666>
+        <th width="43" nowrap bgcolor="#666666" class=formText><font color="#FFFFFF"><script>dw(str_1738);</script></font> </th>
+        <th width="378" nowrap class=formText><font color="#FFFFFF"><script>dw(str_1741);</script> </font></th>
+        </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>1</th>
+        <th nowrap class=formText><input name="urlkeyword" type="text" id="urlkeyword" size="50" maxlength="50"></th>
+      </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>2</th>
+        <th nowrap class=formText><input name="urlkeyword" type="text" id="urlkeyword" size="50" maxlength="50"></th>
+      </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>3</th>
+        <th nowrap class=formText><input name="urlkeyword" type="text" id="urlkeyword" size="50" maxlength="50"></th>
+      </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>4</th>
+        <th nowrap class=formText><input name="urlkeyword" type="text" id="urlkeyword" size="50" maxlength="50"></th>
+      </tr>
+      <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>5</th>
+        <th nowrap class=formText><input name="urlkeyword" type="text" id="urlkeyword" size="50" maxlength="50"></th>
+        </tr>
+     <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>6</th>
+        <th nowrap class=formText><input name="urlkeyword" type="text" id="urlkeyword" size="50" maxlength="50"></th>
+        </tr>
+     <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>7</th>
+        <th nowrap class=formText><input name="urlkeyword" type="text" id="urlkeyword" size="50" maxlength="50"></th>
+        </tr>
+     <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>8</th>
+        <th nowrap class=formText><input name="urlkeyword" type="text" id="urlkeyword" size="50" maxlength="50"></th>
+        </tr>
+     <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>9</th>
+        <th nowrap class=formText><input name="urlkeyword" type="text" id="urlkeyword" size="50" maxlength="50"></th>
+        </tr>
+     <tr>
+        <th nowrap bgcolor="#cccccc" class=formText>10</th>
+        <th nowrap class=formText><input name="urlkeyword" type="text" id="urlkeyword" size="50" maxlength="50"></th>
+        </tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+<BR><BR>
+<script type="text/javascript">
+
+var mypets=new ddtabcontent("pettabs")
+
+mypets.setselectedClassTarget("link")
+mypets.init(0)
+
+</script>
+<script>
+				strHtml='<input id="submitBtn_clear" type="reset" value="'+str_48+'" style="{width:160px;}" class="submitBtn" onMouseOver="window.status=\'Clear\'; return true;" onclick="return Clear_Submit();" onMouseOut="window.status=\'\'; return true;">';
+				dw(strHtml);
+				strHtml='<input id="submitBtn_apply" type="button" value="'+str_49+'" style="{width:160px;}" class="submitBtn" onClick="return Try_Submit();">';
+				dw(strHtml);
+			</script>
+
+</td>
+  </tr>
+</table>
+<BR>
+</TD>
+</form>
+</BODY></HTML>

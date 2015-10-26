@@ -1,0 +1,718 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="expires" CONTENT="0">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<script language="javascript" type="text/JavaScript" src="validate.js"></script>
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_4220+'</title>';
+dw(strHtml); 
+var cc='ppp0';
+var helpItem 	='WIFI Settings';
+var menuSection	='WLAN';
+var menuItem	='WIFI Settings';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<!--
+function Try_Submit() 
+{ 
+	var passForm=document.forms[0];
+	 if(!CheckingDTIM())
+   return false;
+	 if(!CheckingRTSThreshold())
+   return false;
+	 if(!CheckingBeaconInterval())
+   return false;
+	 
+	//wireless mode
+	if (passForm.wl_gmode.value == '3')//Off
+		passForm.wl0_enabled.value = 0;
+	else
+	{
+		passForm.wl0_enabled.value = 1;
+		passForm.wl0_mode.value = passForm.wl_gmode.value;
+	}		
+	
+	//RTS Threshold
+	passForm.wl0_rtsThPeriod.value=passForm.wl_rts.value;
+	
+	//Beacon Interval 
+	passForm.wl0_beaconPeriod.value=passForm.wl_bcn.value;
+//	passForm.submit();
+	
+	//DTIM Interval
+	passForm.wl0_dtimPeriod.value=passForm.wl_dtim.value;
+	
+	//WPS testing
+	passForm.wl0_wps_test.value = passForm.wl_wps_test.selectedIndex;
+	
+//WMM(QOS) Parameters
+	//AP        
+	var wl0_APCwmin_value='';
+	wl0_APCwmin_value = passForm.AP_1.value + ';' + passForm.AP_5.value + ';' + passForm.AP_9.value + ';' + passForm.AP_13.value;
+	passForm.wl0_APCwmin.value=wl0_APCwmin_value;
+	
+	var wl0_APCwmax_value='';
+	wl0_APCwmax_value = passForm.AP_2.value + ';' + passForm.AP_6.value + ';' + passForm.AP_10.value + ';' + passForm.AP_14.value;
+	passForm.wl0_APCwmax.value=wl0_APCwmax_value;
+	
+	var wl0_APAifsn_value='';
+	wl0_APAifsn_value = passForm.AP_3.value + ';' + passForm.AP_7.value + ';' + passForm.AP_11.value + ';' + passForm.AP_15.value;
+	passForm.wl0_APAifsn.value=wl0_APAifsn_value;
+	
+	var wl0_APTxoop_value='';
+	wl0_APTxoop_value = passForm.AP_4.value + ';' + passForm.AP_8.value + ';' + passForm.AP_12.value + ';' + passForm.AP_16.value;
+	passForm.wl0_APTxoop.value=wl0_APTxoop_value;
+	//STA
+	var wl0_BSSCwmin_value='';
+	wl0_BSSCwmin_value = passForm.STA_1.value + ';' + passForm.STA_5.value + ';' + passForm.STA_9.value + ';' + passForm.STA_13.value;
+	passForm.wl0_BSSCwmin.value=wl0_BSSCwmin_value;
+	
+	var wl0_BSSCwmax_value='';
+	wl0_BSSCwmax_value = passForm.STA_2.value + ';' + passForm.STA_6.value + ';' + passForm.STA_10.value + ';' + passForm.STA_14.value;
+	passForm.wl0_BSSCwmax.value=wl0_BSSCwmax_value;
+
+	var wl0_BSSAifsn_value='';
+	wl0_BSSAifsn_value = passForm.STA_3.value + ';' + passForm.STA_7.value + ';' + passForm.STA_11.value + ';' + passForm.STA_15.value;
+	passForm.wl0_BSSAifsn.value=wl0_BSSAifsn_value;
+	
+	var wl0_BSSTxop_value='';
+	wl0_BSSTxop_value = passForm.STA_4.value + ';' + passForm.STA_8.value + ';' + passForm.STA_12.value + ';' + passForm.STA_16.value;
+	passForm.wl0_BSSTxop.value=wl0_BSSTxop_value;
+		
+	passForm.submit();
+}
+
+function Init_Value()
+{
+	alert("The items on this page are unsupported and for advanced users.");
+	var passForm = document.forms[0];  
+
+//wireless mode
+	var wl0_mode = '<%nvram_get("wl0_mode");%>';
+  var wl0_enabled = '<%nvram_get("wl0_enabled");%>';
+  if (wl0_enabled == '0')
+   	passForm.wl_gmode.value = 3;
+  else
+      passForm.wl_gmode.value = wl0_mode;              
+      
+//RTS Threshold
+	var buffer;
+	buffer = "<%nvram_get("wl0_rtsThPeriod");%>";
+	if( buffer == '' )
+		passForm.wl_rts.value = 1;
+	else passForm.wl_rts.value = buffer;
+	
+//Beacon Interval 	
+	buffer = "<%nvram_get("wl0_beaconPeriod");%>";
+	if( buffer == '' )
+		passForm.wl_bcn.value = 1;
+	else passForm.wl_bcn.value = buffer;
+
+//DTIM Interval
+	buffer = "<%nvram_get("wl0_dtimPeriod");%>";
+	if( buffer == '' )
+		passForm.wl_dtim.value = 1;
+	else passForm.wl_dtim.value = buffer;	
+	
+//WPS testing	
+/*	var wps = '<%nvram_get("wl0_wps_test");%>';
+	if (wps == '')
+		passForm.wl_wps_test.selectedIndex=wps;
+	else passForm.wl_wps_test.selectedIndex = 0;
+*/
+  var wps = '<%nvram_get("wl0_sec_mode");%>';
+	if (wps == 'none')
+		passForm.wl_wps_test.selectedIndex=0;
+	else passForm.wl_wps_test.selectedIndex =1;
+
+		
+	var ant = '<%nvram_get("wl0_antenna");%>';
+	
+		
+//Device's UUID
+	/*passForm.uuid.value = '<%nvram_get("wl0_macaddr");%>';*/
+	passForm.uuid.value="28802880-2880-1880-a880-";
+	var wl0_macaddr = '<%nvram_get("wl0_macaddr");%>';
+	var uuid_list= wl0_macaddr.split(":");
+	for(i=0 ;i<6 ;i++)
+		passForm.uuid.value += uuid_list[i];
+
+//WMM(QOS) Parameters
+	//AP
+	var APCwmin = '<%nvram_get("wl0_APCwmin");%>'		
+	if(APCwmin==''){
+		APCwmin='4;4;3;2';
+		passForm.AP_1.value=4;
+		passForm.AP_5.value=4;
+		passForm.AP_9.value=3;
+		passForm.AP_13.value=2;
+	}
+	else{
+		var APCwmin_list=APCwmin.split(";");	
+
+		passForm.AP_1.value=APCwmin_list[0];
+		passForm.AP_5.value=APCwmin_list[1];
+		passForm.AP_9.value=APCwmin_list[2];
+		passForm.AP_13.value=APCwmin_list[3];
+		}
+	var APCwmax = '<%nvram_get("wl0_APCwmax");%>'		
+	if(APCwmax==''){
+		APCwmax='6;10;4;3';
+		passForm.AP_2.value=6;
+		passForm.AP_6.value=10;
+		passForm.AP_10.value=4;
+		passForm.AP_14.value=3;
+	}
+	else{
+		var APCwmax_list=APCwmax.split(";");	
+
+		passForm.AP_2.value=APCwmax_list[0];
+		passForm.AP_6.value=APCwmax_list[1];
+		passForm.AP_10.value=APCwmax_list[2];
+		passForm.AP_14.value=APCwmax_list[3];
+	}
+	var APAifsn = '<%nvram_get("wl0_APAifsn");%>'		
+	if(APAifsn==''){
+		APAifsn='3;7;1;1';
+		passForm.AP_3.value=3;
+		passForm.AP_7.value=7;
+		passForm.AP_11.value=1;
+		passForm.AP_15.value=1;
+	}
+	else{
+		var APAifsn_list=APAifsn.split(";");	
+
+		passForm.AP_3.value=APAifsn_list[0];
+		passForm.AP_7.value=APAifsn_list[1];
+		passForm.AP_11.value=APAifsn_list[2];
+		passForm.AP_15.value=APAifsn_list[3];
+	}	
+	var APTxoop = '<%nvram_get("wl0_APTxoop");%>'		
+	if(APTxoop==''){
+		APTxoop='0;0;94;47';
+		passForm.AP_4.value=0;
+		passForm.AP_8.value=0;
+		passForm.AP_12.value=94;
+		passForm.AP_16.value=47;
+	}
+	else{
+		var APTxoop_list=APTxoop.split(";");	
+
+		passForm.AP_4.value=APTxoop_list[0];
+		passForm.AP_8.value=APTxoop_list[1];
+		passForm.AP_12.value=APTxoop_list[2];
+		passForm.AP_16.value=APTxoop_list[3];
+	}		
+	//STA
+	var STACwmin = '<%nvram_get("wl0_BSSCwmin");%>'		
+	if(STACwmin==''){
+		APCwmin='4;4;3;2';
+		passForm.STA_1.value=4;
+		passForm.STA_5.value=4;
+		passForm.STA_9.value=3;
+		passForm.STA_13.value=2;
+	}
+	else{
+		var STACwmin_list=STACwmin.split(";");	
+
+		passForm.STA_1.value=STACwmin_list[0];
+		passForm.STA_5.value=STACwmin_list[1];
+		passForm.STA_9.value=STACwmin_list[2];
+		passForm.STA_13.value=STACwmin_list[3];
+	}	
+	var STACwmax = '<%nvram_get("wl0_BSSCwmax");%>'		
+	if(STACwmax==''){
+		APCwmax='10;10;4;3';
+		passForm.STA_2.value=10;
+		passForm.STA_6.value=10;
+		passForm.STA_10.value=4;
+		passForm.STA_14.value=3;
+	}
+	else{
+		var STACwmax_list=STACwmax.split(";");	
+
+		passForm.STA_2.value=STACwmax_list[0];
+		passForm.STA_6.value=STACwmax_list[1];
+		passForm.STA_10.value=STACwmax_list[2];
+		passForm.STA_14.value=STACwmax_list[3];
+	}	
+	var STAAifsn = '<%nvram_get("wl0_BSSAifsn");%>'		
+	if(STAAifsn==''){
+		APAifsn='3;7;2;2';
+		passForm.STA_3.value=3;
+		passForm.STA_7.value=7;
+		passForm.STA_11.value=2;
+		passForm.STA_15.value=2;
+	}
+	else{
+		var STAAifsn_list=STAAifsn.split(";");	
+
+		passForm.STA_3.value=STAAifsn_list[0];
+		passForm.STA_7.value=STAAifsn_list[1];
+		passForm.STA_11.value=STAAifsn_list[2];
+		passForm.STA_15.value=STAAifsn_list[3];
+	}		
+	var STATxoop = '<%nvram_get("wl0_BSSTxop");%>'		
+	if(STATxoop==''){
+		STATxoop='0;0;94;47';
+		passForm.STA_4.value=0;
+		passForm.STA_8.value=0;
+		passForm.STA_12.value=94;
+		passForm.STA_16.value=47;
+	}
+	else{
+		var STATxoop_list=STATxoop.split(";");	
+
+		passForm.STA_4.value=STATxoop_list[0];
+		passForm.STA_8.value=STATxoop_list[1];
+		passForm.STA_12.value=STATxoop_list[2];
+		passForm.STA_16.value=STATxoop_list[3];
+	}		
+}
+
+function reset_default()
+{
+	var passForm=document.forms[0];
+	
+	//wireless mode
+	passForm.wl0_enabled.value="1";
+	passForm.wl0_mode.value="9";
+	//RTS Threshold
+	passForm.wl0_rtsThPeriod.value="2347";
+	//Beacon Interval
+	passForm.wl0_beaconPeriod.value="100";
+	//DTIM Interval
+	passForm.wl0_dtimPeriod.value="1";
+	//WPS testing
+	passForm.wl0_wps_test.value = "0";
+	//Device's UUID
+	//passForm.wl0_macaddr.value='<%nvram_get("wl0_macaddr");%>';
+	//passForm.uuid.value = '<%nvram_get("wl0_macaddr");%>';
+	var wl0_macaddr = '<%nvram_get("wl0_macaddr");%>';
+	var uuid_list= wl0_macaddr.split(":");
+	for(i=0 ;i<6 ;i++)
+		passForm.uuid.value += uuid_list[i];
+//WMM(QOS) Parameters
+	//AP
+		passForm.AP_1.value=4;
+		passForm.AP_5.value=4;
+		passForm.AP_9.value=3;
+		passForm.AP_13.value=2;
+		passForm.AP_2.value=6;
+		passForm.AP_6.value=10;
+		passForm.AP_10.value=4;
+		passForm.AP_14.value=3;
+		passForm.AP_3.value=3;
+		passForm.AP_7.value=7;
+		passForm.AP_11.value=1;
+		passForm.AP_15.value=1;
+		passForm.AP_4.value=0;
+		passForm.AP_8.value=0;
+		passForm.AP_12.value=94;
+		passForm.AP_16.value=47;
+	//STA
+		passForm.STA_1.value=4;
+		passForm.STA_5.value=4;
+		passForm.STA_9.value=3;
+		passForm.STA_13.value=2;
+		passForm.STA_2.value=10;
+		passForm.STA_6.value=10;
+		passForm.STA_10.value=4;
+		passForm.STA_14.value=3;
+		passForm.STA_3.value=3;
+		passForm.STA_7.value=7;
+		passForm.STA_11.value=2;
+		passForm.STA_15.value=2;
+		passForm.STA_4.value=0;
+		passForm.STA_8.value=0;
+		passForm.STA_12.value=94;
+		passForm.STA_16.value=47;										
+			
+	passForm.submit();
+}	
+
+function CheckingRTSThreshold ()
+{
+	if ( document.forms[0].wl_rts.value == "" ) {
+  		alert(str_4262);
+  		document.forms[0].wl_rts.focus();
+  		return false;
+	}
+
+	if ( isNaN(document.forms[0].wl_rts.value) || document.forms[0].wl_rts.value < 1 || document.forms[0].wl_rts.value > 2347) {
+		alert(str_4262);
+		document.forms[0].wl_rts.focus();
+		return false;
+	}
+
+	return true;
+}
+	
+function CheckingBeaconInterval ()
+{
+	if ( document.forms[0].wl_bcn.value == "" ) {
+  		alert(str_4263);
+  		document.forms[0].wl_bcn.focus();
+  		return false;
+	}
+  for(i=0;i<document.forms[0].wl_bcn.value.length;i++){
+		var token=document.forms[0].wl_bcn.value.charAt(i);
+		if(token=='`' || token=='~' || token=='!' || token=='@' || token=='#'
+		|| token=='$' || token=='%' || token=='^' || token=='&' || token=='*'
+		|| token=='(' || token==')' || token=='=' || token=='+' || token=='['
+		|| token==']' || token=='{' || token=='}' || token=='\\' || token=='|'
+		|| token==';' || token==':' || token=='\'' || token=='\"' || token=='<'
+		|| token=='>' || token=='?' || token ==' '|| token ==',')
+		{ 
+		   alert(str_4263);
+ 			return false;
+		} 
+	}  	
+
+	if (isNaN(document.forms[0].wl_bcn.value) || document.forms[0].wl_bcn.value < 20 || document.forms[0].wl_bcn.value > 1000)  {
+  		alert(str_4263);
+  		document.forms[0].wl_bcn.focus();
+  		return false;
+	}
+
+	return true;
+}
+
+function CheckingDTIM ()
+{
+	if ( document.forms[0].wl_dtim.value == "" ) {
+		alert(str_4264);
+		document.forms[0].wl_dtim.focus();
+		return false;
+	}
+
+	if (isNaN(document.forms[0].wl_dtim.value) || document.forms[0].wl_dtim.value < 1 || document.forms[0].wl_dtim.value > 255) {
+		alert("Invalid DTIM Interval");
+		alert(str_4264);
+		document.forms[0].wl_dtim.focus();
+		return false;
+	}
+
+	return true;
+}
+
+function MAC_Check(I)
+{
+	d = parseInt ( I , 16 );
+
+	if ( !(d<256 && d>=0) ) {
+		alert(str_904);
+		return false;
+	} 
+	else {
+		return true;
+	}
+}
+//-->	 
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 onload="Init_Value();" marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	var havepc = '<%nvram_get("havepc");%>';
+	showHead(wanStatus,helpItem);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name)  
+</SCRIPT>
+<form name="wlan_main" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="adv_wireless.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="restart" value="wireless">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="data1" value=" wl0_rtsThPeriod wl0_beaconPeriod wl0_dtimPeriod wl0_enabled wl0_wps_test wl0_mode wl0_APCwmin wl0_APCwmax wl0_APAifsn wl0_APTxoop wl0_BSSCwmin wl0_BSSCwmax wl0_BSSAifsn wl0_BSSTxop">
+<input type="hidden" name="wl0_rtsThPeriod">
+<input type="hidden" name="wl0_beaconPeriod">
+<input type="hidden" name="wl0_dtimPeriod">
+<input type="hidden" name="wl0_enabled"> 
+<input type="hidden" name="wl0_wps_test">
+<input type="hidden" name="wl0_mode">
+
+<input type="hidden" name="wl0_APCwmin">
+<input type="hidden" name="wl0_APCwmax">
+<input type="hidden" name="wl0_APAifsn">
+<input type="hidden" name="wl0_APTxoop">
+<input type="hidden" name="wl0_BSSCwmin">
+<input type="hidden" name="wl0_BSSCwmax">
+<input type="hidden" name="wl0_BSSAifsn">
+<input type="hidden" name="wl0_BSSTxop">
+
+<TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw("Wireless > Advanced Settings");</SCRIPT>
+ <BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=5 cellPadding=0 width=626 align=left 
+      border=0>
+        <TBODY>
+        <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD colSpan=2>&nbsp;</TD></TR>
+        <TR><TD colspan=3 align=center>  
+						</TD>
+			  </TR>
+			  <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD colSpan=2><SCRIPT>dw("This page is provided 'as is' for special purposes.  Using of this page is without any expressed or implied warranties and may destroy your settings.");</SCRIPT></TD></TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <!--//Wireless Mode
+            //&gt;-->
+             	 <SCRIPT>dw(str_790);</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <select name="wl_gmode" style="font-size: 8pt" option="9">
+                          <option value="3"><SCRIPT>dw(str_375);</SCRIPT></option>
+                          <option value="1">11b</option>
+                          <option value="0">11b+g</option>
+                          <option value="4">11g</option>
+                          <option value="6">11n</option>
+                          <option value="7">11g+11n</option>
+                          <option value="9">11b+g+n</option>
+                        </select> 
+					     &nbsp;<SCRIPT>dw(str_4222);</SCRIPT>
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw("RTS Threshold >");</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <input name="wl_rts" size="5" maxlength="4" style="font-size: 8pt" value="">						  
+						  &nbsp;(Default: 2347, Range: 1 - 2347)
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw(str_4234);</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <input name="wl_bcn" size="5" maxlength="4" style="font-size: 8pt" value="<%nvram_get("wl0_beaconPeriod");%>">
+		  		  &nbsp;<SCRIPT>dw(str_4235);</SCRIPT>
+		      </TD>
+		    </TR>
+		           
+				<TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw("DTIM Interval >");</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <input name="wl_dtim" size="5" maxlength="3" style="font-size: 8pt" value="<%nvram_get("wl0_dtimPeriod");%>">						  
+						  &nbsp;<SCRIPT>dw(str_4237);</SCRIPT>
+		      </TD>
+		    </TR>
+		    
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw("WPS testing");</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <select name="wl_wps_test" style="font-size: 8pt">
+						  <option value="0"><SCRIPT>dw('WPS '+str_1395);</SCRIPT></option>
+						  <option value="1"><SCRIPT>dw('WPS '+str_1392);</SCRIPT></option>
+						  </select> &nbsp;<SCRIPT>dw(str_4244);</SCRIPT>
+		      </TD>
+		    </TR>
+		    
+		  	<TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw("Device's UUID");</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <input name="uuid" size="40" maxlength="40" style="font-size: 8pt" value="28802880-2880-1880-a880-" disabled>
+						  &nbsp;
+		      </TD>
+		    </TR>
+		     
+		    <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw("WMM(QOS) Parameters >");</SCRIPT>
+            </B> </TD>
+          <TD align=middle colSpan=2>
+						&nbsp;		
+		      </TD>
+		    </TR> 
+		    
+		    <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw("AP");</SCRIPT>
+            </B> </TD>
+          <TD align=middle colSpan=2>
+						&nbsp;		
+		      </TD>
+		    </TR> 
+		    
+		    <TR>
+          <TD>&nbsp;</TD>
+          <TD colSpan=3>
+          	<table cellSpacing=3 cellPadding=1 align=left width=500 border=1>
+							<tr>
+								<td class=QosTable>&nbsp;&nbsp;</td>
+								<td class=QosTable>CWMin</td>
+								<td class=QosTable>CWMax</td>
+								<td class=QosTable>AIFS</td>
+								<td class=QosTable>TxopLimit</td>
+							</tr>
+							<tr>
+								<td class=QosTable>AC_BE</td>
+								<td><input name="AP_1" id="AP_1" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="AP_2" id="AP_2" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="AP_3" id="AP_3" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="AP_4" id="AP_4" size="5" maxlength="5" value="0" type="text"></td>
+							</tr>
+							<tr>
+								<td class=QosTable>AC_BK</td>
+								<td><input name="AP_5" id="AP_5" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="AP_6" id="AP_6" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="AP_7" id="AP_7" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="AP_8" id="AP_8" size="5" maxlength="5" value="0" type="text"></td>
+							</tr>
+							<tr>
+								<td class=QosTable>AC_VI</td>
+								<td><input name="AP_9" id="AP_9" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="AP_10" id="AP_10" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="AP_11" id="AP_11" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="AP_12" id="AP_12" size="5" maxlength="5" value="0" type="text"></td>
+							</tr>
+							<tr>
+								<td class=QosTable>AC_VO</td>
+								<td><input name="AP_13" id="AP_13" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="AP_14" id="AP_14" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="AP_15" id="AP_15" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="AP_16" id="AP_16" size="5" maxlength="5" value="0" type="text"></td>
+							</tr>
+            </table>
+					</TD>
+		    </TR> 
+		    
+		    <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw("STA");</SCRIPT>
+            </B> </TD>
+          <TD align=middle colSpan=2>
+						&nbsp;		
+		      </TD>
+		    </TR> 
+		    
+		    <TR>
+          <TD>&nbsp;</TD>
+          <TD colSpan=3>
+          	<table cellSpacing=3 cellPadding=1 align=left width=500 border=1>
+							<tr>
+								<td class=QosTable>&nbsp;&nbsp;</td>
+								<td class=QosTable>CWMin</td>
+								<td class=QosTable>CWMax</td>
+								<td class=QosTable>AIFS</td>
+								<td class=QosTable>TxopLimit</td>
+							</tr>
+							<tr>
+								<td class=QosTable>AC_BE</td>
+								<td><input name="STA_1" id="STA_1" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="STA_2" id="STA_2" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="STA_3" id="STA_3" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="STA_4" id="STA_4" size="5" maxlength="5" value="0" type="text"></td>
+							</tr>
+							<tr>
+								<td class=QosTable>AC_BK</td>
+								<td><input name="STA_5" id="STA_5" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="STA_6" id="STA_6" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="STA_7" id="STA_7" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="STA_8" id="STA_8" size="5" maxlength="5" value="0" type="text"></td>
+							</tr>
+							<tr>
+								<td class=QosTable>AC_VI</td>
+								<td><input name="STA_9" id="STA_9" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="STA_10" id="STA_10" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="STA_11" id="STA_11" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="STA_12" id="STA_12" size="5" maxlength="5" value="0" type="text"></td>
+							</tr>
+							<tr>
+								<td class=QosTable>AC_VO</td>
+								<td><input name="STA_13" id="STA_13" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="STA_14" id="STA_14" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="STA_15" id="STA_15" size="5" maxlength="5" value="0" type="text"></td>
+								<td><input name="STA_16" id="STA_16" size="5" maxlength="5" value="0" type="text"></td>
+							</tr>
+            </table>
+					</TD>
+		    </TR>
+		    
+		    <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD colSpan=2>&nbsp;</TD></TR>
+        <TR><TD colspan=3 align=center>  
+						</TD>
+			  </TR>	
+			  
+			 	<TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw("Manufature Name >");</SCRIPT>
+            </B> 
+          </TD>
+          <TD class=plaintext_bold>
+		  		   &nbsp;Belkin
+		      </TD>
+		    </TR>	    
+		    
+		    <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw("Firmware Build time >");</SCRIPT>
+            </B> 
+          </TD>
+          <TD class=plaintext_bold>
+		  		   &nbsp;<%nvram_get("fw_build_time");%>
+		      </TD>
+		    </TR>
+		    
+		    <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw("Wireless driver >");</SCRIPT>
+            </B> 
+          </TD>
+          <TD class=plaintext_bold>
+		  		   &nbsp;<SCRIPT>dw("2.4.1.2");</SCRIPT>
+		      </TD>
+		    </TR>
+		     
+        <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD align=middle colSpan=2>
+            <SCRIPT>            	
+            	dw('<input id="submitBtn_exit" type="button" value="');dw(str_48);dw('" style="{width:160px;}" class="submitBtn" onClick="Init_Value();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">&nbsp;&nbsp;');
+							dw('<input id="submitBtn_reset" type="button" style="{width:160px;}" value="');dw(str_4248);dw('" onClick="reset_default();" class="submitBtn">');
+							dw('<input id="submitBtn_save" type="button" style="{width:160px;}" value="');dw(str_49);dw('"onClick="return Try_Submit();" class="submitBtn">&nbsp;&nbsp;');		
+				</SCRIPT>
+          </TD></TR></TBODY></TABLE></FORM></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

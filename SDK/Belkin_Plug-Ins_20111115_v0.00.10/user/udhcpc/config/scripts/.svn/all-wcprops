@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/scripts
+END
+tkparse.h
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/scripts/tkparse.h
+END
+Configure
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/scripts/Configure
+END
+README.uClinux
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/scripts/README.uClinux
+END
+tkcond.c
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/scripts/tkcond.c
+END
+header.tk
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/scripts/header.tk
+END
+README.Menuconfig
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/scripts/README.Menuconfig
+END
+tail.tk
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/scripts/tail.tk
+END
+tkgen.c
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/scripts/tkgen.c
+END
+Menuconfig
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/scripts/Menuconfig
+END
+tkparse.c
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/scripts/tkparse.c
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/scripts/Makefile
+END

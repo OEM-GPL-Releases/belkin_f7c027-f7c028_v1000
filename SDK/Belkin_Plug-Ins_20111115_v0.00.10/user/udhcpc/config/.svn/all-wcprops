@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config
+END
+setconfig
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/setconfig
+END
+autoconf.h
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/autoconf.h
+END
+Configure.help
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/Configure.help
+END
+config.in
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/config.in
+END
+fixconfig
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/fixconfig
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/Makefile
+END
+mkconfig
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/plugins/!svn/ver/1372/trunk/embedded-WeMo_1_3/Plugin/src/target/udhcpc/config/mkconfig
+END

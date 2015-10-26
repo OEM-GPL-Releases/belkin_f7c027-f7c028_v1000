@@ -1,0 +1,95 @@
+<HTML>
+<HEAD>                                
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_416+'</title>';
+dw(strHtml);
+
+<!--
+var helpItem 	='Restart Router';
+var menuSection	='Util';
+var menuItem	='Restart Router';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+var timeoutId;
+var i = 60;
+
+function countDown()
+{
+	i--;
+	document.tF.timeRemain.value=i;
+	if (i<1)
+	{
+		clearInterval(timeoutId);
+		document.location.href="home.html";
+	}
+}
+
+function timecheck()
+{
+    $("a").attr("href", "#");
+   document.tF.timeRemain.value=i;
+   timeoutId = setInterval(countDown,1000); 
+}
+
+
+
+function logoutF()
+{
+	document.tF.logout.value=1;
+	document.tF.submit();
+	return true;
+}
+
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 onload=timecheck() marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem,isAPmode);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name)
+</SCRIPT>
+<FORM name=tF action=home.htmll method=post>
+<INPUT type=hidden value=login name=page> 
+<INPUT type=hidden value=2 name=logout>
+<TD class=head_bold height="100%" width="99%" valign="top">
+	<BR>&nbsp;&nbsp;
+		<SCRIPT>dw(str_415);dw(str_416);</SCRIPT>
+ 	<BR><BR>
+	<TABLE class=copy_1 border=0>
+  		<TBODY>
+  			<TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=5 cellPadding=0 width=485 align=center 
+      border=0>
+        <TBODY>
+        <TR>
+          <TD width=69 height=41>&nbsp;</TD>
+          <TD class=verdana12 colSpan=2 height=41>
+            <SCRIPT>dw(str_417);</SCRIPT>
+          </TD></TR>
+        <TR>
+          <TD width=69 height=41>&nbsp;</TD>
+          <TD class=verdana12 colSpan=2 height=41>
+            <SCRIPT>dw(str_418);</SCRIPT>
+            <INPUT disabled size=2 name=timeRemain>
+            <SCRIPT>dw(str_419);</SCRIPT>
+             </TD></TR></TBODY></TABLE></FORM></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+<iframe src="pre-reboot.html" width="0" height="0" scrolling="no" frameborder="0">
+</iframe>
+</BODY>
+</HTML>

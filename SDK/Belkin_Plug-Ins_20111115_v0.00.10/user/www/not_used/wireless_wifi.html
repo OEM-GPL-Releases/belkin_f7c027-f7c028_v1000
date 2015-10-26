@@ -1,0 +1,675 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="expires" CONTENT="0">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<script language="javascript" type="text/JavaScript" src="validate.js"></script>
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_4220+'</title>';
+dw(strHtml);
+<!--
+var cc='ppp0';
+var helpItem 	='WIFI Settings';
+var menuSection	='WLAN';
+var menuItem	='WIFI Settings';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+
+<!--
+function CheckingRxBuffer ()
+{
+	if ( document.forms[0].wl_rx_buffer.value == "" ) {
+  		//alert("Please specify Rx Buffer Num");
+  		alert(msg_wladv_rx);
+		document.forms[0].wl_rx_buffer.focus();
+  		return false;
+	}
+	
+	if ( isNaN(document.forms[0].wl_rx_buffer.value) || document.forms[0].wl_rx_buffer.value < 1 || document.forms[0].wl_rx_buffer.value > 256)  {
+		//alert("Invalid Rx Buffer Num");
+		alert(msg_wladv_rx);
+		document.forms[0].wl_rx_buffer.focus();		
+		return false;
+	}
+
+	return true;
+}
+
+function CheckingTxChain ()
+{
+	if ( document.forms[0].wl_Tx_chain.value == "" ) {
+			alert(msg_wladv_tx_cmsk);		
+		document.forms[0].wl_Tx_chain.focus();
+  		return false;
+	}
+	
+	if ( isNaN(document.forms[0].wl_Tx_chain.value) || document.forms[0].wl_Tx_chain.value < 1 || document.forms[0].wl_Tx_chain.value > 7)  {
+		alert(msg_wladv_tx_cmsk);
+		document.forms[0].wl_Tx_chain.focus();		
+		return false;
+	}
+
+	return true;
+}
+
+function CheckingRxChain ()
+{
+	if ( document.forms[0].wl_Rx_chain.value == "" ) {
+  		alert(msg_wladv_rx_cmsk);
+		document.forms[0].wl_Rx_chain.focus();
+  		return false;
+	}
+	
+	if ( isNaN(document.forms[0].wl_Rx_chain.value) || document.forms[0].wl_Rx_chain.value < 1 || document.forms[0].wl_Rx_chain.value > 7)  {
+		alert(msg_wladv_rx_cmsk);
+		document.forms[0].wl_Rx_chain.focus();		
+		return false;
+	}
+
+	return true;
+}
+
+function CheckingTxQueue ()
+{
+	if ( document.forms[0].wl_tx_queue.value == "" ) {
+  		alert(msg_wladv_tq);
+		document.forms[0].wl_tx_queue.focus();
+  		return false;
+	}
+	
+	if ( isNaN(document.forms[0].wl_tx_queue.value) || document.forms[0].wl_tx_queue.value < 1 || document.forms[0].wl_tx_queue.value > 1000)  {
+		alert(msg_wladv_tq);
+		document.forms[0].wl_tx_queue.focus();		
+		return false;
+	}
+
+	return true;
+}
+function CheckingRTSThreshold ()
+{
+	if ( document.forms[0].wl_rts.value == "" ) {
+  		alert(msg_wladv_rtsthreshold);
+  		document.forms[0].wl_rts.focus();
+  		return false;
+	}
+
+	if ( isNaN(document.forms[0].wl_rts.value) || document.forms[0].wl_rts.value < 256 || document.forms[0].wl_rts.value > 2347) {
+		alert(msg_wladv_rtsthreshold);
+		document.forms[0].wl_rts.focus();
+		return false;
+	}
+
+	return true;
+}
+
+function CheckingDTIM ()
+{
+	if ( document.forms[0].wl_dtim.value == "" ) {
+		alert(msg_wladv_dtim);
+		document.forms[0].wl_dtim.focus();
+		return false;
+	}
+
+	if (isNaN(document.forms[0].wl_dtim.value) || document.forms[0].wl_dtim.value < 1 || document.forms[0].wl_dtim.value > 255) {
+		alert("Invalid DTIM Interval");
+		alert(msg_wladv_dtim);
+		document.forms[0].wl_dtim.focus();
+		return false;
+	}
+
+	return true;
+}
+
+function CheckingBeaconInterval ()
+{
+	if ( document.forms[0].wl_bcn.value == "" ) {
+  		alert(msg_wladv_beacon);
+  		document.forms[0].wl_bcn.focus();
+  		return false;
+	}
+  for(i=0;i<document.forms[0].wl_bcn.value.length;i++){
+		var token=document.forms[0].wl_bcn.value.charAt(i);
+		if(token=='`' || token=='~' || token=='!' || token=='@' || token=='#'
+		|| token=='$' || token=='%' || token=='^' || token=='&' || token=='*'
+		|| token=='(' || token==')' || token=='=' || token=='+' || token=='['
+		|| token==']' || token=='{' || token=='}' || token=='\\' || token=='|'
+		|| token==';' || token==':' || token=='\'' || token=='\"' || token=='<'
+		|| token=='>' || token=='?' || token ==' '|| token ==',')
+		{ 
+		   alert(msg_wladv_beacon);
+ 			return false;
+		} 
+	}  	
+
+	if (isNaN(document.forms[0].wl_bcn.value) || document.forms[0].wl_bcn.value < 20 || document.forms[0].wl_bcn.value > 1000)  {
+  		alert(msg_wladv_beacon);
+  		document.forms[0].wl_bcn.focus();
+  		return false;
+	}
+
+	return true;
+}
+function MAC_Check(I)
+{
+	d = parseInt ( I , 16 );
+
+	if ( !(d<256 && d>=0) ) {
+		alert(stroute29);
+		return false;
+	} 
+	else {
+		return true;
+	}
+}
+function Try_Submit() 
+{
+	var passForm=document.forms[0];
+	if ( !CheckingBeaconInterval() ) { return false; }
+	if ( !CheckingDTIM() ) { return false; }
+	if ( !CheckingRTSThreshold() ) { return false; }	
+	
+	if (!MACheck(passForm.uuid)) {
+		passForm.uuid.focus();
+		return false;
+	}
+	if(passForm.uuid.value!="") {
+		var mac_list=passForm.uuid.value.split(":");
+		for (j=0;j<6;j++)	{
+			if (!MAC_Check(mac_list[j])) {
+				passForm.uuid.focus();
+				return false;
+			}
+		}
+	}
+	if (passForm.uuid.value=="00:00:00:00:00:00" || passForm.uuid.value=="FF:FF:FF:FF:FF:FF") 
+	{
+		alert(dhcp_client_list1);
+		passForm.uuid.focus();
+		return false;
+	}
+	passForm.wl0_macaddr.value = passForm.uuid.value;
+
+	passForm.wl0_basicRate.value=passForm.wl_basicrate.value;
+	passForm.wl0_datarate.value=passForm.wl_datarate.value;
+	passForm.wl0_beaconPeriod.value=passForm.wl_bcn.value;
+	passForm.wl0_dtimPeriod.value=passForm.wl_dtim.value;
+	passForm.wl0_rtsThPeriod.value=passForm.wl_rts.value;
+	
+	if (passForm.wl_gmode.value == '3')//Off
+		passForm.wl0_enabled.value = 0;
+	else
+	{
+		passForm.wl0_enabled.value = 1;
+		passForm.wl0_mode.value = passForm.wl_gmode.value;
+	}
+	
+	if (passForm.green_eth[0].checked==true)
+		passForm.eco_radio_off_mode.value="1";
+	else
+		passForm.eco_radio_off_mode.value="0";
+		
+	passForm.wl0_N_Rate.value = passForm.wl_n_rate.selectedIndex ;
+	
+	if( !CheckingRxBuffer() ) return false;
+	else passForm.wl0_rx_buffer.value = passForm.wl_rx_buffer.value;
+
+	if( !CheckingTxQueue() ) return false;
+	else passForm.wl0_tx_queue.value = passForm.wl_tx_queue.value;
+		
+	if( !CheckingTxChain() ) return false;
+	else passForm.wl0_Tx_chain.value = passForm.wl_Tx_chain.value;
+		
+	if( !CheckingRxChain() ) return false;
+	else passForm.wl0_Rx_chain.value = passForm.wl_Rx_chain.value;	
+		
+	passForm.wl0_antenna.value = passForm.antenna_config.selectedIndex;
+	passForm.wl0_wps_test.value = passForm.wl_wps_test.selectedIndex;
+		
+	passForm.submit();
+}
+
+function Init_Value()
+{
+	var passForm = document.forms[0];
+	var rate;
+	
+	
+	passForm.uuid.value = '<%nvram_get("wl0_macaddr");%>';
+
+	var basic_rate='<%nvram_get("wl0_basicRate");%>';
+	if(basic_rate=='15')
+	    passForm.wl_basicrate.selectedIndex=0; 
+  else if(basic_rate=='3') 
+	    passForm.wl_basicrate.selectedIndex=1; 
+
+	rate = '<%nvram_get("wl0_datarate");%>';
+	if (rate == '0')
+		passForm.wl_datarate.selectedIndex=0;
+	else if (rate == '5')
+		passForm.wl_datarate.selectedIndex=1;
+	else if (rate == '6')
+		passForm.wl_datarate.selectedIndex=2;
+	else if (rate == '7')
+		passForm.wl_datarate.selectedIndex=3;
+	else if (rate == '8')
+		passForm.wl_datarate.selectedIndex=4;
+	else if (rate == '9')
+		passForm.wl_datarate.selectedIndex=5;
+	else if (rate == '10')
+		passForm.wl_datarate.selectedIndex=6;
+	else if (rate == '11')
+		passForm.wl_datarate.selectedIndex=7;
+	else if (rate == '12')
+		passForm.wl_datarate.selectedIndex=8;
+	else
+		passForm.wl_datarate.selectedIndex=0;
+		
+	var N_rate = '<%nvram_get("wl0_N_Rate");%>';
+	if (N_rate == '')
+		passForm.wl_n_rate.selectedIndex=0;
+	else passForm.wl_n_rate.selectedIndex = N_rate;
+		
+	var ant = '<%nvram_get("wl0_antenna");%>';
+	if (ant == '')
+		passForm.antenna_config.selectedIndex=0;
+	else passForm.antenna_config.selectedIndex = ant;
+	
+	var wps = '<%nvram_get("wl0_wps_test");%>';
+	if (wps == '')
+		passForm.wl_wps_test.selectedIndex=0;
+	else passForm.wl_wps_test.selectedIndex = wps;
+	
+	var buffer = '<%nvram_get("wl0_rx_buffer");%>';	
+	if( buffer == '' )
+		passForm.wl_rx_buffer.value = 16;
+	else passForm.wl_rx_buffer.value = buffer;
+		
+	buffer = '<%nvram_get("wl0_tx_queue");%>';	
+	if( buffer == '' )
+		passForm.wl_tx_queue.value = 1000;
+	else passForm.wl_tx_queue.value = buffer;
+		
+	buffer = "<%nvram_get("wl0_Tx_chain");%>";
+	if( buffer == '' )
+		passForm.wl_Tx_chain.value = 7;
+	else passForm.wl_Tx_chain.value = buffer;
+		
+	buffer = "<%nvram_get("wl0_Rx_chain");%>";
+	if( buffer == '' )
+		passForm.wl_Rx_chain.value = 7;
+	else passForm.wl_Rx_chain.value = buffer;
+	
+	buffer = "<%nvram_get("wl0_dtimPeriod");%>";
+	if( buffer == '' )
+		passForm.wl_dtim.value = 1;
+	else passForm.wl_dtim.value = buffer;
+	
+	buffer = "<%nvram_get("wl0_rtsThPeriod");%>";
+	if( buffer == '' )
+		passForm.wl_rts.value = 1;
+	else passForm.wl_rts.value = buffer;
+	
+	buffer = "<%nvram_get("wl0_beaconPeriod");%>";
+	if( buffer == '' )
+		passForm.wl_bcn.value = 1;
+	else passForm.wl_bcn.value = buffer;
+		
+	var wl0_mode = '<%nvram_get("wl0_mode");%>';
+    var wl0_enabled = '<%nvram_get("wl0_enabled");%>';
+    if (wl0_enabled == '0')
+     	passForm.wl_gmode.value = 3;
+    else
+        passForm.wl_gmode.value = wl0_mode;
+		
+	  
+  if ('<%nvram_get("eco_radio_off_mode");%>' == '1')
+		passForm.green_eth[0].checked=true;
+	else
+		passForm.green_eth[1].checked=true;    
+               
+}
+
+function reset_default()
+{
+	var passForm=document.forms[0];
+	passForm.wl0_burst_mode.value="1";
+	passForm.wl0_apisolation.value="0";
+	passForm.wl0_authtype.value="WEPAUTO";
+	passForm.wl0_basicRate.value="15";
+	passForm.wl0_datarate.value="0";
+	passForm.wl0_txPower.value="100";
+	passForm.wl0_ctsprotect.value="2";
+	passForm.wl0_rtsThPeriod.value="2347";
+	passForm.wl0_beaconPeriod.value="100";
+	passForm.wl0_fragThPeriod.value="2346";
+	passForm.wl0_dtimPeriod.value="1";
+	passForm.wl0_txpreamble.value="";
+	passForm.wl0_auto_channel.value="1";
+	passForm.wl0_auto_nextcha.value="1";
+	
+	passForm.wl0_mode.value="9";
+	passForm.wl0_enabled.value="1";
+	passForm.eco_radio_off_mode.value="1";
+	passForm.wl0_N_Rate.value="0";
+	passForm.wl0_rx_buffer.value = "16";
+	passForm.wl0_tx_queue.value = "1000";
+	passForm.wl0_Tx_chain.value = "7";
+	passForm.wl0_Rx_chain.value = "7";
+	passForm.wl0_antenna.value = "0";
+	passForm.wl0_wps_test.value = "0";
+	passForm.eco_radio_off_mode.value="1";
+	passForm.wl0_macaddr.value='00:90:4B:14:52:48';
+	passForm.submit();
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 onload="Init_Value();" marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	var havepc = '<%nvram_get("havepc");%>';
+	showHead(wanStatus,helpItem);
+	showMenu(menuSection,menuItem,isAPmode)
+</SCRIPT>
+<form name="wlan_main" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wireless_wifi.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="restart" value="wireless">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="data1" value="wl0_burst_mode wl0_apisolation wl0_authtype wl0_basicRate wl0_rx_buffer wl0_tx_queue wl0_Tx_chain wl0_Rx_chain wl0_antenna wl0_wps_test 
+ wl0_datarate wl0_txPower wl0_ctsprotect wl0_rtsThPeriod wl0_beaconPeriod wl0_fragThPeriod wl0_dtimPeriod wl0_txpreamble wl0_channel wl0_nextcha wl0_auto_nextcha wl0_auto_channel wl0_enabled wl0_mode eco_radio_off_mode wl0_N_Rate wl0_rx_buffer wl0_macaddr">
+<input type="hidden" name="wl0_burst_mode">
+<input type="hidden" name="wl0_apisolation">
+<input type="hidden" name="wl0_authtype">
+<input type="hidden" name="wl0_basicRate">
+<input type="hidden" name="wl0_datarate">
+<input type="hidden" name="wl0_txPower">
+<input type="hidden" name="wl0_ctsprotect">
+<input type="hidden" name="wl0_rtsThPeriod">
+<input type="hidden" name="wl0_beaconPeriod">
+<input type="hidden" name="wl0_fragThPeriod">
+<input type="hidden" name="wl0_dtimPeriod">
+<input type="hidden" name="wl0_txpreamble">
+<input type="hidden" name="wl0_channel" value="<%nvram_get("wl0_channel");%>">
+<input type="hidden" name="wl0_auto_channel" value="<%nvram_get("wl0_auto_channel");%>">
+<input type="hidden" name="wl0_nextcha" value="<%nvram_get("wl0_nextcha");%>">
+<input type="hidden" name="wl0_auto_nextcha" value="<%nvram_get("wl0_auto_nextcha");%>">
+<input type="hidden" name="wl0_mode">
+<input type="hidden" name="wl0_enabled">
+<input type="hidden" name="eco_radio_off_mode">
+<input type="hidden" name="wl0_N_Rate">
+<input type="hidden" name="wl0_rx_buffer">
+<input type="hidden" name="wl0_tx_queue">
+<input type="hidden" name="wl0_Tx_chain">
+<input type="hidden" name="wl0_Rx_chain">
+<input type="hidden" name="wl0_antenna">
+<input type="hidden" name="wl0_wps_test">
+<input type="hidden" name="wl0_macaddr">
+
+<TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw("Wireless > WIFI Settings");</SCRIPT>
+ <BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=5 cellPadding=0 width=626 align=left 
+      border=0>
+        <TBODY>
+        <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD colSpan=2>&nbsp;</TD></TR>
+        <TR><TD colspan=3 align=center>
+            
+        	<!--	//The items on this page are unsupported.-->
+        		<SCRIPT>dw(str_4221);</SCRIPT>
+
+        		
+						</TD>
+			  </TR>
+			  <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD colSpan=2>&nbsp;</TD></TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <!--//Wireless Mode
+            //&gt;-->
+             	 <SCRIPT>dw(str_790);</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <select name="wl_gmode" style="font-size: 8pt">
+                          <!--//<option value="3">Off</option>-->
+                          <option value="3"><SCRIPT>dw(str_375);</SCRIPT></option>
+                          <option value="1">11b</option>
+                          <option value="0">11b+g</option>
+                          <option value="4">11g</option>
+                          <option value="6">11n</option>
+                          <option value="7">11g+11n</option>
+                          <option value="9">11b+g+n</option>
+                        </select> 
+					     &nbsp;<SCRIPT>dw(str_4222);</SCRIPT>
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+           <!--	Rate Selection for 802.11b
+            &gt;</B>--> 
+          <SCRIPT>dw(str_4223);</SCRIPT>
+          </TD>
+          <TD class=plaintext_bold>
+		  		  <select name="wl_basicrate" style="font-size: 8pt">
+                          <!--//<option value="15">All</option>-->
+                          <option value="15"><SCRIPT>dw(str_376);</SCRIPT></option>
+                          <option value="3">1 ~ 2 Mbps&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                          <!--option value="351">All</option-->
+                        </select> 
+					     &nbsp;<!--//(Default: All)-->
+					     <SCRIPT>dw(str_4224);</SCRIPT>
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+             <!--Rate Selection for 802.11g-->
+              <SCRIPT>dw(str_4225);</SCRIPT>
+            	</B> </TD>
+          <TD class=plaintext_bold>
+		  		  <SELECT name="wl_datarate" > 
+						<!--<OPTION value=0>Auto</OPTION>-->
+            <OPTION value=0><SCRIPT>dw(str_377);</SCRIPT></OPTION>
+						<OPTION value=5>6 Mbps</OPTION> 
+            <OPTION value=6>9 Mbps</OPTION> 
+						<OPTION value=7>12 Mbps</OPTION> 
+						<OPTION value=8>18 Mbps</OPTION> 
+						<OPTION value=9>24 Mbps</OPTION> 
+						<OPTION value=10>36 Mbps</OPTION> 
+						<OPTION value=11>48 Mbps</OPTION> 
+						<OPTION value=12>54 Mbps&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</OPTION> </SELECT> &nbsp;<SCRIPT>dw(str_4226);</SCRIPT><!--(Default: Auto)-->
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+             <!--Rate Selection for 802.11n-->
+             <!--&gt;-->
+             <SCRIPT>dw(str_4227);</SCRIPT>
+             </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <SELECT name="wl_n_rate" > 
+						<OPTION value=0><SCRIPT>dw(str_377);</SCRIPT></OPTION>
+						<OPTION value=1>13.5 Mbps</OPTION> 
+            <OPTION value=2>27 Mbps</OPTION> 
+						<OPTION value=3>40.5 Mbps</OPTION> 
+						<OPTION value=4>54 Mbps</OPTION> 
+						<OPTION value=5>81 Mbps</OPTION> 
+						<OPTION value=6>108 Mbps</OPTION> 
+						<OPTION value=7>121.5 Mbps</OPTION> 
+						<OPTION value=8>135 Mbps</OPTION>
+						<OPTION value=9>162 Mbps</OPTION>
+						<OPTION value=10>216 Mbps</OPTION>
+						<OPTION value=11>243 Mbps</OPTION>
+						<OPTION value=12>270 Mbps</OPTION>
+						<OPTION value=13>300 Mbps&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</OPTION> </SELECT> &nbsp;<SCRIPT>dw(str_4226);</SCRIPT>
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw(str_4228);</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <input name="wl_rx_buffer" size="5" maxlength="3" style="font-size: 8pt" value="16">						  
+						  &nbsp;<SCRIPT>dw(str_4229);</SCRIPT>
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw(str_4230);</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <input name="wl_tx_queue" size="5" maxlength="4" style="font-size: 8pt" value="1000">						  
+						  &nbsp;<SCRIPT>dw(str_4231);</SCRIPT>
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw(str_4232);</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <input name="wl_rts" size="5" maxlength="4" style="font-size: 8pt" value="<%nvram_get("wl0_rtsThPeriod");%>">
+						&nbsp;<SCRIPT>dw(str_3030);</SCRIPT>
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw(str_4234);</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <input name="wl_bcn" size="5" maxlength="4" style="font-size: 8pt" value="<%nvram_get("wl0_beaconPeriod");%>">
+		  		  &nbsp;<SCRIPT>dw(str_4235);</SCRIPT>
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw(str_4236);</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <input name="wl_dtim" size="5" maxlength="3" style="font-size: 8pt" value="<%nvram_get("wl0_dtimPeriod");%>">						  
+						  &nbsp;<SCRIPT>dw(str_4237);</SCRIPT>
+		      </TD>
+		    </TR>
+		    
+		    <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw(str_4238);</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <input name="wl_Tx_chain" value="<%nvram_get("wl0_Tx_chain");%>" size="5" maxlength="1" style="font-size: 8pt">						  
+						  &nbsp;<SCRIPT>dw(str_4239);</SCRIPT>
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw(str_4240);</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <input name="wl_Rx_chain" value="<%nvram_get("wl0_Rx_chain");%>" size="5" maxlength="1" style="font-size: 8pt">						  
+						  &nbsp;<SCRIPT>dw(str_4239);</SCRIPT>
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw(str_4241);</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <select name="antenna_config" style="font-size: 8pt">
+						  <option value="0">2x3 (5&7)</option>
+						  <option value="1">2x2 (5&5)</option>
+						  <option value="2">3x3 (7&7)</option>
+						</select> &nbsp;<SCRIPT>dw(str_4242);</SCRIPT>
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw(str_4243);</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <select name="wl_wps_test" style="font-size: 8pt">
+						  <option value="0"><SCRIPT>dw('WPS '+str_1395);</SCRIPT></option>
+						  <option value="1"><SCRIPT>dw('WPS '+str_1392);</SCRIPT></option>
+						  </select> &nbsp;<SCRIPT>dw(str_4244);</SCRIPT>
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw(str_4245);</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <input name="uuid" size="18" maxlength="17" style="font-size: 8pt" value="<%nvram_get("wl0_macaddr");%>">
+						  &nbsp;
+		      </TD>
+		    </TR>
+		    
+		    <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD width=192><B>
+            <SCRIPT>dw(str_4246);</SCRIPT></B></TD>
+          <TD width=340>
+            <input name="green_eth" type="radio" value="1" checked>
+						  <b><SCRIPT>dw(str_317);</SCRIPT></b>
+					      <input name="green_eth" type="radio" value="0">&nbsp;<b><SCRIPT>dw(str_318);</SCRIPT></b>  <SCRIPT>dw(str_4249);</SCRIPT>
+					</TD></TR>
+
+        <TR>
+	
+        <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD width=192></TD>
+          <TD width=340></TD></TR><INPUT type=hidden value=nothing name=nothing> 
+        <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD class=formText width=192>&nbsp;</TD>
+          <TD class=plaintext_bold width=340>&nbsp; </TD></TR>
+        <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD align=middle colSpan=2>
+            <SCRIPT>
+            	dw('<input id="submitBtn_save" type="button" style="{width:160px;}" value="');dw(str_126);dw('"onClick="return Try_Submit();" class="submitBtn">&nbsp;&nbsp;');
+            	dw('<input id="submitBtn_exit" type="button" value="');dw(str_4247);dw('" style="{width:160px;}" class="submitBtn" onClick="Init_Value();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">&nbsp;&nbsp;');
+							dw('<input id="submitBtn_reset" type="button" style="{width:160px;}" value="');dw(str_4248);dw('" onClick="reset_default();" class="submitBtn">');
+			</SCRIPT>
+          </TD></TR></TBODY></TABLE></FORM></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

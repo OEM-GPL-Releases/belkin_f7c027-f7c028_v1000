@@ -1,0 +1,63 @@
+PREFIX?=/usr/local
+BINDIR = ${PREFIX}/sbin
+MANDIR = ${PREFIX}/share/man
+LOCALEDIR = ${PREFIX}/share/locale
+
+SRC = src
+PO = po
+MAN = man
+
+#CFLAGS?= -O2
+
+CFLAGS	+= -s -O -Wall
+CFLAGS  += -I. -I../shared $(PATHNVRAM) -Wall
+LDFLAGS += $(LIBNVRAM)
+#CFLAGS	+=	$(PATHNVRAM)
+#CFLAGS	+=	$(PATHUSER)
+#LDFLAGS	+= $(LIBNVRAM)
+
+#all :   clean dnsmasq
+all:
+
+dnsmasq :
+	$(MAKE) I18N=-DNO_GETTEXT -f ../bld/Makefile -C $(SRC) dnsmasq 
+	$(STRIP) $(SRC)/dnsmasq
+	
+clean :
+#	rm -f *~ $(SRC)/*.mo contrib/*/*~ */*~ $(SRC)/*.pot 
+#	rm -f $(SRC)/*.o $(SRC)/dnsmasq.a $(SRC)/dnsmasq core */core
+
+install : all
+	install -d $(INSTALLDIR)/bin
+	install -d $(INSTALLDIR)/tmp
+	install -d $(INSTALLDIR)/etc
+	install $(SRC)/dnsmasq $(INSTALLDIR)/bin
+	touch $(INSTALLDIR)/tmp/resolv.conf
+	touch $(INSTALLDIR)/tmp/passwd
+	touch $(INSTALLDIR)/tmp/group
+	cd $(INSTALLDIR)/etc && ln -sf ../tmp/resolv.conf resolv.conf && ln -sf ../tmp/passwd passwd && ln -sf ../tmp/group group
+
+install-common :
+	install -d $(DESTDIR)$(BINDIR) -d $(DESTDIR)$(MANDIR)/man8
+	install -m 644 $(MAN)/dnsmasq.8 $(DESTDIR)$(MANDIR)/man8 
+	install -m 755 $(SRC)/dnsmasq $(DESTDIR)$(BINDIR)
+
+all-i18n :
+	$(MAKE) I18N=-DLOCALEDIR='\"$(LOCALEDIR)\"' -f ../bld/Makefile -C $(SRC) dnsmasq
+	cd $(PO); for f in *.po; do \
+		$(MAKE) -f ../bld/Makefile -C ../$(SRC) $${f%.po}.mo; \
+	done
+
+install-i18n : all-i18n install-common
+	cd $(SRC); ../bld/install-mo $(DESTDIR)$(LOCALEDIR)
+	cd $(MAN); ../bld/install-man $(DESTDIR)$(MANDIR)
+
+merge :
+	$(MAKE) I18N=-DLOCALEDIR='\"$(LOCALEDIR)\"' -f ../bld/Makefile -C $(SRC) dnsmasq.pot
+	cd $(PO); for f in *.po; do \
+		msgmerge -U $$f ../$(SRC)/dnsmasq.pot; \
+	done
+
+romfs:
+#	cp $(SRC)/dnsmasq  $(ROMFSDIR)/usr/sbin/dnsmasq
+	cp ./src/dnsmasq  $(ROMFSDIR)/usr/sbin/dnsmasq

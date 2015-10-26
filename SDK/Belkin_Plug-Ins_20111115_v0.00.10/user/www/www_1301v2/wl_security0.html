@@ -1,0 +1,113 @@
+<HTML>
+<HEAD>
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language="JavaScript" src="validate.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_800+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Security';
+var menuSection	='WLAN';
+var menuItem	='Security';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function GURL(x){location=x}
+function logoutF()
+{
+document.tF.logout.value=1;
+document.tF.submit();
+return true;
+}
+
+function Init_Value(){}
+function Try_Submit(){}
+
+function ChangeSecMode(wl_sec_mode)
+{
+	if(wl_sec_mode.value == "0") GURL('wl_security0.html');
+	else if(wl_sec_mode.value == "psk") GURL('wl_wpa.html');	
+	else if(wl_sec_mode.value == "WPA2") GURL('wl_wpa.html');
+	else if(wl_sec_mode.value == "WPA1WPA2") GURL('wl_wpa.html');			
+	else if(wl_sec_mode.value == "128") GURL('wl_128wep.html');	
+	else if(wl_sec_mode.value == "64") GURL('wl_64wep.html');		
+	else if(wl_sec_mode.value == "wpa") GURL('wireless_wpa_radius.html');	
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor="#ffffff" leftMargin="0" topMargin="0" onload="Init_Value();" marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem,isAPmode);
+	showMenu(menuSection,menuItem,isAPmode)
+</SCRIPT>
+<form name="tF" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wl_security0.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="restart" value="wireless">
+<input type="hidden" name="data1" value="wl0_sec_mode">
+
+<input type="hidden" name="wl0_sec_mode" value="none">
+ <TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_800);</SCRIPT>
+ <BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=0 cellPadding=0 width=650 align=left 
+      border=0>
+        <TBODY>
+        <TR>
+          <TD vAlign=top height=410>
+            <TABLE class=copy_1 cellSpacing=10 cellPadding=0 width=600 
+            align=center border=0>
+              <TBODY>
+              <TR>
+                <TD width=166><B>
+                  <SCRIPT>dw(str_1715);</SCRIPT>
+                  </B></TD>
+                <TD align=left colSpan=2>
+					<SELECT onchange="ChangeSecMode(this);" name="wl_sec_mode"> 
+                    <SCRIPT>
+						dw('<option value="0" selected >'+str_318+'</option>');
+						dw('<option value="psk">'+str_802+'</option>');
+						dw('<option value="128">'+str_803+'</option>');
+						dw('<option value="64">'+str_804+'</option>');
+						//dw('<option value="wpa">'+str_805+'</option>');
+					</SCRIPT>
+                  	</SELECT> 
+				</TD></TR>
+              <TR>
+                <TD colSpan=3>
+                  <SCRIPT>dw(str_806);</SCRIPT>
+                  <A class=plaintext_bold 
+                  onclick="window.open('glossary.html#wireless_security','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+                  href="javascript:void(0);"><B><FONT color=#0066FF>
+                  <SCRIPT>dw(str_47);</SCRIPT>
+                  </FONT></B></A></TD></TR>
+              <TR>
+                <TD width=166>&nbsp;</TD>
+                <TD width=174>&nbsp;</TD>
+                <TD width=335>&nbsp;</TD></TR>
+              <TR>
+                <TD width=166>&nbsp;</TD>
+                <TD align=middle colSpan=2>
+                  <SCRIPT>dw('<input id="submitBtn_apply" type="submit" style="{width:160px;}" value="'+str_49+'" class="submitBtn" onclick="Try_Submit();">');</SCRIPT>
+                </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></FORM></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

@@ -1,0 +1,35 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html">
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+</head>
+
+<script language="javascript">
+	
+	
+	function Init_Value()
+	{
+		var f=document.forms[0];
+	}
+</script>
+</head>
+<body bgcolor="#ffffff" text="#000000" onLoad="Init_Value();">
+<form name="adv" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="ver.html">
+<input type="hidden" name="redirect_timer" value="45000">
+<input type="hidden" name="reboot" value="1">
+<input type="hidden" name="data1" value="">
+</form>
+Customer Firmware Version : <%nvram_get("fw_version");%><br>
+Hardware Version          : <%nvram_get("hw_version");%><br>
+Model Name                : <%nvram_get("friendly_name");%><br>
+Model Description         : <%nvram_get("model_name");%><br>
+2.4G SSID                 : <%nvram_get("wl0_ssid");%><br>
+5  G SSID                 : <%nvram_get("wl1_ssid");%><br>
+2.4G wireless MAC         : <%nvram_get("wl0_macaddr");%><br>
+Wan           MAC         : <%nvram_get("wan_mac");%><br>
+5  G wireless MAC         : <%nvram_get("wl1_macaddr");%><br>
+</body>
+</html>

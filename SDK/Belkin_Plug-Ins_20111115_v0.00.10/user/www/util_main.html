@@ -1,0 +1,117 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=Content-Type content="text/html; charset=<%nvram_get("charset");%>">
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_415+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='';
+var menuSection	='Util';
+var menuItem	='';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem,isAPmode);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name)
+</SCRIPT>
+<form name="util_main" action="logout.cgi" method="post">
+<input type="hidden" name="tmp">
+</form>
+ <TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_415);</SCRIPT>
+ <BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD><SPAN class=verdana12>
+      <SCRIPT>dw(str_442);</SCRIPT>
+
+      <UL>
+        <!--SCRIPT>
+	if('eth1' !='')
+	{
+		var strHtml='<li><a href="util_parentalc.html"><b><font color=6464c3> '+um2
+		+'</font></b></a><br>'+um3+um4;
+		document.write(strHtml);
+	}
+</SCRIPT-->
+
+        <LI><A href="util_restart.html">
+        <B><SPAN class=verdana12><SCRIPT>dw(str_32);</SCRIPT></SPAN></B>
+        </A><BR>
+        <SCRIPT>dw(str_447);</SCRIPT>
+        <BR>&nbsp; 
+        <LI><A href="util_restore.html">
+        <B><SPAN class=verdana12><SCRIPT>dw(str_34);</SCRIPT></SPAN></B>
+        </FONT></B></A><BR>
+        <SCRIPT>dw(str_449);</SCRIPT>
+        <BR>&nbsp; 
+        <LI><A href="util_settings.html">
+        <B><SPAN class=verdana12><SCRIPT>dw(str_35);</SCRIPT></SPAN></B>
+        </FONT></B></A><BR>
+        <SCRIPT>dw(str_451);</SCRIPT>
+        <BR>&nbsp; 
+        <LI><A href="util_prev.html">
+        <B><SPAN class=verdana12><SCRIPT>dw(str_36);</SCRIPT></SPAN></B>
+        </FONT></B></A><BR>
+        <SCRIPT>dw(str_527);</SCRIPT>
+        <BR>&nbsp; 
+        <LI><A href="util_update.html">
+        <B><SPAN class=verdana12><SCRIPT>dw(str_37);</SCRIPT></SPAN></B>
+        </FONT></B></A><BR>
+        <SCRIPT>dw(str_455);</SCRIPT>
+        <BR>&nbsp; 
+        <LI>
+        <SCRIPT>
+	var strHtml="";
+	if('1'=='1' )
+	{
+		strHtml='<a href="util_system.html">';
+	}else{
+		strHtml='<a href="utilb_system.html">';
+	}
+	document.write(strHtml);
+</SCRIPT>
+        <B><SPAN class=verdana12><SCRIPT>dw(str_38);</SCRIPT></SPAN></B>
+        </FONT></B></A><BR>
+        <SCRIPT>dw(str_457); 
+	if('1'=='1' )
+	{
+		var strHtml=str_458;
+		document.write(strHtml);
+	}                
+dw(str_459);
+</SCRIPT>
+       
+        <BR>&nbsp;
+        <LI><A href="util_self_healing.html">
+        <B><SPAN class=verdana12><SCRIPT>dw(str_2150);</SCRIPT></SPAN></B>
+        </A><BR>
+        <SCRIPT>dw(str_2154);</SCRIPT>
+        <BR>&nbsp; 
+        
+         </LI></UL></SPAN></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

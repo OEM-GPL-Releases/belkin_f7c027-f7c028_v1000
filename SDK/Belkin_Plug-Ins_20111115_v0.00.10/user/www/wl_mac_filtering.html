@@ -1,0 +1,682 @@
+<HTML>
+<HEAD>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META http-equiv=Pragma content=no-cache>
+<META http-equiv=Content-Type content="text/html; charset=<%nvram_get("charset");%>">
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_104+'</title>';
+dw(strHtml);
+<!--
+
+function d2h(d)
+{
+    return d.toString(16);
+}
+
+function h2d(h)
+{
+    return parseInt(h,16);
+}
+
+var helpItem 	='MAC Address Filtering';
+var menuSection	='Fire';
+var menuItem	='MAC Address Filtering';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+var mac_str_client_in_list = '0' ;
+function disable_btn(){
+	var f = document.forms[0];
+	
+	f.hostAdd1.disabled = true; 
+
+//	alert("token[5]="+token[5]);
+
+	for(var i=1; i<=20; i++)
+	{          
+		if(token[i] == "00:00:00:00:00:00"){
+			//DO nothing
+		}
+		else{
+	//		alert(token[i]);
+			eval("f.delname"+i).disabled = true;		
+		}
+		
+	}
+
+}
+
+function filter_mac_block_submit(f,action){
+	
+	if(action == "add_apply"){
+		if(count >= 3){
+			for (i=1;i<=count-1;i++){
+				if (eval('f.filter_mac_block_form'+i+'.checked'))
+					eval('f.filter_mac_block'+i).value = "1";
+				else
+					eval('f.filter_mac_block'+i).value = "0";
+			}
+		}
+
+		eval('f.filter_mac_block'+count).value = "0";
+	}
+	
+
+	if(action == "apply"){
+		for (i=1;i<=count;i++){
+			if (eval('f.filter_mac_block_form'+i+'.checked'))
+				eval('f.filter_mac_block'+i).value = "1";
+			else
+				eval('f.filter_mac_block'+i).value = "0";
+		}
+	}
+
+	setTimeout("disable_btn()", 1000);
+}
+
+
+function isBlank(s) 
+{
+	for(var i = 0; i < s.length; i++) 
+	{
+		var c = s.charAt(i);
+		if((c !=' ') && (c!='\n') && (c !='\t')) 
+			return false;
+	}
+	return true;
+}
+
+function isHex(s) 
+{
+	var j,x = 0;
+	for(var i = 0; i < s.length; i++) 
+	{
+		var c = s.charAt(i);
+		j = parseInt(c,16);
+		if ((j > -1) && (j  < 16)) 
+		{
+			if(x==1) 
+				return false;
+			x=1;
+		}
+	}
+	return true;
+}
+
+function isNValid(s) 
+{
+	if( isBlank(s) || isHex(s)) 
+		return true;
+	else 
+		return false;
+}
+
+	var x=new Array(
+	"aa",
+	"bb",
+	"cc",
+	"dd",
+	"ee",
+	"11"
+	);
+
+	var newmac='<%get_my_mac();%>';
+	x[0]=newmac.substring(0,2);
+	x[1]=newmac.substring(3,5);
+	x[2]=newmac.substring(6,8);
+	x[3]=newmac.substring(9,11);
+	x[4]=newmac.substring(12,14);
+	x[5]=newmac.substring(15,17);
+	
+	mac_str_client = x[0]+':'+x[1]+':'+x[2]+':'+x[3]+':'+x[4]+':'+x[5] ;
+	mac_str_client.toUpperCase();
+
+function check_mac_address(mac_address, mac_row)
+{
+    var mac_array = new Array(6);
+    mac_array = mac_address.split(":")
+    var f = document.forms[0];
+	var tmp;
+	var i,j;
+    	
+    var MACaddr1 = mac_array[0];
+    var MACaddr2 = mac_array[1];
+    var MACaddr3 = mac_array[2];
+    var MACaddr4 = mac_array[3];
+    var MACaddr5 = mac_array[4];
+    var MACaddr6 = mac_array[5];
+    var mac_prefix_filter = MACaddr1 + MACaddr2 + MACaddr3 + MACaddr4 + MACaddr5;
+
+    var MACaddr6_10 = h2d(MACaddr6);
+    if(mac_prefix_filter.toLowerCase() == '0180c20000')
+    {
+        if((MACaddr6_10 <= 16 && MACaddr6_10 >= 0) || (MACaddr6_10 <= 47 && MACaddr6_10 >= 32))
+        {
+            alert(str_902);
+            return false;
+        }
+    }
+	
+	if(!(isBlank(MACaddr1))||!(isBlank(MACaddr2))||!(isBlank(MACaddr3))|| !(isBlank(MACaddr4))||!(isBlank(MACaddr5))||!(isBlank(MACaddr6)))
+	{
+		if (isNValid(MACaddr1)||isNValid(MACaddr2)||isNValid(MACaddr3) ||isNValid(MACaddr4) ||isNValid(MACaddr5)||isNValid(MACaddr6))
+		{
+			alert(str_115);
+			return false;
+		} 
+		mac_str = MACaddr1 + ':' + MACaddr2 + ':' + MACaddr3 + ':' + MACaddr4 + ':' + MACaddr5 + ':' + MACaddr6;
+ 		
+		if (mac_str.toLowerCase() == 'ff:ff:ff:ff:ff:ff' || mac_str == '00:00:00:00:00:00')
+		{
+			alert(str_902);
+			return false;
+		}
+		
+		mac_str = MACaddr1 + ':' + MACaddr2 + ':' + MACaddr3;
+		
+		if (mac_str.toLowerCase() == '01:00:5e')
+		{
+			alert(str_902);
+			return false;
+		}
+
+		mac_str = MACaddr1+':'+MACaddr2+':'+MACaddr3+':'+MACaddr4+':'+MACaddr5+':'+MACaddr6;
+		mac_str.toUpperCase();
+
+		for(i=1;i<=count;i++)
+		{
+			if(token[i].indexOf(mac_str)!=-1)
+			{
+				alert(str_112+mac_str); 
+				return false;		  
+			}
+		}
+
+		if(count>20) 
+		{
+			alert(str_1238);
+			return false;
+		}
+		//$('#mac_filter_table tr:eq('+mac_row+')').css("background-color", "#CCCCCC");
+		return true;
+	}	 
+	if((isBlank(MACaddr1))&&(isBlank(MACaddr2))&&(isBlank(MACaddr3))&& (isBlank(MACaddr4))&&(isBlank(MACaddr5))&&(isBlank(MACaddr6)))
+	{
+        	alert(str_115);
+        	return false;
+     }
+	alert(str_115);
+	return false;
+}
+
+function Try_Submit() 
+{
+	var f = document.forms[0];
+	
+	if (f.mac_mode_check.checked)
+		f.mac_filter_enabled.value = 1;
+	else
+		f.mac_filter_enabled.value = 0;
+	
+	if (f.mac_mode_check.checked){
+		for (i=1;i<=20;i++)
+		{
+			if (eval('f.filter_mac'+i+'.value') == '00:00:00:00:00:00' || eval('f.filter_mac'+i+'.value') == '')
+			{
+				mac_str_client_in_list = '0' ;
+				for(j = 1 ; j <= i ; j++){
+					if(eval('f.filter_mac'+j+'.value') == mac_str_client){
+						mac_str_client_in_list = '1';
+						
+					}
+					
+				}
+				
+				if(mac_str_client_in_list == '0'){
+					eval('f.filter_mac'+i+'.value = mac_str_client;');
+					eval('f.filter_mac_block'+i+'.value = "0";');
+					break;
+				}
+			}
+		}
+	}
+	else{
+	
+		count-- ;
+	
+	}
+
+
+
+	filter_mac_block_submit(f,"apply");
+	
+	f.hostAdd1.disabled = true; 
+	return true;
+}
+
+function Try_Del(x) 
+{ 
+	var f = document.forms[0];
+	
+	eval('f.filter_mac'+x).value = eval('f.filter_mac'+count).value ;
+	eval('f.filter_mac'+count).value = "00:00:00:00:00:00";
+
+	eval('f.filter_mac_block'+x).value = eval('f.filter_mac_block'+count).value ;
+	eval('f.filter_mac_block'+count).value = "";
+	
+	if (f.mac_mode_check.checked)
+		f.mac_filter_enabled.value = 1;
+	else
+		f.mac_filter_enabled.value = 0;
+	
+//	f.data1.value="mac_filter_enabled filter_mac" + x;
+	f.reboot.value=0;
+	return true;
+}
+function macconnetstate(x) 
+{ 
+document.mac_form.stateindex.value = x;
+} 
+
+
+function Init_Value()
+{
+	var f = document.forms[0];
+	var mac_mode='<%nvram_get("mac_filter_enabled");%>';
+	
+	if(mac_mode=='1') 
+		f.mac_mode_check.checked=true;
+	else 
+		f.mac_mode_check.checked=false;
+	
+	f.MACaddr1.value='';
+	f.MACaddr2.value='';
+	f.MACaddr3.value='';
+	f.MACaddr4.value='';
+	f.MACaddr5.value='';
+	f.MACaddr6.value='';
+
+	f.hostAdd1.disabled = false; 
+	
+	var block_checked=new Array(21);
+	block[1]='<%nvram_get("filter_mac_block1");%>';
+	block[2]='<%nvram_get("filter_mac_block2");%>';
+	block[3]='<%nvram_get("filter_mac_block3");%>';
+	block[4]='<%nvram_get("filter_mac_block4");%>';
+	block[5]='<%nvram_get("filter_mac_block5");%>';
+	block[6]='<%nvram_get("filter_mac_block6");%>';
+	block[7]='<%nvram_get("filter_mac_block7");%>';
+	block[8]='<%nvram_get("filter_mac_block8");%>';
+	block[9]='<%nvram_get("filter_mac_block9");%>';
+	block[10]='<%nvram_get("filter_mac_block10");%>';
+	block[11]='<%nvram_get("filter_mac_block11");%>';
+	block[12]='<%nvram_get("filter_mac_block12");%>';
+	block[13]='<%nvram_get("filter_mac_block13");%>';
+	block[14]='<%nvram_get("filter_mac_block14");%>';
+	block[15]='<%nvram_get("filter_mac_block15");%>';
+	block[16]='<%nvram_get("filter_mac_block16");%>';
+	block[17]='<%nvram_get("filter_mac_block17");%>';
+	block[18]='<%nvram_get("filter_mac_block18");%>';
+	block[19]='<%nvram_get("filter_mac_block19");%>';
+	block[20]='<%nvram_get("filter_mac_block20");%>';
+
+	for(i=1;i<=20;i++){
+		if(block[i] != ""){
+			if(block[i] == "1"){
+				eval("f.filter_mac_block_form"+i).checked = true ;
+			}
+			else{
+				eval("f.filter_mac_block_form"+i).checked = false ;
+			}
+		}
+		else{
+			break ;
+		}
+		
+	}
+
+			if(count==20)
+      {
+      f.MACaddr1.disabled = true;
+      f.MACaddr2.disabled = true;
+      f.MACaddr3.disabled = true;
+      f.MACaddr4.disabled = true;
+      f.MACaddr5.disabled = true;
+      f.MACaddr6.disabled = true;
+      f.hostAdd1.disabled = true;
+      }	
+
+}
+//-->
+$(document).ready(function () {
+    $('.mac_del_button').val('Delete');
+    $('.submitBtn_add').val(str_113);
+});
+
+</SCRIPT>
+
+</HEAD>
+<BODY bgColor="#ffffff" leftMargin="0" topMargin="0" marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem,isAPmode);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name)
+</SCRIPT>
+<FORM id="mac_form" name="mac_form" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wl_mac_filtering.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="restart" value="firewall">
+<input type="hidden" name="data1" 
+value="mac_filter_enabled 
+       filter_mac1 filter_mac2 filter_mac3 filter_mac4 filter_mac5 
+       filter_mac6 filter_mac7 filter_mac8 filter_mac9 filter_mac10 
+	   filter_mac11 filter_mac12 filter_mac13 filter_mac14 filter_mac15 
+	   filter_mac16 filter_mac17 filter_mac18 filter_mac19 filter_mac20 
+       filter_mac_block1 filter_mac_block2 filter_mac_block3 filter_mac_block4 filter_mac_block5 
+       filter_mac_block6 filter_mac_block7 filter_mac_block8 filter_mac_block9 filter_mac_block10 
+	   filter_mac_block11 filter_mac_block12 filter_mac_block13 filter_mac_block14 filter_mac_block15 
+	   filter_mac_block16 filter_mac_block17 filter_mac_block18 filter_mac_block19 filter_mac_block20 ">
+
+<input type="hidden" name="mac_filter_enabled">
+<input type="hidden" name="filter_mac1" value='<%nvram_get("filter_mac1");%>'>
+<input type="hidden" name="filter_mac2" value='<%nvram_get("filter_mac2");%>'>
+<input type="hidden" name="filter_mac3" value='<%nvram_get("filter_mac3");%>'>
+<input type="hidden" name="filter_mac4" value='<%nvram_get("filter_mac4");%>'>
+<input type="hidden" name="filter_mac5" value='<%nvram_get("filter_mac5");%>'>
+<input type="hidden" name="filter_mac6" value='<%nvram_get("filter_mac6");%>'>
+<input type="hidden" name="filter_mac7" value='<%nvram_get("filter_mac7");%>'>
+<input type="hidden" name="filter_mac8" value='<%nvram_get("filter_mac8");%>'>
+<input type="hidden" name="filter_mac9" value='<%nvram_get("filter_mac9");%>'>
+<input type="hidden" name="filter_mac10" value='<%nvram_get("filter_mac10");%>'>
+<input type="hidden" name="filter_mac11" value='<%nvram_get("filter_mac11");%>'>
+<input type="hidden" name="filter_mac12" value='<%nvram_get("filter_mac12");%>'>
+<input type="hidden" name="filter_mac13" value='<%nvram_get("filter_mac13");%>'>
+<input type="hidden" name="filter_mac14" value='<%nvram_get("filter_mac14");%>'>
+<input type="hidden" name="filter_mac15" value='<%nvram_get("filter_mac15");%>'>
+<input type="hidden" name="filter_mac16" value='<%nvram_get("filter_mac16");%>'>
+<input type="hidden" name="filter_mac17" value='<%nvram_get("filter_mac17");%>'>
+<input type="hidden" name="filter_mac18" value='<%nvram_get("filter_mac18");%>'>
+<input type="hidden" name="filter_mac19" value='<%nvram_get("filter_mac19");%>'>
+<input type="hidden" name="filter_mac20" value='<%nvram_get("filter_mac20");%>'>
+
+<input type="hidden" name="filter_mac_block1" value='<%nvram_get("filter_mac_block1");%>'>
+<input type="hidden" name="filter_mac_block2" value='<%nvram_get("filter_mac_block2");%>'>
+<input type="hidden" name="filter_mac_block3" value='<%nvram_get("filter_mac_block3");%>'>
+<input type="hidden" name="filter_mac_block4" value='<%nvram_get("filter_mac_block4");%>'>
+<input type="hidden" name="filter_mac_block5" value='<%nvram_get("filter_mac_block5");%>'>
+<input type="hidden" name="filter_mac_block6" value='<%nvram_get("filter_mac_block6");%>'>
+<input type="hidden" name="filter_mac_block7" value='<%nvram_get("filter_mac_block7");%>'>
+<input type="hidden" name="filter_mac_block8" value='<%nvram_get("filter_mac_block8");%>'>
+<input type="hidden" name="filter_mac_block9" value='<%nvram_get("filter_mac_block9");%>'>
+<input type="hidden" name="filter_mac_block10" value='<%nvram_get("filter_mac_block10");%>'>
+<input type="hidden" name="filter_mac_block11" value='<%nvram_get("filter_mac_block11");%>'>
+<input type="hidden" name="filter_mac_block12" value='<%nvram_get("filter_mac_block12");%>'>
+<input type="hidden" name="filter_mac_block13" value='<%nvram_get("filter_mac_block13");%>'>
+<input type="hidden" name="filter_mac_block14" value='<%nvram_get("filter_mac_block14");%>'>
+<input type="hidden" name="filter_mac_block15" value='<%nvram_get("filter_mac_block15");%>'>
+<input type="hidden" name="filter_mac_block16" value='<%nvram_get("filter_mac_block16");%>'>
+<input type="hidden" name="filter_mac_block17" value='<%nvram_get("filter_mac_block17");%>'>
+<input type="hidden" name="filter_mac_block18" value='<%nvram_get("filter_mac_block18");%>'>
+<input type="hidden" name="filter_mac_block19" value='<%nvram_get("filter_mac_block19");%>'>
+<input type="hidden" name="filter_mac_block20" value='<%nvram_get("filter_mac_block20");%>'>
+
+
+
+<TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_104);</SCRIPT><BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=36>&nbsp;</TD>
+    <TD colSpan=2>
+      <SCRIPT>dw(str_105);</SCRIPT>&nbsp;
+	  <A onclick="window.open('glossary.html#wireless_mac_ctrl','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" href="javascript:void(0);"> 
+	  <B><FONT color=#0066FF>
+      <SCRIPT>dw(str_47);</SCRIPT>
+      </FONT></B></A>
+	 </TD>
+  </TR>
+  <TR>
+    <TD width=36>&nbsp;</TD>
+    <TD>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	<B>
+    <SCRIPT>dw(str_106);</SCRIPT>
+      </B> <INPUT type="checkbox" name="mac_mode_check"></TD>
+      
+    <TD>&nbsp;</TD></TR></TBODY></TABLE><BR>
+<TABLE class=copy_1 cellSpacing=5 cellPadding=0 width=500 border=0>
+  <TBODY>
+  <TR>
+    <TD width=19>&nbsp;</TD>
+    <TD colSpan=2>
+      <TABLE id="mac_filter_table" class=copy_1 cellSpacing=1 cellPadding=1 width=433 align=center border=0>
+        <TBODY>
+        <TR>
+        <TH colspan=4 align="left"><SCRIPT>dw(str_107);</SCRIPT> >
+        </TH>
+        </TR>
+
+		        
+        <TR bgColor=#666666>
+          <TH width="10%"><SCRIPT>dw(str_108);</SCRIPT></TH>
+          <TH width="58%"><FONT color=#ffffff>
+            <SCRIPT>dw(str_110);</SCRIPT>
+            </FONT></TH>
+          <TH width="22%">&nbsp;</TH></TR>
+        <TR align=middle bgColor=#CCCCCC>
+          <td>
+            <INPUT type="checkbox" name="filter_mac_block[]">
+          </td>
+
+          <TD>
+                <INPUT class="mac" maxLength=2 size=2 name="MACaddr1[]">&nbsp;-&nbsp;<INPUT class="mac" maxLength=2 size=2 name="MACaddr2[]">&nbsp;-&nbsp;<INPUT class="mac" maxLength=2 size=2 name="MACaddr3[]">&nbsp;-&nbsp;<INPUT class="mac" maxLength=2 size=2 name="MACaddr4[]">&nbsp;-&nbsp;<INPUT class="mac" maxLength=2 size=2 name="MACaddr5[]">&nbsp;-&nbsp;<INPUT class="mac" maxLength=2 size=2 name="MACaddr6[]">
+          </TD>
+          <TD>
+              <input id="mac_add_button" type="button" name="submitBtn_add" value="" style="{width:100px;}" class="submitBtn_add">
+          </TD>
+        </TR>
+        </TBODY></TABLE></TD></TR>
+  <TR>
+    <TD width=19>&nbsp;</TD>
+    <TD colSpan=2>&nbsp;</TD></TR>
+  <TR>
+    <TD width=19>&nbsp;</TD>
+    <TD colSpan=2>
+      <DIV align=right>
+      	<SCRIPT>
+	  		strHtml='<input id="Mac_apply_clear" type="button" value="'+str_48+'" style="{width:160px;}" class="submitBtn" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">';
+            dw(strHtml);
+			strHtml='<input id="Mac_apply_button" type="button" style="{width:160px;}" value="'+str_49+'" class="submitBtn">';
+			dw(strHtml);
+		</SCRIPT>
+      </DIV></TD></TR></TBODY></TABLE></TD></TR></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</FORM>
+<script>
+var total_count=2;
+
+$('#Mac_apply_button').click(function(e){
+    var block_array = document.getElementsByName("filter_mac_block[]");
+    var MACaddr1_array = document.getElementsByName("MACaddr1[]");
+    var MACaddr2_array = document.getElementsByName("MACaddr2[]");
+    var MACaddr3_array = document.getElementsByName("MACaddr3[]");
+    var MACaddr4_array = document.getElementsByName("MACaddr4[]");
+    var MACaddr5_array = document.getElementsByName("MACaddr5[]");
+    var MACaddr6_array = document.getElementsByName("MACaddr6[]");
+    var i = 0;
+    var k = 0;
+    var mac_address = "";
+    var block_checked = "";
+    var submit = "";
+    var mac_length = $('input[name=MACaddr1[]]').length;
+    for(i=1;i<mac_length;i++)
+    {
+        k = i;
+        block_checked = (block_array[k].checked) ? "1" : "0";
+        mac_address = MACaddr1_array[k].value + ":" + MACaddr2_array[k].value + ":" + MACaddr3_array[k].value + ":" + MACaddr4_array[k].value + ":" + MACaddr5_array[k].value + ":" + MACaddr6_array[k].value;
+        $("input[name=filter_mac"+k+"]").val(mac_address);
+        $("input[name=filter_mac_block"+k+"]").val(block_checked);
+    }
+    for(i=mac_length;i<=20;i++)
+    {
+        k = i;
+        mac_address = "00:00:00:00:00:00";
+        $("input[name=filter_mac"+k+"]").val(mac_address);
+        $("input[name=filter_mac_block"+k+"]").val("0");
+    }
+    if($("input[name=mac_mode_check]").attr("checked"))
+    {
+        $("input[name=mac_filter_enabled]").val("1");
+    }
+    else
+    {
+        $("input[name=mac_filter_enabled]").val("0");
+    }
+    $('.mac_del_button').attr("disabled", true);
+    $('#mac_add_button').attr("disabled", true);
+    $('#mac_form').submit();
+});
+
+$('#Mac_apply_clear').click(function(e){
+    window.location.reload();
+});
+$('#mac_add_button').click(function(e){
+    var block_array = document.getElementsByName("filter_mac_block[]");
+    var MACaddr1_array = document.getElementsByName("MACaddr1[]");
+    var MACaddr2_array = document.getElementsByName("MACaddr2[]");
+    var MACaddr3_array = document.getElementsByName("MACaddr3[]");
+    var MACaddr4_array = document.getElementsByName("MACaddr4[]");
+    var MACaddr5_array = document.getElementsByName("MACaddr5[]");
+    var MACaddr6_array = document.getElementsByName("MACaddr6[]");
+    var mac_address = MACaddr1_array[0].value + ":" + MACaddr2_array[0].value + ":" + MACaddr3_array[0].value + ":" + MACaddr4_array[0].value + ":" + MACaddr5_array[0].value + ":" + MACaddr6_array[0].value;
+    var submit = check_mac_address(mac_address, "0");
+    if(!submit)
+        return false;
+        
+    if (total_count > 20)
+     {
+      	alert(str_1238);
+			  return false;
+     }
+    else
+     {       
+        add_mac_row(mac_address, 2, total_count);
+        total_count++;
+     }
+
+});
+$('.mac_del_button').live("click" ,function(){
+    $(this).parent().parent().remove();
+    total_count--;
+});
+
+function add_mac_row(mac_address, block, count)
+{
+    var mac_array = new Array(6);
+    mac_array = mac_address.split(":");
+
+    var MACaddr1 = mac_array[0];
+    var MACaddr2 = mac_array[1];
+    var MACaddr3 = mac_array[2];
+    var MACaddr4 = mac_array[3];
+    var MACaddr5 = mac_array[4];
+    var MACaddr6 = mac_array[5];
+    var checked = (block == "1") ? 'checked="checked"' : '';
+    var mac = MACaddr1 + ":" + MACaddr2 + ":" + MACaddr3 + ":" + MACaddr4 + ":" + MACaddr5 + ":" + MACaddr6;
+    if (count==1)
+     {
+        $("#mac_filter_table").append('<tr align=middle bgColor=#CCCCCC><td><INPUT type="checkbox" name="filter_mac_block[]" '+checked+'></td><td>'+mac+'<INPUT type="hidden" class="mac" maxLength=2 size=2 name="MACaddr1[]" value="'+MACaddr1+'"><INPUT type="hidden" class="mac" maxLength=2 size=2 name="MACaddr2[]" value="'+MACaddr2+'"><INPUT type="hidden" class="mac" maxLength=2 size=2 name="MACaddr3[]" value="'+MACaddr3+'"><INPUT type="hidden" class="mac" maxLength=2 size=2 name="MACaddr4[]" value="'+MACaddr4+'"><INPUT type="hidden" class="mac" maxLength=2 size=2 name="MACaddr5[]" value="'+MACaddr5+'"><INPUT type="hidden" class="mac" maxLength=2 size=2 name="MACaddr6[]" value="'+MACaddr6+'"></td><td><input type="button" name="del_button[]" value="Delete" class="first_mac_button"></td></tr>');     
+     }
+    else
+     {
+        $("#mac_filter_table").append('<tr align=middle bgColor=#CCCCCC><td><INPUT type="checkbox" name="filter_mac_block[]" '+checked+'></td><td>'+mac+'<INPUT type="hidden" class="mac" maxLength=2 size=2 name="MACaddr1[]" value="'+MACaddr1+'"><INPUT type="hidden" class="mac" maxLength=2 size=2 name="MACaddr2[]" value="'+MACaddr2+'"><INPUT type="hidden" class="mac" maxLength=2 size=2 name="MACaddr3[]" value="'+MACaddr3+'"><INPUT type="hidden" class="mac" maxLength=2 size=2 name="MACaddr4[]" value="'+MACaddr4+'"><INPUT type="hidden" class="mac" maxLength=2 size=2 name="MACaddr5[]" value="'+MACaddr5+'"><INPUT type="hidden" class="mac" maxLength=2 size=2 name="MACaddr6[]" value="'+MACaddr6+'"></td><td><input type="button" name="del_button[]" value="Delete" class="mac_del_button"></td></tr>');
+     }
+
+}
+
+count=0;
+var token= new Array(21);
+var token_checked=new Array(21);
+token[1]='<%nvram_get("filter_mac1");%>';
+token[2]='<%nvram_get("filter_mac2");%>';
+token[3]='<%nvram_get("filter_mac3");%>';
+token[4]='<%nvram_get("filter_mac4");%>';
+token[5]='<%nvram_get("filter_mac5");%>';
+token[6]='<%nvram_get("filter_mac6");%>';
+token[7]='<%nvram_get("filter_mac7");%>';
+token[8]='<%nvram_get("filter_mac8");%>';
+token[9]='<%nvram_get("filter_mac9");%>';
+token[10]='<%nvram_get("filter_mac10");%>';
+token[11]='<%nvram_get("filter_mac11");%>';
+token[12]='<%nvram_get("filter_mac12");%>';
+token[13]='<%nvram_get("filter_mac13");%>';
+token[14]='<%nvram_get("filter_mac14");%>';
+token[15]='<%nvram_get("filter_mac15");%>';
+token[16]='<%nvram_get("filter_mac16");%>';
+token[17]='<%nvram_get("filter_mac17");%>';
+token[18]='<%nvram_get("filter_mac18");%>';
+token[19]='<%nvram_get("filter_mac19");%>';
+token[20]='<%nvram_get("filter_mac20");%>';
+
+var block= new Array(21);
+var block_checked=new Array(21);
+block[1]='<%nvram_get("filter_mac_block1");%>';
+block[2]='<%nvram_get("filter_mac_block2");%>';
+block[3]='<%nvram_get("filter_mac_block3");%>';
+block[4]='<%nvram_get("filter_mac_block4");%>';
+block[5]='<%nvram_get("filter_mac_block5");%>';
+block[6]='<%nvram_get("filter_mac_block6");%>';
+block[7]='<%nvram_get("filter_mac_block7");%>';
+block[8]='<%nvram_get("filter_mac_block8");%>';
+block[9]='<%nvram_get("filter_mac_block9");%>';
+block[10]='<%nvram_get("filter_mac_block10");%>';
+block[11]='<%nvram_get("filter_mac_block11");%>';
+block[12]='<%nvram_get("filter_mac_block12");%>';
+block[13]='<%nvram_get("filter_mac_block13");%>';
+block[14]='<%nvram_get("filter_mac_block14");%>';
+block[15]='<%nvram_get("filter_mac_block15");%>';
+block[16]='<%nvram_get("filter_mac_block16");%>';
+block[17]='<%nvram_get("filter_mac_block17");%>';
+block[18]='<%nvram_get("filter_mac_block18");%>';
+block[19]='<%nvram_get("filter_mac_block19");%>';
+block[20]='<%nvram_get("filter_mac_block20");%>';
+
+
+var newmac='<%get_my_mac();%>';
+
+add_mac_row(newmac, 0, 1);
+
+for(var i=2; i<=20; i++)
+{
+    if (token[i] == '00:00:00:00:00:00')
+        continue;
+    add_mac_row(token[i], block[i], i);
+    total_count++;
+}
+var mac_mode = '<%nvram_get("mac_filter_enabled");%>';
+var checked = (mac_mode == '1') ? true : false;
+$("input[name=mac_mode_check]").attr("checked", checked);
+$("input[name=filter_mac_block[]]:eq(1)").attr("disabled", true);
+$("input[name=filter_mac_block[]]:eq(1)").attr("disabled", true);
+$("input[name=del_button[]]:eq(0)").attr("disabled", true);
+
+</script>
+
+</BODY></HTML>

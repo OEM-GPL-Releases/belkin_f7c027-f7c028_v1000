@@ -1,0 +1,740 @@
+<HTML><HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=Content-Type content=text/html; charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_786+'</title>';
+document.write(strHtml);
+
+var ns4 = (document.layers)? true:false ;
+var ie4 = (document.all)? true:false;
+var ie5  = (document.all && document.getElementById);
+var ns6 = (!document.all && document.getElementById);
+var cc='ppp0';
+var helpItem 	='Channel and SSID';
+var menuSection	='WLAN';
+var menuItem	='Channel and SSID';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+<%showCurrentChannel();%>
+
+var f=document.wlanset;
+
+function write2_4Channel()
+{
+	var strHtml='';	
+	var channels = <%nvram_get("channels");%>;
+	strHtml=
+	'<select name=\"wl0_channel\" id=\"wl0_channel\" onchange=\"ext2_4chn_change();\">'
+	+'  <option value="0" >Auto</option>';
+	
+	for( i = 1 ; i <= channels ; i++ )
+	{
+		strHtml += '  <option value="'+i+'" >'+i+'</option>';
+	}
+	strHtml	=	strHtml +'</select>';
+	document.writeln(strHtml);
+}
+
+
+
+function Show_Wireless_Channel()
+{
+  var f=document.wlanset;
+	var strHtml='';	
+	strHtml='<select name=\"wl1_channel\" id="\wl1_channel\" onchange=\"Change_Extension_Channel();\">'
+	+'  <option value=\"0\" >Auto</option>';
+	
+	for(var i = 36 ; i <= 49 ; i=i+4 )
+	{
+		strHtml += '  <option value=\"'+i+'\" >'+i+'</option>';
+	}
+	for(var j = 149 ; j <= 166 ; j=j+4 )
+	{
+		strHtml += '  <option value=\"'+j+'\" >'+j+'</option>';
+	}
+	strHtml	=	strHtml +'</select>';
+	document.write(strHtml);
+} 
+
+function ext2_4chn()
+{
+	var nextcha = '<%nvram_get("wl0_nextcha");%>';
+	var channels = '<%nvram_get("channels");%>';
+  var current_channel = $('#wl0_channel').attr("selectedIndex");
+  var strHtml='<select name=\"wl0_nextcha_menu\" id=\"wl0_nextcha_menu\">';
+  if(current_channel == 0)
+  	strHtml += '  <option value="0" >Auto</option>';
+  else
+  {
+		for(var g = 1 ; g <= channels ; g++ )
+		{
+			if( nextcha == 0 )
+			{
+				if( g - 4==current_channel )
+					strHtml += '  <option value=\"'+g+'\" >'+g+'</option>';
+				else if( g==current_channel-4 )
+					strHtml += '  <option value=\"'+g+'\" selected>'+g+'</option>';
+			}
+			else
+			{
+				if( g - 4==current_channel )
+					strHtml += '  <option value=\"'+g+'\" selected >'+g+'</option>';
+				else if( g==current_channel-4 )
+					strHtml += '  <option value=\"'+g+'\" >'+g+'</option>';
+			}
+		}
+	}
+	strHtml	=	strHtml +'</select>';
+	//document.write(strHtml);
+	$('#ext2_4channel').html(strHtml);
+	
+	change2_4extSelect();
+}
+
+function Show_Extension_Channel()
+{
+  var f=document.wlanset;
+	var strHtml='';	
+	strHtml='<select name=\"wl1_nextcha\" id=\"wl1_nextcha\">'
+	+'  <option value="0" >Auto</option>';
+	
+	for(var k = 36 ; k <= 49 ; k=k+4 )
+	{
+		strHtml += '  <option value=\"'+k+'\" >'+k+'</option>';
+	}
+	for(var g = 149 ; g <= 166 ; g=g+4 )
+	{
+		strHtml += '  <option value=\"'+g+'\" >'+g+'</option>';
+	}
+	strHtml	=	strHtml +'</select>';
+	document.write(strHtml);
+}  
+
+function ext2_4chn_change()
+{
+
+	var channels = '<%nvram_get("channels");%>';
+	var f = document.forms[0];
+	var cnt = 0;
+  
+//  if ($('#wl0_channel').attr("selectedIndex")==0)	
+//      $('#wl0_nextcha').attr("selectedIndex", $('#wl0_channel').attr("selectedIndex"));
+//  else if($('#wl0_channel').attr("selectedIndex")<=4)
+//       $('#wl0_nextcha').attr("selectedIndex", $('#wl0_channel').attr("selectedIndex")+4);   
+//  else if($('#wl0_channel').attr("selectedIndex")>=5)
+//  	$('#wl0_nextcha').attr("selectedIndex", $('#wl0_channel').attr("selectedIndex")-4);
+	ext2_4chn();
+
+}
+ 
+
+function  Change_Extension_Channel ()
+{
+       
+   if ($('#wl1_channel').attr("selectedIndex")==0 )  
+       $('#wl1_nextcha').attr("selectedIndex", $('#wl1_channel').attr("selectedIndex"));
+  else if ($('#wl1_channel').attr("selectedIndex")==1)
+       $('#wl1_nextcha').attr("selectedIndex", $('#wl1_channel').attr("selectedIndex")+1);
+  else if ($('#wl1_channel').attr("selectedIndex")==2)
+       $('#wl1_nextcha').attr("selectedIndex", $('#wl1_channel').attr("selectedIndex")-1);
+  else if ($('#wl1_channel').attr("selectedIndex")==3)
+       $('#wl1_nextcha').attr("selectedIndex",  $('#wl1_channel').attr("selectedIndex")+1);
+  else if ($('#wl1_channel').attr("selectedIndex")==4)
+       $('#wl1_nextcha').attr("selectedIndex", $('#wl1_channel').attr("selectedIndex")-1);
+  else if ($('#wl1_channel').attr("selectedIndex")==5)
+       $('#wl1_nextcha').attr("selectedIndex", $('#wl1_channel').attr("selectedIndex")+1);
+  else if ($('#wl1_channel').attr("selectedIndex")==6)
+       $('#wl1_nextcha').attr("selectedIndex", $('#wl1_channel').attr("selectedIndex")-1);
+  else if ($('#wl1_channel').attr("selectedIndex")==7)
+       $('#wl1_nextcha').attr("selectedIndex",  $('#wl1_channel').attr("selectedIndex")+1);
+  else if ($('#wl1_channel').attr("selectedIndex")==8)
+       $('#wl1_nextcha').attr("selectedIndex", $('#wl1_channel').attr("selectedIndex")-1);
+  else if ($('#wl1_channel').attr("selectedIndex")==9)
+       $('#wl1_nextcha').attr("selectedIndex", $('#wl1_channel').attr("selectedIndex")-1);
+}
+
+function Change2_4nbw()
+{
+  if  ($('#wl0_mode').attr("selectedIndex")==0)
+   {
+        $('#wl0_ssid').attr("disabled",true);
+        $('#wl0_channel').attr("disabled",true);
+        $('#wl0_ssid_bcast').attr("disabled",true);
+        $('#wl0_ctsprotect').attr("disabled",true);
+        $('#wl0_nbw').attr("disabled",true);
+        $('#wl0_wmm').attr("disabled",true);
+   }
+   else
+    {
+           $('#wl0_nbw').attr("disabled", false);
+           $('#wl0_ssid').attr("disabled",false);
+           $('#wl0_channel').attr("disabled",false);
+           $('#wl0_ssid_bcast').attr("disabled",false);
+           $('#wl0_ctsprotect').attr("disabled",false);
+           $('#wl0_wmm').attr("disabled",false); 
+    }
+   
+       if ($('#wl0_mode').attr("selectedIndex")==2 || $('#wl0_mode').attr("selectedIndex")==3 )
+           $('#wl0_nbw').attr("disabled",false);
+       else
+           $('#wl0_nbw').attr("disabled",true); 
+    
+    change2_4extSelect();
+}
+
+function change2_4extSelect()
+{
+   if ($('#wl0_nbw').val()==1)
+    {
+       if  ($('#wl0_mode').attr("selectedIndex")==2  || $('#wl0_mode').attr("selectedIndex")==3 )
+         $('#wl0_nextcha_menu').attr("disabled", false);
+       else
+         $('#wl0_nextcha_menu').attr("disabled", true);   	  
+    }
+  else
+   {
+       $('#wl0_nextcha_menu').attr("disabled", true);   	  
+   }
+}
+
+
+function Change_nbw()
+{  
+   if  ($('#wl1_mode').attr("selectedIndex")==0)
+   {
+        $('#wl1_ssid').attr("disabled",true);
+        $('#wl1_channel').attr("disabled",true);
+        $('#wl1_ssid_bcast').attr("disabled",true);
+        $('#wl1_ctsprotect').attr("disabled",true);
+        $('#wl1_nbw').attr("disabled",true);
+        $('#wl1_wmm').attr("disabled",true);
+   }
+   else
+    {
+           $('#wl1_nbw').attr("disabled", false);
+           $('#wl1_ssid').attr("disabled",false);
+           $('#wl1_channel').attr("disabled",false);
+           $('#wl1_ssid_bcast').attr("disabled",false);
+           $('#wl1_ctsprotect').attr("disabled",false);
+           $('#wl1_wmm').attr("disabled",false); 
+    }
+    
+       if ($('#wl1_mode').attr("selectedIndex")==2 || $('#wl1_mode').attr("selectedIndex")==3 )         
+           $('#wl1_nbw').attr("disabled",false);          
+       else
+           $('#wl1_nbw').attr("disabled",true);
+}
+
+
+function isBlank(s) 
+{
+	for(var i = 0; i < s.length; i++) {
+		var c = s.charAt(i);
+		if((c !=' ') && (c!='\n') && (c !='\t')) 
+			return false;
+	}
+	return true;
+}
+
+
+
+function Try_Submit()  
+{ 
+	var f=document.wlanset;
+  /* for 2.4GHz  */
+    if ($('#wl0_mode').val() != 3)
+    {        
+        if(isBlank($('#wl0_ssid').val())) 
+     	{
+    	   alert(str_1201);
+    		  $('#wl0_ssid').focus();
+    		return false;
+     	}
+    
+      for(var i=0 ; i < $('#wl0_ssid').val().length ; i++)
+    	{
+     		var token= $('#wl0_ssid').val().charAt(i);
+     		if(token=='`' || token=='~' || token=='!' || token=='@' || token=='#'
+     		|| token=='$' || token=='%' || token=='^' || token=='&' || token=='*'
+     		|| token=='(' || token==')' || token=='=' || token=='[' || token==','
+     		|| token==']' || token=='{' || token=='}' || token=='\\' || token=='|'
+     		|| token==';' || token==':' || token=='\'' || token=='\"' || token=='<'
+     		|| token=='>' || token=='/' || token=='?'  || token=='-' || token==' ')
+     		{
+    			alert(str_1268);
+    			return false;
+     		}	 
+    	}    	  
+    }
+    
+    
+   	if($('#wl0_channel').val()=='0')
+    	  $('#wl0_autoChannel').val('1');
+    else
+    	  $('#wl0_autoChannel').val('0');
+    		
+    	
+    	if( $('#wl0_ssid_bcast').attr("checked"))
+    	     $('#wl0_ssid_bcast_enabled').val('0');
+     	else
+    	     $('#wl0_ssid_bcast_enabled').val('1'); 
+    
+    // for ext channel select
+    var selected_channel = $('#wl0_channel').val();
+    //alert("selected_channel="+selected_channel+" ; nextcha_menu="+$('#wl0_nextcha_menu').val());
+    if( selected_channel > 0 )
+    {
+    	var ext_cha = $('#wl0_nextcha_menu').val();
+    	if( ext_cha-1 >= selected_channel-1 )
+    		f.wl0_nextcha.value = 1;
+    	else f.wl0_nextcha.value = 0;
+    }
+  	else f.wl0_nextcha.value = 0;
+    //alert("ext_channel="+f.wl0_nextcha.value );
+    
+  //Off
+  if ($('#wl0_mode').val() == '3')
+    $('#wl0_enabled').val('0');    
+	else if ($('#wl0_mode').val() == '6' || $('#wl0_mode').val() == '9') // n or bgn -> no WPA-PSK/TKIP support 20100813
+	{
+		//alert( "2.4G before="+$('#wl0_sec_mode').val()+", enc="+$('#wl0_wpaenc').val() );
+    $('#wl0_enabled').val('1');
+    if( $('#wl0_sec_mode').val() == 'psk' )
+    {
+    	$('#wl0_wpaenc').val('2');
+      $('#wl0_sec_mode').val('WPA1WPA2');
+    }
+    //alert( "2.4G after"+$('#wl0_sec_mode').val()+", enc="+$('#wl0_wpaenc').val() );
+  }
+    
+
+  /* for 5GHz  */
+if ($('#wl1_mode').val()!=3)
+{ 
+ 	if(isBlank($('#wl1_ssid').val())) 
+ 	{
+	   alert(str_1201);
+		  $('#wl1_ssid').focus();
+		return false;
+ 	}
+
+  for(var i=0 ; i < $('#wl1_ssid').val().length ; i++)
+	{
+ 		var token= $('#wl1_ssid').val().charAt(i);
+ 		if(token=='`' || token=='~' || token=='!' || token=='@' || token=='#'
+ 		|| token=='$' || token=='%' || token=='^' || token=='&' || token=='*'
+ 		|| token=='(' || token==')' || token=='=' || token=='[' || token==','
+ 		|| token==']' || token=='{' || token=='}' || token=='\\' || token=='|'
+ 		|| token==';' || token==':' || token=='\'' || token=='\"' || token=='<'
+ 		|| token=='>' || token=='/' || token=='?'  || token=='-'|| token==' ')
+ 		{
+			alert(str_1268);
+			return false;
+ 		}	 
+	}
+	
+ }
+ 
+   	          if($('#wl1_channel').val()=='0')
+            	  $('#wl1_autoChannel').val('1');
+            	else
+            	  $('#wl1_autoChannel').val('0'); 
+             	
+            	if( $('#wl1_ssid_bcast').attr("checked"))
+            	     $('#wl1_ssid_bcast_enabled').val('0');
+             	else
+            	     $('#wl1_ssid_bcast_enabled').val('1');
+             	              
+              if ($('#wl1_mode').val()==3)//Off
+                    $('#wl1_enabled').val('0');         
+            	//else
+              //   	  $('#wl1_enabled').val('1');
+              else if ($('#wl1_mode').val() == '11' || $('#wl1_mode').val() == '8') // n or an -> no WPA-PSK/TKIP support 20100813
+							{
+								//alert( "5G before="+$('#wl1_sec_mode').val()+", enc="+$('#wl1_wpaenc').val() );
+						    $('#wl1_enabled').val('1');
+						    if( $('#wl1_sec_mode').val() == 'psk' )
+						    {
+						    	$('#wl1_wpaenc').val('2');
+						      $('#wl1_sec_mode').val('WPA1WPA2');
+						    }
+						    //alert( "5G after="+$('#wl1_sec_mode').val()+", enc="+$('#wl1_wpaenc').val() );
+						  }   	  
+            
+   
+
+ 
+
+           $('#wl0_nbw').attr("disabled", false);
+           $('#wl0_ssid').attr("disabled",false);
+           $('#wl0_channel').attr("disabled",false);
+           $('#wl0_ssid_bcast').attr("disabled",false);
+           $('#wl0_ctsprotect').attr("disabled",false);
+           $('#wl0_wmm').attr("disabled",false);   	 
+
+           $('#wl1_nbw').attr("disabled", false);
+           $('#wl1_ssid').attr("disabled",false);
+           $('#wl1_channel').attr("disabled",false);
+           $('#wl1_ssid_bcast').attr("disabled",false);
+           $('#wl1_ctsprotect').attr("disabled",false);
+           $('#wl1_wmm').attr("disabled",false);
+
+          $('#wlanset').submit();
+          
+          $('#wl0_nbw').attr("disabled", true);
+          $('#wl0_ssid').attr("disabled",true);
+          $('#wl0_channel').attr("disabled",true);
+          $('#wl0_ssid_bcast').attr("disabled",true);
+          $('#wl0_ctsprotect').attr("disabled",true);
+          $('#wl0_wmm').attr("disabled",true); 
+          
+          $('#wl1_nbw').attr("disabled", true);
+          $('#wl1_ssid').attr("disabled",true);
+          $('#wl1_channel').attr("disabled",true);
+          $('#wl1_ssid_bcast').attr("disabled",true);
+          $('#wl1_ctsprotect').attr("disabled",true);
+          $('#wl1_wmm').attr("disabled",true);  	      
+	      
+      
+}
+
+function InitValue()
+{
+ /* for 2.4GHz  */
+ 
+	 $('#wl0_sec_mode').val('<%nvram_get("wl0_sec_mode");%>');
+	 $('#wl0_wpaenc').val('<%nvram_get("wl0_wpaenc");%>');
+	 $('#wl1_sec_mode').val('<%nvram_get("wl1_sec_mode");%>');
+	 $('#wl1_wpaenc').val('<%nvram_get("wl1_wpaenc");%>');
+	 
+   $('#wl0_nextcha_menu').attr("disabled",true);  
+   $('#wl0_ssid').val('<%nvram_get("wl0_ssid");%>');
+   $('#wl0_channel').val('<%nvram_get("wl0_channel");%>');
+//   $('#wl0_enabled').val('<%nvram_get("wl0_enabled");%>');
+   $('#wl0_ssid_bcast_enabled').val('<%nvram_get("wl0_ssid_bcast_enabled");%>');
+   $('#wl0_ctsprotect').val('<%nvram_get("wl0_ctsprotect");%>');
+   $('#wl0_nbw').val('<%nvram_get("wl0_nbw");%>');
+   $('#wl0_mode').val('<%nvram_get("wl0_mode");%>');
+   $('#wl0_autoChannel').val('<%nvram_get("wl0_autoChannel");%>');
+   $('#wl0_wmm').val('<%nvram_get("wl0_wmm");%>');
+    
+      if ($('#wl0_mode').val()=='3')
+      {
+        $('#wl0_ssid').attr("disabled",true);
+        $('#wl0_channel').attr("disabled",true);
+        $('#wl0_ssid_bcast').attr("disabled",true);
+        $('#wl0_ctsprotect').attr("disabled",true);
+        $('#wl0_nbw').attr("disabled",true);
+        $('#wl0_wmm').attr("disabled",true);
+      }
+      else
+      {
+        $('#wl0_ssid').attr("disabled",false);
+        $('#wl0_channel').attr("disabled",false);
+        $('#wl0_ssid_bcast').attr("disabled",false);
+        $('#wl0_ctsprotect').attr("disabled",false);
+        $('#wl0_nbw').attr("disabled",false);
+        $('#wl0_wmm').attr("disabled",false);
+      
+      }
+
+      if  ($('#wl0_ssid_bcast_enabled').val()=='0')
+           $('#wl0_ssid_bcast').attr("checked", true);
+      else 
+           $('#wl0_ssid_bcast').attr("checked", false);
+        
+      if('<%nvram_get("havebandwidth");%>'  == 'true')
+           	ext2_4chn_change();
+      
+      ext2_4chn();
+                                       
+ /* for 5GHz  */
+  // $('#wl1_nextcha').val('<%nvram_get("wl1_nextcha");%>');
+   $('#wl1_nextcha').attr("disabled",true);  
+   $('#wl1_ssid').val('<%nvram_get("wl1_ssid");%>');
+   $('#wl1_channel').val('<%nvram_get("wl1_channel");%>');
+   $('#wl1_enabled').val('<%nvram_get("wl1_enabled");%>');
+   $('#wl1_ssid_bcast_enabled').val('<%nvram_get("wl1_ssid_bcast_enabled");%>');
+   $('#wl1_ctsprotect').val('<%nvram_get("wl1_ctsprotect");%>');
+   $('#wl1_nbw').val('<%nvram_get("wl1_nbw");%>');
+   $('#wl1_mode').val('<%nvram_get("wl1_mode");%>');
+   $('#wl1_autoChannel').val('<%nvram_get("wl1_autoChannel");%>');
+   $('#wl1_wmm').val('<%nvram_get("wl1_wmm");%>');
+    
+      if ($('#wl1_mode').val()=='3')
+      {
+      
+        $('#wl1_ssid').attr("disabled",true);
+        $('#wl1_channel').attr("disabled",true);
+        $('#wl1_ssid_bcast').attr("disabled",true);
+        $('#wl1_ctsprotect').attr("disabled",true);
+        $('#wl1_nbw').attr("disabled",true);
+        $('#wl1_wmm').attr("disabled",true);   
+      }
+    else
+      {              
+        $('#wl1_ssid').attr("disabled",false);
+        $('#wl1_channel').attr("disabled",false);
+        $('#wl1_ssid_bcast').attr("disabled",false);
+        $('#wl1_ctsprotect').attr("disabled",false);
+        $('#wl1_nbw').attr("disabled",false);
+        $('#wl1_wmm').attr("disabled",false);
+      }
+
+      if  ($('#wl1_ssid_bcast_enabled').val()=='0')
+           $('#wl1_ssid_bcast').attr("checked", true);
+      else 
+           $('#wl1_ssid_bcast').attr("checked", false);
+                                                                                                                    
+      Change_Extension_Channel();
+      change2_4extSelect();
+}
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+</Script>
+
+</HEAD >
+<body  onLoad="InitValue();">
+
+<SCRIPT language="JavaScript">
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem,isAPmode);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name);
+</SCRIPT>
+
+
+<td  height="100%" width="99%" valign="top">
+<form id="wlanset" name="wlanset" method="post" action="post.cgi">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wl_channel.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="restart" value="wireless">
+<input type="hidden" name="data1" value="wl0_ssid wl0_ssid_bcast_enabled wl0_enabled wl0_nextcha wl0_channel wl0_mode wl0_brust_mode wl0_ctsprotect wl0_autoChannel dot11_qos_enabled wl0_nbw wl0_wmm wl1_ssid wl1_ssid_bcast_enabled wl1_enabled wl1_channel wl1_mode wl1_brust_mode wl1_ctsprotect wl1_autoChannel wl1_nbw wl1_wmm wl0_sec_mode wl0_wpaenc wl1_sec_mode wl1_wpaenc">
+<input type="hidden" id="wl0_enabled" name="wl0_enabled">
+<input type="hidden" name="wl0_brust_mode">
+<input type="hidden" name="wl0_autoChannel">
+<input type="hidden" name="dot11_qos_enabled">
+<input type="hidden" name="wl0_nbw">
+<input type="hidden" name="wl0_wmm">
+<input type="hidden" name="wl0_nextcha">
+<input type="hidden" id="wl0_ssid_bcast_enabled" name="wl0_ssid_bcast_enabled">
+<input type="hidden" id="wl0_sec_mode" name="wl0_sec_mode">
+<input type="hidden" id="wl0_wpaenc" name="wl0_wpaenc">
+<input type="hidden" id="wl1_sec_mode" name="wl1_sec_mode">
+<input type="hidden" id="wl1_wpaenc" name="wl1_wpaenc">
+<input type="hidden" id="wl1_enabled" name="wl1_enabled">
+<input type="hidden" name="wl1_brust_mode">
+<input type="hidden" name="wl1_autoChannel">
+<input type="hidden" name="wl1_nbw">
+<input type="hidden" name="wl1_wmm">   
+<input type="hidden" id="wl1_ssid_bcast_enabled" name="wl1_ssid_bcast_enabled">
+
+	     <table width="600" cellSpacing="0" cellPadding="0" border="0">
+				   	  <tr height="10"><td colspan="2"></td></tr>
+              <tr height="30"><td width="10"></td>
+					     <td class="head_bold" ><SCRIPT>document.write(str_786);</SCRIPT></td>
+					 </tr>
+					   <tr height="80"><td width="10" ></td>
+					     <td class="copy_1" ><SCRIPT>dw(str_787);</SCRIPT> 
+                <A class=copy_1 onclick="window.open('glossary.html#channel_ssid','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" href="javascript:void(0);">
+                <B><FONT color=#0066FF> <SCRIPT>dw(str_47);</SCRIPT> </FONT></B></A>
+              </td>
+					 </tr>
+	    </table> 
+ 
+    <table width="900" cellSpacing="0" cellPadding="0" border="0">
+    <tr>
+      <td width="15">&nbsp;</td>
+      <td width="400" valign="top">   
+	        
+	           	<table  class="copy_1"  width="400" style="font-weight: bold;"  border="0"   cellpadding="0" cellspacing="0">
+      			     <tr height="40">
+      			          <td  width="20">&nbsp;</td>
+                      <td colspan="3" align="center"><script>document.write(str_4202);</script></td>
+                    
+                    </tr>            
+                <tr height="40">
+                      <td  width="20">&nbsp;</td>
+                    	<td  width="120"><script>document.write(str_788);</script>:</td>
+                      <td  width="30">&nbsp;</td>
+                      <td  width="200">&nbsp;<SCRIPT>write2_4Channel();</SCRIPT></td>
+                    </tr>                   
+                    <tr height="40">
+                      <td>&nbsp;</td> 
+                      <td><script>document.write(str_1300);</script>:</td>
+                       <td>&nbsp;</td>
+                      <td>&nbsp;<span id="ext2_4channel"></span><!--script>ext2_4chn();</script--></td>
+                    </tr>
+                     <tr height="40">
+                      <td>&nbsp;</td> 
+                      <td><SCRIPT>document.write(str_343);</SCRIPT>:</td>
+                      <td>&nbsp;</td>
+                      <td>
+										  <input name="wl0_ssid" id="wl0_ssid" size="20" class="ssid_col_width" maxlength="32" onkeypress="if(event.keyCode==13)return false;"></td>
+                    </tr>
+                <tr height="40">
+                      <td>&nbsp;</td>
+                      <td><SCRIPT>document.write(str_790);</SCRIPT>:</td>
+                      <td>&nbsp;</td>
+                      <td>
+										  <select name="wl0_mode" id="wl0_mode" class="wireless_select_col_width" onChange="Change2_4nbw();">
+										    			  <OPTION value="3"><SCRIPT>dw(str_375);</SCRIPT></OPTION>
+                                <OPTION value="0"><SCRIPT>dw(str_4200);</SCRIPT></OPTION>
+                                <OPTION value="6"><SCRIPT>dw(str_2605);</SCRIPT></OPTION> 
+			                          <OPTION value="9"><SCRIPT>dw(str_4201);</SCRIPT></OPTION>                                 
+										  </select></td>                
+                    </tr>
+                   
+                    <tr height="40">
+                      <td>&nbsp;</td>
+                    	<td><SCRIPT> document.write(str_1301);</SCRIPT>:</td>
+                       <td>&nbsp;</td>
+                      <td>
+                			<select size="1" name="wl0_nbw"  id="wl0_nbw" class="wireless_select_col_width" onChange="change2_4extSelect();">
+			                <option value="0"><script>document.write(str_4204);</script></option>
+			                <option value="1"><script>document.write(str_4205);</script></option>
+			                </select></td> 
+                    
+                    <tr height="40">
+                      <td>&nbsp;</td>
+                      <td><script>document.write(str_794);</script>:</td>
+                       <td>&nbsp;</td>
+                      <td>
+                         <input type="checkbox" name="wl0_ssid_bcast" id="wl0_ssid_bcast">
+                      </td>
+                    </tr>
+                    
+                     <tr height="40">
+                      <td>&nbsp;</td>
+                      <td><SCRIPT>dw(str_797);</SCRIPT>:</td>
+                       <td>&nbsp;</td>
+                      <td><select name="wl0_ctsprotect" id="wl0_ctsprotect"> 
+                        	<SCRIPT>dw('<option value="2" >' + str_375 + '</option>');
+						                      dw('<option value="0">' + str_374 + '</option>');
+                          </SCRIPT>
+                          </select>
+                      </td>
+                    </tr>
+                    
+                     <tr height="40">
+                      <td>&nbsp;</td>
+                      <td> <SCRIPT>dw(str_1304);</SCRIPT>:</td>
+                       <td>&nbsp;</td>
+                      <td><select name="wl0_wmm" id="wl0_wmm">
+                       	<SCRIPT>dw('<option value="0" >' + str_375 + '</option>');
+					                     	dw('<option value="1">' + str_374 + '</option>');
+                       </SCRIPT>
+                        </select>
+                      </td>
+                    </tr>
+                  </table>                   
+      
+      </td>
+      
+          <td width="100">&nbsp;</td> 
+          <td width="400" valign="top">
+          
+               	<table  class="copy_1"  width="100%" style="font-weight: bold;"  border="0" cellpadding="0" cellspacing="0">
+      			     <tr height="40">
+      			        
+                      <td colspan="2" align="left"><script>document.write(str_4203);</script></td>                   
+                    </tr>            
+                <tr height="40">
+                      
+                      <td  width="300">&nbsp;<SCRIPT>Show_Wireless_Channel();</SCRIPT></td>
+                    </tr>                   
+                    <tr height="40">                      
+                      <td>&nbsp;<script>Show_Extension_Channel();</script></td>
+                    </tr>
+                     <tr height="40">                    
+                      <td><input name="wl1_ssid" id="wl1_ssid" size="20" class="ssid_col_width" maxlength="32" onkeypress="if(event.keyCode==13)return false;"></td>
+                    </tr>
+                    
+                  <tr height="40">                     
+                      <td>
+										  <select name="wl1_mode" id="wl1_mode" class="wireless_select_col_width" onChange="Change_nbw();">										      
+                          <OPTION value="3"><SCRIPT>document.write(str_375);</SCRIPT></OPTION>
+                          <OPTION value="2"><SCRIPT>document.write(str_2601);</SCRIPT></OPTION>
+                          <OPTION value="11"><SCRIPT>document.write(str_2605);</SCRIPT></OPTION>
+			                    <OPTION value="8"><SCRIPT>document.write(str_4206);</SCRIPT></OPTION> 
+										  </select>
+                          &nbsp;&nbsp;<A onclick="window.open('glossary.html#wireless_mode','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" href="javascript:void(0);"> 
+                          <B><FONT color=#6464c3><SCRIPT>dw(str_47);</SCRIPT></FONT></B></A>
+                      </td>               
+                    </tr>
+                   
+                    <tr height="40">                    
+                      <td>
+                			<select size="1" name="wl1_nbw"  id="wl1_nbw" class="wireless_select_col_width">
+			                <option value="0"><script>document.write(str_4204);</script></option>
+			                <option value="1"><script>document.write(str_4205);</script></option>
+			                </select></td>                   
+                    </tr>
+                    <tr height="40">
+                    
+                      <td>
+                         <input type="checkbox" name="wl1_ssid_bcast" id="wl1_ssid_bcast">
+                         &nbsp;&nbsp;<A  onclick="window.open('glossary.html#bro_ssid','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" href="javascript:void(0);"> 
+                          <B><FONT color=#6464c3><SCRIPT>dw(str_47);</SCRIPT></FONT></B></A>
+                      </td>
+                    </tr>
+                    
+                     <tr height="40">                   
+                      <td><select name="wl1_ctsprotect" id="wl1_ctsprotect"> 
+                        	<SCRIPT>dw('<option value="2" >' + str_375 + '</option>');
+						                      dw('<option value="0">' + str_374 + '</option>');
+                          </SCRIPT>
+                          </select>
+                          
+                         &nbsp;&nbsp;<A onclick="window.open('glossary.html#protected_mode','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" href="javascript:void(0);">
+    				              <B><FONT color=#6464c3><SCRIPT>dw(str_47);</SCRIPT></FONT></B></A>
+                      </td>
+                    </tr>
+                    
+                     <tr height="40">
+                      
+                      <td><select name="wl1_wmm" id="wl1_wmm">
+                       	<SCRIPT>dw('<option value="0" >' + str_375 + '</option>');
+					                     	dw('<option value="1">' + str_374 + '</option>');
+                       </SCRIPT>
+                        </select>
+                         &nbsp;&nbsp;<A onclick="window.open('glossary.html#wmm','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" href="javascript:void(0);"> 
+                        <B><FONT color=#6464c3><SCRIPT>dw(str_47);</SCRIPT></FONT></B></A>
+                      </td>                    
+                    </tr>
+                  </table>                   
+          </td> 
+         </tr>
+       </table> 
+               <table width="850" cellSpacing="0" cellPadding="0" border="0">
+                  <tr height="40"><td>&nbsp;</td></tr>
+                  <tr>
+                    <td width="100%" align="center">  
+                      <SCRIPT>
+                        dw('<input id="submitBtn_clear" type="button" value="');
+                        dw(str_48);dw('" style="{width:160px;}" class="submitBtn" onClick="InitValue();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">');
+			                  dw('<input id="submitBtn_apply" type="button" style="{width:160px;}" value="');
+                        dw(str_49);dw('"onClick="return Try_Submit();" class="submitBtn">');
+                      </SCRIPT>                                                                                                  
+                  
+                   </td>
+                </tr>
+            </table>
+</form>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+ 

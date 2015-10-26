@@ -1,0 +1,12 @@
+Ralink AP SDK - History
+
+Version 3.5.0.0
+===============
+
+- upport RT2880/RT3052/RT3883/RT3352 
+- support NAND/SPI/NOR in the same firmware
+- support Hardware NAT on RT3052/RT3883/RT3352
+- support Software QoS (uplink/downlink)
+- super dmz support
+- support kernel mode pptp/l2tp to improve throughput significantly
+

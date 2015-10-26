@@ -1,0 +1,18 @@
+<html>
+<head>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<title>Wi-Fi Protected Setup</title>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<script>
+	if('<%nvram_get("wl0_wps_enabled");%>' == '0') 
+		window.location.href ="wireless_wps_disbled.html";
+	else 
+		window.location.href ="wireless_wps_enabled.html";
+</script>
+</head>
+<body>
+</body>
+</html>

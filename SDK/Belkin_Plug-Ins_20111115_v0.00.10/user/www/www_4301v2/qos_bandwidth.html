@@ -1,0 +1,353 @@
+<HTML><HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=Content-Type content=text/html; charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT>
+<%autofw_check();%>
+strHtml='<title>'+str_1880+'</title>';
+dw(strHtml);
+
+var qos_bandwidth_profile = parent.$('#qos_bandwidth_profile').val();
+//var qos_bandwidth_profile = "Auto";
+switch(qos_bandwidth_profile)
+{
+  case "Auto":
+    var qos_bandwidth_profile_array = [<%show_bandwidth_info("Auto");%>]; 
+    var bandwidth_proflie = 1; 
+  break;
+  case "User_Defined_1":
+    var qos_bandwidth_profile_array = [<%show_bandwidth_info("User_Defined_1");%>];
+    var bandwidth_proflie = 2;  
+  break;
+  case "User_Defined_2":
+    var qos_bandwidth_profile_array = [<%show_bandwidth_info("User_Defined_2");%>];
+    var bandwidth_proflie = 3;   
+  break;  
+}   
+var qos_bandwidth_up = (typeof qos_bandwidth_profile_array[0] == "undefined") ? "" : qos_bandwidth_profile_array[0];
+//var qos_bandwidth_down = (typeof qos_bandwidth_profile_array[1] == "undefined") ? "" : qos_bandwidth_profile_array[1];
+var qos_highest_rate = (typeof qos_bandwidth_profile_array[2] == "undefined") ? "" : qos_bandwidth_profile_array[2];
+var qos_high_rate = (typeof qos_bandwidth_profile_array[3] == "undefined") ? "" : qos_bandwidth_profile_array[3];
+var qos_medium_rate = (typeof qos_bandwidth_profile_array[4] == "undefined") ? "" : qos_bandwidth_profile_array[4];
+var qos_normal_rate = (typeof qos_bandwidth_profile_array[5] == "undefined") ? "" : qos_bandwidth_profile_array[5];
+var up_qos_defined_kbps = (typeof qos_bandwidth_profile_array[6] == "undefined") ? "128" : qos_bandwidth_profile_array[6];
+//var down_qos_defined_kbps = (typeof qos_bandwidth_profile_array[7] == "undefined") ? "" : qos_bandwidth_profile_array[7];
+var qos_CheckHighest = (typeof qos_bandwidth_profile_array[8] == "undefined") ? "" : qos_bandwidth_profile_array[8];
+var qos_CheckHigh = (typeof qos_bandwidth_profile_array[9] == "undefined") ? "" : qos_bandwidth_profile_array[9];
+var qos_CheckMedium = (typeof qos_bandwidth_profile_array[10] == "undefined") ? "" : qos_bandwidth_profile_array[10];
+var qos_CheckNormal = (typeof qos_bandwidth_profile_array[11] == "undefined") ? "" : qos_bandwidth_profile_array[11];
+
+
+
+
+function InitValue()
+{
+  document.Addqos_form.qos_bandwidth_up.value=qos_bandwidth_up;
+//	document.Addqos_form.qos_bandwidth_down.value=qos_bandwidth_down;
+  document.Addqos_form.qos_highest_rate.value=qos_highest_rate;
+  document.Addqos_form.qos_high_rate.value=qos_high_rate;
+	document.Addqos_form.qos_medium_rate.value=qos_medium_rate;
+	document.Addqos_form.qos_normal_rate.value=qos_normal_rate;
+	
+//	document.Addqos_form.down_qos_defined_kbps.value=down_qos_defined_kbps;
+
+	if (document.Addqos_form.qos_bandwidth_up.value != "user_defined")
+	  { 
+	     document.Addqos_form.up_qos_defined_kbps.disabled=true;
+		  document.Addqos_form.up_qos_defined_kbps.value=up_qos_defined_kbps;   
+	  }
+	  else
+	  {  
+	     document.Addqos_form.up_qos_defined_kbps.disabled=false;
+		 document.Addqos_form.up_qos_defined_kbps.value=up_qos_defined_kbps;   
+	  }
+/*	  
+	if (document.Addqos_form.qos_bandwidth_down.value != "user_defined")
+	  { 
+	     document.Addqos_form.down_qos_defined_kbps.disabled=true;
+		 document.Addqos_form.down_qos_defined_kbps.value=down_qos_defined_kbps;  
+	  }
+	  else
+	  {  
+	     document.Addqos_form.down_qos_defined_kbps.disabled=false; 
+	     document.Addqos_form.down_qos_defined_kbps.value=down_qos_defined_kbps; 
+	  }
+*/
+	  document.Addqos_form.qos_CheckHighest.checked = (qos_CheckHighest == "1") ? true : false;
+    document.Addqos_form.qos_CheckHigh.checked = (qos_CheckHigh == "1") ? true : false;   
+    document.Addqos_form.qos_CheckMedium.checked = (qos_CheckMedium == "1") ? true : false;   
+    document.Addqos_form.qos_CheckNormal.checked = (qos_CheckNormal == "1") ? true : false;      
+
+}
+
+function up_UserDefined(s)
+{
+   var selectValue = s;
+   var selObj = document.getElementById('up_qos_defined_kbps');
+   if (selectValue == "user_defined")
+       {
+          selObj.disabled=false;
+		  selObj.value ="";
+     }
+	 else
+	 {
+	 	selObj.disabled=true;
+		selObj.value = selectValue;
+	 }
+   
+}
+/*
+function down_UserDefined(s)
+{
+   var selectValue = s;
+   var selObj = document.getElementById('down_qos_defined_kbps');
+   if (selectValue == "user_defined")
+       {
+          selObj.disabled=false;
+		  selObj.value ="";
+     }
+	 else
+	 {
+	 	selObj.disabled=true;
+		selObj.value = selectValue;
+	 }
+   
+}
+*/
+/*
+function CheckBandwidthValue(Check,Level)
+{
+	if (eval('document.Addqos_form.' + Check + '.checked') == false)
+	  {
+	      eval('document.Addqos_form.' + Level + '.value=0');
+	      eval('document.Addqos_form.' + Check + '.value=0');
+	  }
+    else
+	    {
+		   switch (Level)
+		     {
+					case "qos_highest_rate":
+					  eval('document.Addqos_form.' + Level + '.value=' + qos_highest_rate);
+					  break;
+					case "qos_high_rate":
+					   eval('document.Addqos_form.' + Level + '.value=' + qos_high_rate);
+					  break;
+					case "qos_medium_rate":
+						eval('document.Addqos_form.' + Level + '.value=' + qos_medium_rate);
+						break;
+					case "qos_normal_rate":
+						eval('document.Addqos_form.' + Level + '.value=' + qos_normal_rate);
+						break;
+					default:
+					   eval('document.Addqos_form.' + Level + '.value=0');
+			  }
+		 }
+		 
+		
+}
+*/
+
+
+function Try_SubmitAdd(Addqos_form)
+{
+ 
+  if ( (document.Addqos_form.qos_bandwidth_up.value != "Auto" && document.Addqos_form.up_qos_defined_kbps.value < 128)|| (document.Addqos_form.qos_bandwidth_up.value != "Auto" && document.Addqos_form.up_qos_defined_kbps.value > 10240))
+	    alert(str_3290); 
+//	else if ((document.Addqos_form.qos_bandwidth_down.value != "Auto"  && document.Addqos_form.down_qos_defined_kbps.value < 128) || (document.Addqos_form.qos_bandwidth_down.value != "Auto"  && document.Addqos_form.down_qos_defined_kbps.value > 10240))
+//	    alert(str_3291);  
+    else if (document.Addqos_form.qos_highest_rate.value > 100  || document.Addqos_form.qos_highest_rate.value <= 0 || isNaN(document.Addqos_form.qos_highest_rate.value) == true)
+	     alert(str_1572);   
+	else if (document.Addqos_form.qos_high_rate.value > 100  || document.Addqos_form.qos_high_rate.value <= 0 || isNaN(document.Addqos_form.qos_high_rate.value) == true)	
+	     alert(str_1572);
+	else if (document.Addqos_form.qos_medium_rate.value > 100  || document.Addqos_form.qos_medium_rate.value <= 0 || isNaN(document.Addqos_form.qos_medium_rate.value) == true)       
+	     alert(str_1572); 
+	else if (document.Addqos_form.qos_normal_rate.value > 100  || document.Addqos_form.qos_normal_rate.value <= 0 || isNaN(document.Addqos_form.qos_normal_rate.value) == true)
+	  alert(str_1572); 
+	else if ((eval(document.Addqos_form.qos_highest_rate.value) + eval(document.Addqos_form.qos_high_rate.value) + eval(document.Addqos_form.qos_medium_rate.value) + eval(document.Addqos_form.qos_normal_rate.value)) != 100)
+	     alert(str_1573);
+  else
+  {
+               
+    /*
+    else
+  		document.Addqos_form.submit();
+  	*/
+
+    if(document.Addqos_form.qos_CheckHigh.checked == true)
+      document.Addqos_form.qos_CheckHigh.value = "1";   
+    if(document.Addqos_form.qos_CheckHighest.checked == true)
+      document.Addqos_form.qos_CheckHighest.value = "1"; 
+    if(document.Addqos_form.qos_CheckMedium.checked == true)
+      document.Addqos_form.qos_CheckMedium.value = "1"; 
+    if(document.Addqos_form.qos_CheckNormal.checked == true)
+      document.Addqos_form.qos_CheckNormal.value = "1";
+      
+                       
+    $('#bandwidth_field').append('<input type="hidden" name="'+bandwidth_proflie+'_qos_bandwidth_up" value="' +  document.Addqos_form.qos_bandwidth_up.value + '">');
+//    $('#bandwidth_field').append('<input type="hidden" name="'+bandwidth_proflie+'_qos_bandwidth_down" value="' +  document.Addqos_form.qos_bandwidth_down.value + '">');
+    $('#bandwidth_field').append('<input type="hidden" name="'+bandwidth_proflie+'_qos_highest_rate" value="' +  document.Addqos_form.qos_highest_rate.value + '">');
+    $('#bandwidth_field').append('<input type="hidden" name="'+bandwidth_proflie+'_qos_high_rate" value="' +  document.Addqos_form.qos_high_rate.value + '">');
+    $('#bandwidth_field').append('<input type="hidden" name="'+bandwidth_proflie+'_qos_medium_rate" value="' +  document.Addqos_form.qos_medium_rate.value + '">');
+    $('#bandwidth_field').append('<input type="hidden" name="'+bandwidth_proflie+'_qos_normal_rate" value="' +  document.Addqos_form.qos_normal_rate.value + '">');
+//    $('#bandwidth_field').append('<input type="hidden" name="'+bandwidth_proflie+'_down_qos_defined_kbps" value="' +  document.Addqos_form.down_qos_defined_kbps.value + '">');
+    $('#bandwidth_field').append('<input type="hidden" name="'+bandwidth_proflie+'_up_qos_defined_kbps" value="' +  document.Addqos_form.up_qos_defined_kbps.value + '">');    
+    
+    $('#bandwidth_field').append('<input type="hidden" name="'+bandwidth_proflie+'_qos_CheckHighest" value="' +  document.Addqos_form.qos_CheckHighest.value + '">');
+    $('#bandwidth_field').append('<input type="hidden" name="'+bandwidth_proflie+'_qos_CheckHigh" value="' +  document.Addqos_form.qos_CheckHigh.value + '">');
+    $('#bandwidth_field').append('<input type="hidden" name="'+bandwidth_proflie+'_qos_CheckMedium" value="' +  document.Addqos_form.qos_CheckMedium.value + '">');
+    $('#bandwidth_field').append('<input type="hidden" name="'+bandwidth_proflie+'_qos_CheckNormal" value="' +  document.Addqos_form.qos_CheckNormal.value + '">');
+    
+        //var insert_value = 'next_page '+bandwidth_proflie+'_qos_bandwidth_up '+bandwidth_proflie+'_qos_bandwidth_down '+bandwidth_proflie+'_up_qos_defined_kbps '+bandwidth_proflie+'_down_qos_defined_kbps '+bandwidth_proflie+'_qos_highest_rate '+bandwidth_proflie+'_qos_high_rate '+bandwidth_proflie+'_qos_medium_rate '+bandwidth_proflie+'_qos_normal_rate '+bandwidth_proflie+'_qos_CheckHighest '+bandwidth_proflie+'_qos_CheckHigh '+bandwidth_proflie+'_qos_CheckMedium '+bandwidth_proflie+'_qos_CheckNormal';
+        var insert_value = 'next_page '+bandwidth_proflie+'_qos_bandwidth_up '+bandwidth_proflie+'_up_qos_defined_kbps '+bandwidth_proflie+'_qos_highest_rate '+bandwidth_proflie+'_qos_high_rate '+bandwidth_proflie+'_qos_medium_rate '+bandwidth_proflie+'_qos_normal_rate '+bandwidth_proflie+'_qos_CheckHighest '+bandwidth_proflie+'_qos_CheckHigh '+bandwidth_proflie+'_qos_CheckMedium '+bandwidth_proflie+'_qos_CheckNormal';
+    $(':input[name=data1]').val(insert_value); 
+    document.Addqos_form.submit();
+    
+  parent.$('#block_background').css("display", "none");
+  parent.$('#add_qos_bandwidth').hide(); 
+  }
+}
+
+$(":input[value=Cancel]").live("click" ,function(){
+  //console.log("test");
+  //alert("test");
+  parent.$('#block_background').css("display", "none");
+  parent.$('#add_qos_bandwidth').hide(); 
+});
+</SCRIPT>
+</HEAD >
+<body onLoad="InitValue();" bgcolor="#FFFFFF">						
+
+<form id="Addqos_form" name="Addqos_form" method="post" action="qos_bandwidth.cgi">
+
+ <table border="0" cellspacing="0" cellpadding="0" align="left" width="100%" height="100%">
+ <tr>    
+	  <td  height="100%" width="99%" valign="top">
+	    
+	               <table width="600" cellSpacing="0" cellPadding="0">
+				   	 <tr height="30"><td width="5" ></td>
+					     <td class=head_bold ></td>
+					 </tr>
+	               </table> 
+					             
+	                <table width="600" cellSpacing="0" cellPadding="0">		  
+					  <tr height="50"><td width="20"></td>
+					      <td class=TitleTextCol width="250"><b><SCRIPT>dw(str_1577);</SCRIPT></b></td>
+					      <td class=TextCol colspan="2" width="360">&nbsp;</td>
+					  </tr>
+					  <tr height="50"><td  width="20"></td>
+					      <td class=TextCol width="220"><b><SCRIPT>dw(str_1578);</SCRIPT>&nbsp;&nbsp;&gt;</b></td>
+					      <td class=TextCol width="130"> 
+				            <select id="qos_bandwidth_up" name="qos_bandwidth_up" onChange="up_UserDefined(this.options[this.options.selectedIndex].value);">
+						  				
+												<SCRIPT>dw('<option value="128">'+ str_4114 +'</option>');
+														dw('<option value="256">'+ str_4115 +'</option>');
+														dw('<option value="384">'+ str_4116 +'</option>');
+														dw('<option value="512">'+ str_4117 +'</option>');
+														dw('<option value="768">'+ str_4118 +'</option>');
+														dw('<option value="1024">'+ str_4119 +'</option>');
+														dw('<option value="3072">'+ str_4120 +'</option>');
+														dw('<option value="10240">'+ str_4121 +'</option>');
+														dw('<option value="user_defined">'+ str_1579 +'</option>');
+														dw('<option value="Auto">'+ str_377 +'</option>');
+												</SCRIPT>
+											</select>
+						  </td>
+						  <td class=TextCol width="230"><input id="up_qos_defined_kbps" name="up_qos_defined_kbps" type="text" style="width :50pt;" value="0">  kbps </td>
+					  </tr>	
+					  <!--tr height="50"><td  width="20"></td>
+					      <td class=TextCol width="220"><b><SCRIPT>dw(str_1580);</SCRIPT>&nbsp;&nbsp;&gt;</b></td>
+					      <td class=TextCol width="130"> 
+						  					<select id="qos_bandwidth_down" name="qos_bandwidth_down" onChange="down_UserDefined(this.options[this.options.selectedIndex].value);">
+												<SCRIPT>dw('<option value="128">'+ str_4114 +'</option>');
+														dw('<option value="256">'+ str_4115 +'</option>');
+														dw('<option value="384">'+ str_4116 +'</option>');
+														dw('<option value="512">'+ str_4117 +'</option>');
+														dw('<option value="768">'+ str_4118 +'</option>');
+														dw('<option value="1024">'+ str_4119 +'</option>');
+														dw('<option value="3072">'+ str_4120 +'</option>');
+														dw('<option value="10240">'+ str_4121 +'</option>');
+														dw('<option value="user_defined">'+ str_1579 +'</option>');
+														dw('<option value="Auto">'+ str_377 +'</option>');
+												</SCRIPT>
+											</select>
+						  </td>
+						   <td class=TextCol width="230"><input id="down_qos_defined_kbps" name="down_qos_defined_kbps" type="text" style="width :50pt;" value="0">  kbps </td>
+					  </tr-->
+					  	  <tr height="50"><td width="20"></td>
+					      <td class=TitleTextCol colspan="3" width="580"><b><SCRIPT>dw(str_1581);</SCRIPT></b></td>
+					  </tr>    	 	  				    
+			        </table>					 
+					
+					<table width="600" cellSpacing=0 cellPadding=0>     	 			 				      		
+              			 <tr height="30">
+						    <td width="20"></td>
+					        <td class=TableListTopCol width="100"><SCRIPT>dw(str_1582);</SCRIPT></td>
+					        <td class=TableListTopCol width="300"><SCRIPT>dw(str_1583);</SCRIPT></td>
+							<td class=TableListTopCol width="180"><SCRIPT>dw(str_1558);</SCRIPT></td>
+					  </tr>	
+					   <tr height="30">
+					      <td width="20"></td>
+					      <td class=TableListCol width="100"><SCRIPT>dw(str_1562);</SCRIPT></td>
+					      <td class=TableListCol width="300"><input id="qos_highest_rate" name="qos_highest_rate" type="text" style="width :35pt;" value="0">&nbsp;%</td>
+						  <td class=TableListCol width="180"><INPUT type="checkbox" name="qos_CheckHighest" value="0"></td>
+					  </tr>
+					  <tr height="30">
+					      <td width="20"></td>
+					      <td class=TableListCol width="100"><SCRIPT>dw(str_1561);</SCRIPT></td>
+					      <td class=TableListCol width="300"><input id="qos_high_rate" name="qos_high_rate" type="text" style="width :35pt;" value="0" >&nbsp;%</td>
+						  <td class=TableListCol width="180"><INPUT type="checkbox" name="qos_CheckHigh" value="0"></td>
+					  </tr>
+					  <tr height="30">
+					      <td width="20"></td>
+					      <td class=TableListCol width="100"><SCRIPT>dw(str_1568);</SCRIPT></td>
+					      <td class=TableListCol width="300"><input id="qos_medium_rate" name="qos_medium_rate" type="text" style="width :35pt;" value="0">&nbsp;%</td>
+						  <td class=TableListCol width="180"><INPUT type="checkbox" name="qos_CheckMedium" value="0"></td>
+					  </tr>
+					  <tr height="30">
+					      <td  width="20"></td>
+					      <td class=TableListCol width="100"><SCRIPT>dw(str_1629);</SCRIPT></td>
+					      <td class=TableListCol width="300"><input id="qos_normal_rate" name="qos_normal_rate" type="text" style="width :35pt;" value="0">&nbsp;%</td>
+						  <td class=TableListCol width="180"><INPUT type="checkbox" name="qos_CheckNormal" value="0"></td>
+					  </tr>
+					  <tr height="20"><td></td></tr>		   				    				   				    				  				  				
+			        </table>
+					
+					<table width="600" cellSpacing=0 cellPadding=0> 
+					    <tr> <td  width="20"></td>
+						     <td>&nbsp;</td>
+					    </tr>    	 			 				      		
+              			 <tr height="30" align="right">
+						    <td width="20"></td>
+					        <td width="580" colspan="4">
+							<script>
+							    dw('<input id="submitBtn_add" type="button" style="{width:130px;}" value="');
+								dw(str_49);
+								dw('" onClick="Try_SubmitAdd(Addqos_form);" class="submitBtn">');
+								dw('    <input id="submitBtn_clear" type="button" value="');
+								dw(str_1399);
+								dw('" style="{width:80px;}" class="submitBtn">');
+							</script>   
+                     </td>				        
+						</tr>			   		    				  				  								
+			        </table>				
+  			</td>
+ 			</tr>
+		 </table>
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="qos_bandwidth.html">
+<input type="hidden" name="redirect_timer" value="10">
+<input type="hidden" name="reboot" value="0">
+<!--input type="hidden" name="data1" value="next_page qos_bandwidth_up qos_bandwidth_down up_qos_defined_kbps down_qos_defined_kbps qos_highest_rate qos_high_rate qos_medium_rate qos_normal_rate qos_CheckHighest qos_CheckHigh qos_CheckMedium qos_CheckNormal"--> 
+<input type="hidden" name="data1" value="next_page qos_bandwidth_up up_qos_defined_kbps qos_highest_rate qos_high_rate qos_medium_rate qos_normal_rate qos_CheckHighest qos_CheckHigh qos_CheckMedium qos_CheckNormal"> 
+<div id="bandwidth_field">
+</div>
+</form>
+</body>
+</html>
+ 

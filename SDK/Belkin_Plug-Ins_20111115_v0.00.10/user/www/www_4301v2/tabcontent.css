@@ -1,0 +1,42 @@
+
+
+/* ######### CSS for Indented CSS Tabs. Remove if not using ######### */
+
+
+.indentmenu{
+font-weight: bold ;
+width: 100%; /*leave this value as is in most cases*/
+}
+
+.indentmenu ul{
+margin: 0;
+padding: 0;
+float: left;
+/* width: 80%; width of menu*/
+border-top: 1px solid navy; /*navy border*/
+background: black url(indentbg.gif) center center repeat-x;
+}
+
+.indentmenu ul li{
+display: inline;
+}
+
+.indentmenu ul li a{
+float: left;
+color: white; /*text color*/
+padding: 5px 11px;
+text-decoration: none;
+border-right: 1px solid ; /*navy divider between menu items*/
+}
+
+.indentmenu ul li a:visited{
+color: white;
+}
+
+.indentmenu ul li a.selected{
+color: white !important;
+padding-top: 6px; /*shift text down 1px*/
+padding-bottom: 4px;
+background: black url(indentbg2.gif) center center repeat-x;
+}
+

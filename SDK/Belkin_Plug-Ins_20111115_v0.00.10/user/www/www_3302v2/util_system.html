@@ -1,0 +1,1096 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT language=JavaScript src="validate.js"></SCRIPT>
+<SCRIPT language=JavaScript src="md5.js"></SCRIPT>
+<SCRIPT language=JavaScript>
+<!--
+var havefwcheck='<%nvram_get("havefwcheck");%>';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+function MakeArrayday(size) {
+this.length = size;
+for(var i = 1; i <= size; i++) this[i] = "";
+return this;
+}
+function MakeArraymonth(size) {
+this.length = size;
+for(var i = 1; i <= size; i++) this[i] = "";
+return this;
+}
+
+function CheckTimeRange(passForm)
+{	
+	var eco_ar_start_time=f.eco_time_start.value.split(":");
+	f.eco_start_hour.value=parseInt(eco_ar_start_time[0],10);
+	f.eco_start_min.value=parseInt(eco_ar_start_time[1],10);
+	var eco_ar_end_time=f.eco_time_stop.value.split(":");
+	f.eco_end_hour.value=parseInt(eco_ar_end_time[0],10);
+	f.eco_end_min.value=parseInt(eco_ar_end_time[1],10);
+
+//<!-- It need support overnight
+//	if((parseInt(f.eco_start_hour.value) * 60 + parseInt(f.eco_start_min.value)) >= (parseInt(f.eco_end_hour.value) * 60 +  parseInt(f.eco_end_min.value)))
+//	{
+//		alert(str_4265);
+//		return false;
+//	}
+//-->
+	return true;
+}
+/*
+function genCountryList()
+{
+	  countrylist = '<%nvram_get("country_list");%>';
+	  ctryArray = countrylist.split(' ');
+	   
+	 
+    dw('<TD class=verdana12 height=26><B>'+yctry+':</B></TD>');
+    dw('<TD>');
+    dw('<select name="country_code">');
+    for( i = 0 ; i < ctryArray.length ; i++ )
+    {
+    	  if( ctryArray[i] == 'us' )
+    	    dw('<option value="us">United States</option>');
+    	  else if( ctryArray[i] == 'tw' )
+    	    dw('<option value="tw">Taiwan</option>');
+    	  else if( ctryArray[i] == 'cn' )
+    	    dw('<option value="cn">China</option>');
+    	  else if( ctryArray[i] == 'kr' )
+    	    dw('<option value="kr">Korea</option>');
+    	  else if( ctryArray[i] == 'de' )
+    	    dw('<option value="de">German</option>');
+    	  else if( ctryArray[i] == 'fr' )
+    	    dw('<option value="fr">France</option>');
+    	  else if( ctryArray[i] == 'sg' )
+    	    dw('<option value="sg">Sigapore</option>');
+    	  else if( ctryArray[i] == 'ca' )
+    	    dw('<option value="ca">Canada</option>');
+    	  else if( ctryArray[i] == 'au' )
+    	    dw('<option value="au">Australia</option>');
+    	  else if( ctryArray[i] == 'uk' )
+    	    dw('<option value="uk">United Kingdom</option>');
+    	  else if( ctryArray[i] == 'jp' )
+    	    dw('<option value="jp">Japan</option>');
+    }
+    dw('</select>');
+    dw('</TD>');
+}                  
+*/
+            
+function funClock() 
+{
+	var f = document.forms[0];
+	
+	var runTime = new Date();
+	var hours = f.hour.value;
+	var minutes = f.min.value;
+	var seconds = f.sec.value;
+
+	var dn = "AM";
+
+	if (hours >= 12) 
+	{
+		dn = "PM";
+		hours = hours - 12;
+	}
+
+	if (seconds == 0)
+	{
+		minutes++;
+		f.min.value++;
+		if(minutes ==60)
+		{
+			hours++;
+			f.hour.value++;
+			minutes = 0;
+			f.min.value = 0;
+		}
+	}
+	if (hours == 0) hours = 12;
+	if (hours == 12 && minutes==0 && seconds == 0) setTimeout('document.location.href="util_system.html";',0);
+	var temp_min=String(minutes);
+	if (minutes <= 9 && temp_min.length==1) minutes = "0" + minutes;
+	if (seconds <= 9) seconds = "0" + seconds;
+	movingtime = "<font color=red size=3><b>"+ hours + ":" + minutes + ":" + seconds + " " + dn + "</b></font>";
+	if (document.layers) {
+		document.layers.clock.document.write(movingtime);
+		document.layers.clock.document.close();
+	}
+	else if (document.all) 
+		clock.innerHTML = movingtime;
+	else {
+		document.getElementById('clock').innerHTML = movingtime;
+	}
+	f.sec.value++;
+	if(f.sec.value>59) f.sec.value = 0;
+		setTimeout("funClock()", 1000)
+}
+window.onload = funClock;
+//-->
+</SCRIPT>
+<LINK href="util_system.files/styles.css" type=text/css rel=stylesheet>
+<META http-equiv=Pragma content=no-cache>
+<SCRIPT>
+strHtml='<title>'+str_540+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='System Settings';
+var menuSection	='Util';
+var menuItem	='System Settings';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+<%autofw_check();%>
+	
+
+function Init_Value()
+{
+	var f=document.forms[0];
+ 	EnableDisableIPTextbox();
+	var wan_enabled = '<%nvram_get("wan_enabled");%>';
+	var upnp_enabled = '<%nvram_get("upnp_enabled");%>';
+	var login_timeout = '<%nvram_get("login_timeout");%>';
+	var remote_enabled = '<%nvram_get("remote_mgmt_enabled");%>';
+	var remote_ip = '<%nvram_get("remote_mgmt_ip_start");%>';
+	var remote_port = '<%nvram_get("remote_mgmt_port");%>';
+	var timezone_index = '<%nvram_get("timezone_index");%>';
+	var timezone_daylightsaving = '<%nvram_get("timezone_daylightsaving");%>';
+	var auto_upgrade_enabled = '<%nvram_get("remote_auto_fwchk");%>';
+	var primary_ntp='<%nvram_get("ntp_server1");%>';
+	var backup_ntp='<%nvram_get("ntp_server2");%>';
+	var ntp_primary_index_value='<%nvram_get("ntp_primary_index");%>';
+	var ntp_backup_index_value='<%nvram_get("ntp_backup_index");%>';
+	var i,j;
+	var ifr = document.getElementById('fwck_ifram');
+
+	var eco_day = '<%nvram_get("eco_ar_day");%>';
+	var eco_time_start = '<%nvram_get("eco_time_start");%>';
+	var eco_time_stop = '<%nvram_get("eco_time_stop");%>';
+	
+	f.timeout.value = login_timeout;
+	f.userOldPswd.value ="";
+	f.userNewPswd.value ="";
+	f.userConPswd.value ="";
+	 
+ 	if (remote_enabled == '1')
+	{
+		if (remote_ip == '0')
+		{
+			f.checkremote.checked=true;
+			f.IP1.disabled=true;
+			f.IP2.disabled=true; 
+			f.IP3.disabled=true; 
+			f.IP4.disabled=true;
+			f.remote_port.value=remote_port;
+		}
+		else
+		{
+			f.checkremote.checked=false;
+			t1=remote_ip.indexOf('.');
+			if(t1!=-1)f.IP1.value=remote_ip.substring(0,t1);
+			t2=remote_ip.indexOf('.',(t1+1));	
+			if(t2!=-1)f.IP2.value=remote_ip.substring((t1+1),t2);
+			t1=remote_ip.indexOf('.',(t2+1));
+			if(t1!=-1)f.IP3.value=remote_ip.substring((t2+1),t1);
+			f.IP4.value=remote_ip.substring(t1+1);
+			f.remote_port.value=remote_port;
+		}
+	}
+	else
+	{
+		f.checkremote.checked=false;
+		f.IP1.value = '';
+		f.IP2.value = '';
+		f.IP3.value = '';
+		f.IP4.value = '';
+		f.remote_port.value=remote_port;
+	}	
+
+	if(upnp_enabled =='1') 
+		f.EnableUPNP[0].checked=true;
+ 	else 
+		f.EnableUPNP[1].checked=true;
+	
+	if( f.Enableautoupdate	)
+	{
+	if(auto_upgrade_enabled =='1') 
+		f.Enableautoupdate[0].checked=true;
+ 	else 
+		f.Enableautoupdate[1].checked=true;	
+	}	
+
+	if (timezone_daylightsaving == '1')
+		f.daylight.checked = true;
+	else
+		f.daylight.checked = false;
+		
+	f.ntp_primary.selectedIndex = ntp_primary_index_value;
+	f.ntp_backup.selectedIndex = ntp_backup_index_value;	
+	
+	
+	if( f.Enableautoupdate )
+	{
+		if (auto_upgrade_enabled == '1')
+		{
+			f.Enableautoupdate[0].checked = true;
+			ifr.src = "fwck.html";
+		}
+		else
+			f.Enableautoupdate[1].checked = true;
+	}	
+
+	if('<%nvram_get("eco_dis_rad_from");%>' == '1' )
+		f.dis_rad_from.checked = true;
+	else
+		f.dis_rad_from.checked = false;
+	
+	if('<%nvram_get("eco_dim_enabled");%>' == '1' )
+                f.eco_dim_icon.checked = true;
+        else
+                f.eco_dim_icon.checked = false;	
+	
+	if (eco_time_start !="") {
+		f.start_hour.value=eco_time_start;
+	}
+	if (eco_time_stop !="") {
+		f.end_hour.value=eco_time_stop;	
+	}
+	
+	var days_index = eco_day;
+		
+		for(j=0;j<7;j++) {
+			if((days_index >> j & 0x1)) {
+				if(j==0)
+					f.eco_days_7.checked=1;
+				else
+					eval("f.eco_days_"+j).checked=1;
+			}			
+			else {
+				if(j==0)
+					f.eco_days_7.checked=0;
+				else
+					eval("f.eco_days_"+j).checked=0;
+			}	
+		}
+
+}
+
+function storeData()
+{
+	var f=document.forms[0];
+
+	if (!(isBlank(f.userOldPswd.value) && isBlank(f.userNewPswd.value) && isBlank(f.userConPswd.value)))
+		f.login_password.value = hex_md5(f.userNewPswd.value);
+
+	f.login_timeout.value=f.timeout.value;
+
+	if (f.daylight.checked == true)
+		f.timezone_daylightsaving.value = 1;
+	else
+		f.timezone_daylightsaving.value = 0;
+		
+	if (f.EnableUPNP[0].checked==true) 
+		f.upnp_enabled.value = '1';
+ 	else 
+		f.upnp_enabled.value = '0'; 
+
+	if( f.Enableautoupdate )
+	{	
+		if (f.Enableautoupdate[0].checked==true)
+			f.remote_auto_fwchk.value = '1';
+		else
+			f.remote_auto_fwchk.value = '0';	
+	}	
+	
+	f.ntp_server1.value=f.ntp_primary.value;
+	f.ntp_server2.value=f.ntp_backup.value;
+	return true;
+}
+
+function isBlank(s) 
+{
+	for(i=0;i<s.length;i++) 
+ 	{
+		c=s.charAt(i);
+		if((c!=' ')&&(c!='\n')&&(c!='\t'))
+			return false;
+	}
+ 	return true;
+}
+
+function isNValidIP(s) 
+{
+ 	if((isBlank(s))||(isNaN(s))||(s<0||s>255)|| (!s.match(/^[0-9]{1,3}$/)) || (s.match(/^[0]{1,2}./))) 
+		return true;
+ 	else 
+		return false;
+}
+
+function Try_Submit() 
+{
+	var f=document.forms[0];
+	var tmp,i,c;
+	var timezoneText = f.tz.value;
+	var timezoneIndex = timezoneText.substr(0,3);
+	var timezone = f.tz.value;
+	var k=0;
+	
+	f.ntp_primary_index.value = f.ntp_primary.selectedIndex;
+	f.ntp_backup_index.value = f.ntp_backup.selectedIndex;
+	
+	f.timezone_index.value = timezoneIndex;
+	f.timezone_diff.value = timezone;
+
+ 	if(!(isBlank(f.userOldPswd.value) && isBlank(f.userNewPswd.value) && isBlank(f.userConPswd.value))) 
+	{
+ 		if(hex_md5(f.userOldPswd.value)!=f.http_passwd.value)
+ 		{
+			alert(str_623);
+			return false;
+ 		}
+ 
+ 		if(f.userConPswd.value!=f.userNewPswd.value) 
+ 		{
+			alert(str_624);
+			return false;
+ 		}
+		
+		if (f.userNewPswd.value != 0 && (f.userNewPswd.value.length < 3 || f.userNewPswd.value.length > 12 || f.userConPswd.value.length <3 || f.userConPswd.value.length >12))   //eric add f.userNewPswd.value != 0 && 
+		{ 
+			alert(str_626); 
+			return false;
+		}
+ 	}
+ 	
+	ns = f.timeout.value;
+
+	for (i=0;i<ns.length;i++)
+    {
+    	c=ns.charAt(i);
+        if ((c<'0')||(c>'9'))
+		{
+			 alert(str_625);
+			 return false;
+		}	
+	}
+ 	 if(eval(f.timeout.value)<1 || eval(f.timeout.value)>99)
+ 	{
+		alert(str_625);
+		return false;
+ 	}
+
+ 	if(storeData()==false)
+		return false;
+	
+	if(f.checkremote.checked == true)
+ 	{
+		f.remote_mgmt_ip_start.value="0";
+		f.remote_mgmt_ip_end.value="0";
+		f.allow_remote_ip.value="0";
+		f.remote_mgmt_enabled.value = "1";
+		if(f.remote_port.value=="")
+			f.remote_mgmt_port.value="8080";
+		else {
+			if(!validatePort(f.remote_port.value)) {
+				f.remote_port.focus();
+				return false;
+			}
+			else
+				f.remote_mgmt_port.value = f.remote_port.value;
+		}
+	}
+	else if(!(isBlank(f.IP1.value))||!(isBlank(f.IP2.value))||!(isBlank(f.IP3.value))||!(isBlank(f.IP4.value)))
+ 	{
+		if(isNValidIP(f.IP1.value)) { alert(str_1379); return false; }
+		if(isNValidIP(f.IP2.value)) { alert(str_1379); return false; }
+		if(isNValidIP(f.IP3.value)) { alert(str_1379); return false; }
+		if(isNValidIP(f.IP4.value)) { alert(str_1379); return false; }
+		
+		f.remote_mgmt_ip_start.value = f.IP1.value + '.' + f.IP2.value + '.' + f.IP3.value + '.' + f.IP4.value;
+		f.remote_mgmt_ip_end.value = f.IP1.value + '.' + f.IP2.value + '.' + f.IP3.value + '.' + f.IP4.value;
+		f.allow_remote_ip.value="1";
+		f.remote_mgmt_enabled.value = "1";
+		if(f.remote_port.value=="")
+			f.remote_mgmt_port.value="8080";
+		else {
+			if(!validatePort(f.remote_port.value)) {
+				f.remote_port.focus();
+				return false;
+			}
+			else
+				f.remote_mgmt_port.value = f.remote_port.value;
+		}
+ 	}
+	else
+	{
+		f.remote_mgmt_enabled.value = '0';
+		f.remote_mgmt_ip_start.value = '0';
+		f.remote_mgmt_ip_end.value = '0';
+		f.remote_mgmt_port.value = '8080';
+	}
+	
+		
+	if (f.eco_dim_icon.checked == true)
+	{
+		f.eco_dim_enabled.value="1";
+	}
+	else
+	{
+		f.eco_dim_enabled.value="0";
+	}
+	if (f.dis_rad_from.checked == true)
+	{
+		f.eco_dis_rad_from.value="1";
+		f.eco_time_start.value=f.start_hour.value;
+		f.eco_time_stop.value=f.end_hour.value;
+		var eco_ar_start_time=f.eco_time_start.value.split(":");
+		f.eco_start_hour.value=parseInt(eco_ar_start_time[0],10);
+		f.eco_start_min.value=parseInt(eco_ar_start_time[1],10);
+		var eco_ar_end_time=f.eco_time_stop.value.split(":");
+		f.eco_end_hour.value=parseInt(eco_ar_end_time[0],10);
+		f.eco_end_min.value=parseInt(eco_ar_end_time[1],10);
+		for(j=1;j<8;j++) {
+			if (eval("f.eco_days_"+j).checked==1) {				
+				k+=parseInt(eval("f.eco_days_"+j).value,10);
+			}
+		}
+		f.eco_ar_day.value=k;
+	}
+	else
+	{
+		f.eco_dis_rad_from.value="0";
+		f.eco_time_start.value="0:0";
+		f.eco_time_stop.value="0:0";
+		var eco_ar_start_time=f.eco_time_start.value.split(":");
+		f.eco_start_hour.value="0";
+		f.eco_start_min.value="0";
+		var eco_ar_end_time=f.eco_time_stop.value.split(":");
+		f.eco_end_hour.value="0";
+		f.eco_end_min.value="0";
+		f.eco_ar_day.value="0";
+	}
+
+	if(f.dis_rad_from.checked == true)
+	{
+		if(!CheckTimeRange(document.forms[0]))
+		{
+			 return false;
+		}
+	}
+
+	alert(str_1202);
+
+	f.userOldPswd.value="*****";
+	f.userNewPswd.value="*****";
+	f.userConPswd.value="*****";
+
+	return true;
+}
+
+function alertAdminPswd()
+{
+	var f = document.forms[0];
+	
+ 	if(f.checkremote.checked == true) 
+		alert(str_628);
+}
+
+function EnableDisableIPTextbox()
+{
+	var f=document.forms[0];
+ 	if(f.checkremote.checked == true)
+ 	{
+		f.IP1.disabled = true;
+		f.IP2.disabled = true;
+		f.IP3.disabled = true;
+		f.IP4.disabled = true;
+ 	}
+ 	else
+ 	{
+		f.IP1.disabled = false;
+		f.IP2.disabled = false;
+		f.IP3.disabled = false;
+		f.IP4.disabled = false;
+ 	}
+}
+
+function write_lanip_head()
+{
+	  var f = document.forms[0];
+	  
+	  lan_ip = f.cur_ipaddr.value;
+	  lan_ip_head = lan_ip.substring(0,lan_ip.lastIndexOf('.'));
+	  dw(lan_ip_head);
+}
+
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 onload=Init_Value();funClock(); marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem);
+	showMenu(menuSection,menuItem,isAPmode)
+</SCRIPT>
+<form name="system" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="util_system.html">
+<input type="hidden" name="redirect_timer" value="45000">
+<input type="hidden" name="reboot" value="1">
+<input type="hidden" name="data1" value="timezone_diff timezone_daylightsaving timezone_index upnp_enabled login_password login_timeout remote_mgmt_ip_start remote_mgmt_ip_end allow_remote_ip remote_mgmt_enabled remote_mgmt_port remote_auto_fwchk ntp_server1 ntp_server2 country_code eco_time_start eco_time_stop eco_ar_day eco_start_hour eco_start_min eco_end_hour eco_end_min eco_dis_rad_from ntp_primary_index ntp_backup_index">
+<!--input type="hidden" name="data1" value="timezone_diff timezone_daylightsaving timezone_index upnp_enabled login_password login_timeout remote_mgmt_ip_start remote_mgmt_ip_end allow_remote_ip remote_mgmt_enabled remote_mgmt_port remote_auto_fwchk ntp_server1 ntp_server2 country_code"-->
+<input type="hidden" name="http_passwd" value='<%nvram_get("login_password");%>'>
+<input type="hidden" name="upnp_enabled">
+<input type="hidden" name="login_password" value='<%nvram_get("login_password");%>'>
+<input type="hidden" name="login_timeout">
+<input type="hidden" name="remote_mgmt_ip_start">
+<input type="hidden" name="remote_mgmt_ip_end">
+<input type="hidden" name="allow_remote_ip">
+<input type="hidden" name="remote_mgmt_enabled">
+<input type="hidden" name="remote_mgmt_port">
+<input type="hidden" name="timezone_index">
+<input type="hidden" name="timezone_diff">
+<input type="hidden" name="timezone_daylightsaving">
+<input type="hidden" name="remote_auto_fwchk">
+<input type="hidden" name="ntp_server1"> 
+<input type="hidden" name="ntp_server2">
+<INPUT type=hidden value=1974 name=year> 
+<INPUT type=hidden value=9 name=mon> 
+<INPUT type=hidden value=3 name=day> 
+<INPUT type=hidden value=0 name=hour> 
+<INPUT type=hidden value=0 name=min> 
+<INPUT type=hidden value=0 name=sec>
+<INPUT type="hidden" name="eco_time_start">
+<INPUT type="hidden" name="eco_time_stop">
+<INPUT type="hidden" name="eco_ar_day">
+<INPUT type="hidden" name="eco_start_hour">
+<INPUT type="hidden" name="eco_start_min">
+<INPUT type="hidden" name="eco_end_hour">
+<INPUT type="hidden" name="eco_end_min">
+<INPUT type="hidden" name="eco_dis_rad_from">
+<INPUT type="hidden" name="eco_dim_enabled">
+
+
+<input type="hidden" name="ntp_primary_index">
+<input type="hidden" name="ntp_backup_index">
+
+ <TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_540);</SCRIPT>
+ <BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>      <table class=copy_1 cellspacing=5 cellpadding=0 width=700 align=left border=0>
+      <tbody>
+        <tr>
+          <td colspan=2 height=11><b>
+            <script>dw(str_541);</script>
+          </b></td>
+        </tr>
+        <tr>
+          <td colspan=2 height=19><script>dw(str_542);</script>
+              <a 
+            onClick="window.open('glossary.html#admin_password','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"><b><font color=#0066FF>
+              <script>dw(str_47);</script>
+            </font></b></a></td>
+        </tr>
+        <tr>
+          <td nowrap width=240 height=19>- <b><span>
+            <script>dw(str_543);</script>
+          </span>&gt;</b></td>
+          <td class=plaintext_bold width=360 height=19><input type="password" name="userOldPswd" maxlength="12" size="12"></td>
+        </tr>
+        <tr>
+          <td width=240>- <b><span>
+            <script>dw(str_544);</script>
+          </span>&gt;</b></td>
+          <td class=plaintext_bold width=360><input type="password" name="userNewPswd" maxlength="12" size="12"></td>
+        </tr>
+        <tr>
+          <td width=240><nobr>- <b><span>
+            <script>dw(str_545);</script>
+          </span>&gt;</b></nobr></td>
+          <td class=plaintext_bold width=360><input type="password" name="userConPswd" maxlength="12" size="12" ></td>
+        </tr>
+        <tr>
+          <td width=240><span>- </span><b><span>
+            <script>dw(str_546);</script>
+          </span><span>&gt; </span></b></td>
+          <td class=plaintext_bold width=360><input name="timeout" maxlength="2" size="4">
+              <span class=plaintext>
+              <script>dw(str_547);</script>
+            </span> </td>
+        </tr>
+        <tr>
+          <td colspan=2><hr color=#666666 noshade size=1>
+          </td>
+        </tr>
+        <tr>
+          <td width=240 height=14><b>
+            <script>dw(str_548);</script>
+          </b></td>
+          <td class=redBold width=360 height=32><b><font color=red size=3>
+            <script type=text/javascript>
+			var f= document.forms[0];
+			
+//var date_str='1970/01/01 , 05:47:21';
+var date_str = '<%system_time();%>';
+t1=date_str.indexOf('/');
+t2=date_str.indexOf('/',t1+1);
+t3=date_str.indexOf(',',t2+1);
+t4=date_str.indexOf(':',t3+1);t5=date_str.indexOf(':',t4+1);
+f.year.value=date_str.substring(0,t1);
+f.mon.value=date_str.substring(t1+1,t2);
+f.day.value=date_str.substring(t2+1,t3);
+f.hour.value=date_str.substring(t3+1,t4);
+f.min.value=date_str.substring(t4+1,t5);
+f.sec.value=date_str.substring(t5+1);
+var d=new Date()
+var monthname=new Array(str_549,str_1282,str_1283,str_1284,str_1285,str_1286,str_1287,str_1288,str_1289,str_1290,str_1291,str_1292)
+if (str_3400=='French') {
+document.write(document.tF0.day.value+" ")
+document.write(monthname[f.mon.value-1] + ", ")
+}
+else {
+document.write(monthname[f.mon.value-1] + " ")
+document.write(f.day.value + ", ")
+} 
+document.write(f.year.value)
+    </script>
+&nbsp; </font>&nbsp;</b><span id=clock 
+            style="POSITION: relative"></span></td>
+        </tr>
+        <tr>
+          <td colspan=2><script>dw(str_550);</script>
+              <a 
+            onClick="window.open('glossary.html#time_zone','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"><b><font color=#0066FF>
+              <script>dw(str_47);</script>
+            </font></b></a></td>
+        </tr>
+        <tr>
+          <td width=240>- <b><span>
+            <script>dw(str_551);</script>
+&gt;</span></b></td>
+          <td class=plaintext_bold width=360><select style="COLOR: #000000" size="1" name="tz">
+              <script>
+
+dw('<option value="001+12:00" <% asp_TZ(1); %>>'+str_552+'</option>');
+dw('<option value="002+11:00" <% asp_TZ(2); %>>'+str_553+'</option>');
+dw('<option value="003+10:00" <% asp_TZ(3); %>>'+str_554+'</option>');
+dw('<option value="004+09:00" <% asp_TZ(4); %>>'+str_555+'</option>');
+dw('<option value="005+08:00" <% asp_TZ(5); %>>'+str_556+'</option>');
+dw('<option value="006+07:00" <% asp_TZ(6); %>>'+str_557+'</option>');
+dw('<option value="007+07:00" <% asp_TZ(7); %>>'+str_558+'</option>');
+dw('<option value="008+06:00" <% asp_TZ(8); %>>'+str_559+'</option>');
+dw('<option value="009+06:00" <% asp_TZ(9); %>>'+str_560+'</option>');
+dw('<option value="010+06:00" <% asp_TZ(10); %>>'+str_561+'</option>');
+dw('<option value="011+05:00" <% asp_TZ(11); %>>'+str_562+'</option>');
+dw('<option value="012+05:00" <% asp_TZ(12); %>>'+str_563+'</option>');
+dw('<option value="013+05:00" <% asp_TZ(13); %>>'+str_564+'</option>');
+dw('<option value="014+04:00" <% asp_TZ(14); %>>'+str_565+'</option>');
+dw('<option value="015+04:00" <% asp_TZ(15); %>>'+str_566+'</option>');
+dw('<option value="016+04:00" <% asp_TZ(16); %>>'+str_567+'</option>');
+dw('<option value="017+03:00" <% asp_TZ(17); %>>'+str_568+'</option>');
+dw('<option value="018+03:00" <% asp_TZ(18); %>>'+str_569+'</option>');
+dw('<option value="019+03:00" <% asp_TZ(19); %>>'+str_570+'</option>');
+dw('<option value="020+02:00" <% asp_TZ(20); %>>'+str_571+'</option>');
+dw('<option value="021+01:00" <% asp_TZ(21); %>>'+str_572+'</option>');
+dw('<option value="022+00:00" <% asp_TZ(22); %>>'+str_573+'</option>');
+dw('<option value="023+00:00" <% asp_TZ(23); %>>'+str_574+'</option>');
+dw('<option value="024+00:00" <% asp_TZ(24); %>>'+str_575+'</option>');
+dw('<option value="025-01:00" <% asp_TZ(25); %>>'+str_576+'</option>');
+dw('<option value="026-01:00" <% asp_TZ(26); %>>'+str_577+'</option>');
+dw('<option value="027-01:00" <% asp_TZ(27); %>>'+str_578+'</option>');
+dw('<option value="028-01:00" <% asp_TZ(28); %>>'+str_579+'</option>');
+dw('<option value="029-01:00" <% asp_TZ(29); %>>'+str_580+'</option>');
+dw('<option value="030-01:00" <% asp_TZ(30); %>>'+str_581+'</option>');
+dw('<option value="031-02:00" <% asp_TZ(31); %>>'+str_582+'</option>');
+dw('<option value="032-02:00" <% asp_TZ(32); %>>'+str_583+'</option>');
+dw('<option value="033-02:00" <% asp_TZ(33); %>>'+str_584+'</option>');
+dw('<option value="034-02:00" <% asp_TZ(34); %>>'+str_585+'</option>');
+dw('<option value="035-02:00" <% asp_TZ(35); %>>'+str_586+'</option>');
+dw('<option value="036-02:00" <% asp_TZ(36); %>>'+str_587+'</option>');
+dw('<option value="037-03:00" <% asp_TZ(37); %>>'+str_588+'</option>');
+dw('<option value="038-03:00" <% asp_TZ(38); %>>'+str_589+'</option>');
+dw('<option value="039-03:30" <% asp_TZ(39); %>>'+str_590+'</option>');
+dw('<option value="040-04:00" <% asp_TZ(40); %>>'+str_591+'</option>');
+dw('<option value="041-04:30" <% asp_TZ(41); %>>'+str_592+'</option>');
+dw('<option value="042-05:00" <% asp_TZ(42); %>>'+str_593+'</option>');
+dw('<option value="044-06:00" <% asp_TZ(44); %>>'+str_594+'</option>');
+dw('<option value="045-07:00" <% asp_TZ(45); %>>'+str_595+'</option>');
+dw('<option value="046-08:00" <% asp_TZ(46); %>>'+str_596+'</option>');
+dw('<option value="047-08:00" <% asp_TZ(47); %>>'+str_597+'</option>');
+dw('<option value="048-09:00" <% asp_TZ(48); %>>'+str_598+'</option>');
+dw('<option value="050-10:00" <% asp_TZ(50); %>>'+str_599+'</option>');
+dw('<option value="051-10:00" <% asp_TZ(51); %>>'+str_600+'</option>');
+dw('<option value="052-10:00" <% asp_TZ(52); %>>'+str_601+'</option>');
+dw('<option value="053-10:00" <% asp_TZ(53); %>>'+str_602+'</option>');
+dw('<option value="054-11:00" <% asp_TZ(54); %>>'+str_603+'</option>');
+dw('<option value="055-12:00" <% asp_TZ(55); %>>'+str_604+'</option>');
+dw('<option value="056-12:00" <% asp_TZ(56); %>>'+str_605+'</option>');
+
+    </script>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td width=240>- <b><span>
+            <script>dw(str_606);</script>
+          </span>&gt;</b></td>
+          <td class=plaintext_bold width=360><input type=checkbox 
+            value=0 name="daylight">
+              <script>dw(str_607);</script>
+          </td>
+        </tr>
+        <tr>
+          <td width=240>- <b><span>
+            <script>dw(str_629);</script>
+          </span>&gt;</b></td>
+          <td class=plaintext_bold width=360><select style="COLOR: #000000" size="1" name="ntp_primary">
+              <script>
+			dw('<option value="192.43.244.18">'+str_631+'</option>');
+			dw('<option value="192.5.41.41">'+str_633+'</option>');
+			dw('<option value="207.200.81.113">'+str_635+'</option>');
+			dw('<option value="129.132.2.21">'+str_637+'</option>');
+			dw('<option value="128.250.36.3">'+str_3160+'</option>');
+			dw('<option value="129.132.2.21">'+str_3162+'</option>');
+			</script>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td width=240>- <b><span>
+            <script>dw(str_630);</script>
+          </span>&gt;</b></td>
+          <td class=plaintext_bold width=360><select style="COLOR: #000000" size="1" name="ntp_backup">
+              <script>
+			dw('<option value="132.163.4.102">'+str_632+'</option>');
+			dw('<option value="192.5.41.209">'+str_634+'</option>');
+			dw('<option value="208.184.49.9">'+str_636+'</option>');
+			dw('<option value="130.149.17.8">'+str_638+'</option>');
+			dw('<option value="130.123.2.99">'+str_3161+'</option>');
+			dw('<option value="130.149.17.8">'+str_3163+'</option>');
+			</script>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td colspan=2><hr color=#666666 noshade size=1>
+          </td>
+        </tr>
+        <tr>
+          <td width=240><b>
+            <script>dw(str_608);</script>
+          </b></td>
+          <td class=plaintext_bold width=360>&nbsp;</td>
+        </tr>
+        <tr>
+          <td class=verdana12 colspan=2 height=26><b>
+            <script>dw(str_609);</script>
+            </b>
+              <script>dw(str_610);</script>
+              <b>
+              <script>dw(str_611);</script>
+              </b><a 
+            onClick="window.open('glossary.html#remote_mgmt','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"><b><font color=#0066FF>
+              <script>dw(str_47);</script>
+            </font></b></a></td>
+        </tr>
+        <tr>
+          <td colspan=2 height=26><span>
+            <input type="checkbox" name="checkremote" onClick="alertAdminPswd(); EnableDisableIPTextbox();" value="1" >
+            <b>
+            <script>dw(str_612);</script>
+          </b></span></td>
+          <td class=plaintext_bold width=80 height=26></td>
+        </tr>
+        <tr>
+          <td width=240>- <b><span>
+            <script>dw(str_613);</script>
+          </span>&gt;</b></td>
+          <td class=plaintext_bold width=360><input maxlength="3" size="4" name="IP1">
+        .
+          <input style="COLOR: #000000" maxlength="3" size="4" name="IP2">
+        .
+        <input style="COLOR: #000000" maxlength="3" size="4" name="IP3">
+        .
+        <input style="COLOR: #000000" maxlength="3" size="4" name="IP4">
+          </td>
+        </tr>
+        <tr>
+          <td width=240>- <b><span>
+            <script>dw(str_640);</script>
+          </span>&gt;</b></td>
+          <td class=plaintext_bold width=360><input maxlength="5" size="4" name="remote_port">
+          </td>
+        </tr>
+
+        <tr>
+          <td colspan=2><hr color=#666666 noshade size=1>
+          </td>
+        </tr>
+        <tr>
+          <td><b>
+            <script>dw(str_617);</script>
+          </b></td>
+          <td class=plaintext_bold width=360>&nbsp;</td>
+        </tr>
+        <tr>
+          <td class=verdana12 colspan=2 height=26><b>
+            <script>dw(str_609);</script>
+            </b>
+              <script>dw(str_618);</script>
+              <a 
+            onClick="window.open('glossary.html#upnp','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"><b><font color=#0066FF>
+              <script>dw(str_47);</script>
+            </font></b></a></td>
+        </tr>
+        <tr>
+          <td width=240>- <b><span>
+            <script>dw(str_619);</script>
+&gt;</span></b></td>
+          <td class=plaintext_bold width=360><input type="radio" name="EnableUPNP" value="0">
+              <script>dw(str_71);</script>
+              <input type="radio" name="EnableUPNP" value="1">
+              <script>dw(str_119);</script>
+          </td>
+        </tr>
+        <script>
+                if( havefwcheck == 'true' )
+                {	
+                dw('<TR>');
+                  dw('<TD colSpan=2> <HR color=#666666 noShade SIZE=1> </TD>');
+                dw('</TR>');
+                dw('<TR> ');
+                  dw('<TD colSpan=2><B>');
+                    dw(str_620);
+                    dw('</B></TD>');
+                dw('</TR>');
+                 dw('<TR>');
+                  dw('<TD class=verdana12 colSpan=2 height=26><B></B>');
+                    dw(str_609);
+                    dw('</B>'+str_621);
+                    dw('<A onclick="window.open(\'glossary.html#auto_update\',\'help\',\'toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150\');"');
+                    dw('href="javascript:void(0);"><B><FONT color=#0066FF>');
+                    dw(str_47);
+                    dw('</FONT></B></A></TD>');
+                  dw('</TR>');
+	                dw('<TR>');
+	                 dw('<TD width=240>- <B><SPAN>');
+	                    dw(str_622);
+	                    dw('&gt;</SPAN></B></TD>');
+	                  dw('<TD width=360> <INPUT type="radio" name="Enableautoupdate" value="0">'); 
+	                    dw(str_71);dw('<INPUT type="radio" name="Enableautoupdate" value="1">');
+	                    dw(str_119); dw('</TD>');
+	                dw('</TR>');
+                }
+                </script>
+ 
+      <a name="lang"></a>
+
+      <tr>
+      </tr>
+      <tr>
+        <td colspan=2><hr color=#666666 noshade size=1>
+        </td>
+      </tr>
+      <tr>
+        <td colspan=2><b><span><script>dw(str_2401);</script></span></b> </td>
+      </tr>
+	  <tr>
+        <td colspan=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<A onclick="window.open('glossary.html#eco_mode','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" href="javascript:void(0);"><B><FONT color=#0066FF><SCRIPT>dw(str_47);</SCRIPT>
+            </FONT></B></A>
+		</td>
+	  </tr>
+	   <tr>
+        <td colspan=2>&nbsp;</td>
+      </tr>
+ 
+      <tr>
+        <td height="25" colspan="2" valign="middle">
+        <table width="600" height="25" border=0 cellpadding="0" cellspacing="0" >
+        <tr height="25">
+        <td width="30"></td>
+        <td><input type="checkbox" name="eco_dim_icon">&nbsp; <font face="verdana" style="font-size: 8pt">
+            <script>dw(str_2402);</script>
+          </font></td><td></td></tr>
+        <tr>
+        <td width="30"></td>
+            <td width="218" class="MainTd" height="25">
+            <input type="checkbox" name="dis_rad_from">
+&nbsp; <font face="verdana" style="font-size: 8pt">
+            <script>dw(str_2403);</script>
+          </font></td>
+            <td width="352" class="MainTd">
+                <select name="start_hour" style="font-size:8pt;font-family:Arial">
+                  <option value="0:0" selected>12:00 AM</option>
+                  <option value="0:30">12:30 AM</option>
+                  <option value="1:0">01:00 AM</option>
+                  <option value="1:30">01:30 AM</option>
+                  <option value="2:0">02:00 AM</option>
+                  <option value="2:30">02:30 AM</option>
+                  <option value="3:0">03:00 AM</option>
+                  <option value="3:30">03:30 AM</option>
+                  <option value="4:0">04:00 AM</option>
+                  <option value="4:30">04:30 AM</option>
+                  <option value="5:0">05:00 AM</option>
+                  <option value="5:30">05:30 AM</option>
+                  <option value="6:0">06:00 AM</option>
+                  <option value="6:30">06:30 AM</option>
+                  <option value="7:0">07:00 AM</option>
+                  <option value="7:30">07:30 AM</option>
+                  <option value="8:0">08:00 AM</option>
+                  <option value="8:30">08:30 AM</option>
+                  <option value="9:0">09:00 AM</option>
+                  <option value="9:30">09:30 AM</option>
+                  <option value="10:0">10:00 AM</option>
+                  <option value="10:30">10:30 AM</option>
+                  <option value="11:0">11:00 AM</option>
+                  <option value="11:30">11:30 AM</option>
+				  <option value="12:0">12:00 PM</option>
+				  <option value="12:30">12:30 PM</option>
+				  <option value="13:0">01:00 PM</option>
+                  <option value="13:30">01:30 PM</option>
+                  <option value="14:0">02:00 PM</option>
+                  <option value="14:30">02:30 PM</option>
+                  <option value="15:0">03:00 PM</option>
+                  <option value="15:30">03:30 PM</option>
+                  <option value="16:0">04:00 PM</option>
+                  <option value="16:30">04:30 PM</option>
+                  <option value="17:0">05:00 PM</option>
+                  <option value="17:30">05:30 PM</option>
+                  <option value="18:0">06:00 PM</option>
+                  <option value="18:30">06:30 PM</option>
+                  <option value="19:0">07:00 PM</option>
+                  <option value="19:30">07:30 PM</option>
+                  <option value="20:0">08:00 PM</option>
+                  <option value="20:30">08:30 PM</option>
+                  <option value="21:0">09:00 PM</option>
+                  <option value="21:30">09:30 PM</option>
+                  <option value="22:0">10:00 PM</option>
+                  <option value="22:30">10:30 PM</option>
+                  <option value="23:0">11:00 PM</option>
+                  <option value="23:30">11:30 PM</option>
+				  <option value="24:0">12:00 AM</option>
+                </select>
+            &nbsp;&nbsp;&nbsp;&nbsp; <font face="verdana" style="font-size: 9pt">
+            <script>dw(str_1593);</script>
+            </font>
+            <select name="end_hour" style="font-size:8pt;font-family:Arial">
+                  <option value="0:0" selected>12:00 AM</option>
+                  <option value="0:30">12:30 AM</option>
+                  <option value="1:0">01:00 AM</option>
+                  <option value="1:30">01:30 AM</option>
+                  <option value="2:0">02:00 AM</option>
+                  <option value="2:30">02:30 AM</option>
+                  <option value="3:0">03:00 AM</option>
+                  <option value="3:30">03:30 AM</option>
+                  <option value="4:0">04:00 AM</option>
+                  <option value="4:30">04:30 AM</option>
+                  <option value="5:0">05:00 AM</option>
+                  <option value="5:30">05:30 AM</option>
+                  <option value="6:0">06:00 AM</option>
+                  <option value="6:30">06:30 AM</option>
+                  <option value="7:0">07:00 AM</option>
+                  <option value="7:30">07:30 AM</option>
+                  <option value="8:0">08:00 AM</option>
+                  <option value="8:30">08:30 AM</option>
+                  <option value="9:0">09:00 AM</option>
+                  <option value="9:30">09:30 AM</option>
+                  <option value="10:0">10:00 AM</option>
+                  <option value="10:30">10:30 AM</option>
+                  <option value="11:0">11:00 AM</option>
+                  <option value="11:30">11:30 AM</option>
+				  <option value="12:0">12:00 PM</option>
+				  <option value="12:30">12:30 PM</option>
+				  <option value="13:0">01:00 PM</option>
+                  <option value="13:30">01:30 PM</option>
+                  <option value="14:0">02:00 PM</option>
+                  <option value="14:30">02:30 PM</option>
+                  <option value="15:0">03:00 PM</option>
+                  <option value="15:30">03:30 PM</option>
+                  <option value="16:0">04:00 PM</option>
+                  <option value="16:30">04:30 PM</option>
+                  <option value="17:0">05:00 PM</option>
+                  <option value="17:30">05:30 PM</option>
+                  <option value="18:0">06:00 PM</option>
+                  <option value="18:30">06:30 PM</option>
+                  <option value="19:0">07:00 PM</option>
+                  <option value="19:30">07:30 PM</option>
+                  <option value="20:0">08:00 PM</option>
+                  <option value="20:30">08:30 PM</option>
+                  <option value="21:0">09:00 PM</option>
+                  <option value="21:30">09:30 PM</option>
+                  <option value="22:0">10:00 PM</option>
+                  <option value="22:30">10:30 PM</option>
+                  <option value="23:0">11:00 PM</option>
+                  <option value="23:30">11:30 PM</option>
+				  <option value="24:0">12:00 AM</option>
+            </select>
+            </td>
+            </tr>
+        </table></td>
+      </tr>
+      <tr>
+        <td colspan="2"><table width="600" border=0 cellpadding="0" cellspacing="0">
+        <td width="248"></td>
+            <td width="352"><table width="270" border=0 cellpadding="0" cellspacing="0">
+				 <td width="3"><font face="Arial" style="font-size: 8pt"></font></td>
+				  <td width="30"><font face="Arial" style="font-size: 8pt"><script>dw(str_1745);</script></font></td>
+				  <td width="30"><font face="Arial" style="font-size: 8pt"><script>dw(str_1746);</script></font></td>
+				  <td width="30"><font face="Arial" style="font-size: 8pt"><script>dw(str_1747);</script></font></td>
+				  <td width="30"><font face="Arial" style="font-size: 8pt"><script>dw(str_1748);</script></font></td>
+				  <td width="30"><font face="Arial" style="font-size: 8pt"><script>dw(str_1749);</script></font></td>
+				  <td width="30"><font face="Arial" style="font-size: 8pt"><script>dw(str_1750);</script></font></td>
+				  <td width="30"><font face="Arial" style="font-size: 8pt"><script>dw(str_1751);</script></font></td>
+            </table></td>
+        </table></td>
+      </tr>
+      <tr>
+        <td colspan="2"><table width="600" border=0 cellpadding="0" cellspacing="0">
+        <td width="248" align="right"><font face="Arial" style="font-size: 8pt"><script>dw(str_2404);</script></font>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+            <td width="352"><table width="270" border=0 cellpadding="0" cellspacing="0">
+              	  <td width="40"><input type="checkbox" value="1" name="eco_days_7"></td>
+                  <td width="40"><input type="checkbox" value="2" name="eco_days_1"></td>
+                  <td width="40"><input type="checkbox" value="4" name="eco_days_2"></td>
+                  <td width="40"><input type="checkbox" value="8" name="eco_days_3"></td>
+                  <td width="40"><input type="checkbox" value="16" name="eco_days_4"></td>
+                  <td width="40"><input type="checkbox" value="32" name="eco_days_5"></td>
+                  <td width="40"><input type="checkbox" value="64" name="eco_days_6"></td>
+            </table></td>
+        </table></td>
+      </tr>
+      <tr>
+        <td colspan=2></td>
+      </tr>
+      <tr>
+        <td width=240>&nbsp;</td>
+        <td align=middle width=360><script>
+				dw('<input id="submitBtn_clear" type="button" value="');
+				dw(str_48);
+				dw('" style="{width:175px;}" class="submitBtn" onclick="f.reset();Init_Value();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">');
+				dw('<input id="submitBtn_apply" type="submit" style="{width:175px;}" value="');
+				dw(str_49);
+				dw('" onClick="return Try_Submit();" class="submitBtn">');
+			</script>
+        </td>
+      </tr>
+    </table></TD>
+  </TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</form>
+<iframe id="fwck_ifram" width="0" height="0" scrolling="no" frameborder="0">
+</iframe>
+</BODY></HTML>

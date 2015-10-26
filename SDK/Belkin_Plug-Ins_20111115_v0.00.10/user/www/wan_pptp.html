@@ -1,0 +1,760 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=Content-Type content="text/html; charset=<%nvram_get("charset");%>">
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_743+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Connection Type';
+var menuSection	='WAN';
+var menuItem	='Connection Type';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function SubnetCheck_dypptp(ipaddr, netmask, gateway)
+{
+	 sn_octs = netmask.value.split('.');                         // Grab subnet mask octets         
+   ref_octs = ipaddr.value.split('.');    
+   global_ip_octs = gateway.value.split('.');    
+   global_ip_bin= (global_ip_octs[3]-0)+(256*(global_ip_octs[2]-0))+(256*256*(global_ip_octs[1]-0))+(256*256*256*(global_ip_octs[0]-0)); 
+	 sn_bin=(sn_octs[3]-0)+(256*(sn_octs[2]-0))+(256*256*(sn_octs[1]-0))+(256*256*256*(sn_octs[0]-0));
+   ref_bin=(ref_octs[3]-0)+(256*(ref_octs[2]-0))+(256*256*(ref_octs[1]-0))+(256*256*256*(ref_octs[0]-0));
+	
+	nwaddress = ref_bin & sn_bin;	// bit-wise AND  
+  compare = global_ip_bin & sn_bin;	// same for reference address  
+	
+	if (nwaddress != compare)	{
+		alert(str_397);
+		return 0;
+	}
+	else if (nwaddress == compare)	{
+		return 1;
+	}
+}
+
+function reload_page()
+{
+	document.location.href="wan_pptp.html";
+}
+function sel_My_Internet_IP()
+{
+	var f=document.wan_form;
+	if(f.ip_addr_assign.selectedIndex == '0')
+	{
+		for(var i=1;i<=4;i++)
+		{
+			eval("f.pptpmyip"+i).disabled = 1;
+			eval("f.pptpmyip"+i).value = '';
+			eval("f.pptpsubnet"+i).disabled = 1;
+			eval("f.pptpsubnet"+i).value = '';
+			eval("f.pptpdw"+i).disabled = 1;
+			eval("f.pptpdw"+i).value = '';
+		}
+			
+	}
+	else
+	{
+		for(var i=1;i<=4;i++)
+		{
+			eval("f.pptpmyip"+i).disabled = 0;
+			eval("f.pptpsubnet"+i).disabled = 0;
+			eval("f.pptpdw"+i).disabled = 0;
+		}
+	}
+}
+function initData()
+{
+	var f=document.wan_form;
+	var pptp_username ='<%nvram_get("pptp_username");%>';
+	var pptp_password ='<%nvram_get("pptp_password");%>';
+	var pptp_hostname ='<%nvram_get("wan_hostname");%>';
+	var ipadder ='<%nvram_get("pptp_local_ipaddr");%>';
+	var netmask ='<%nvram_get("pptp_local_netmask");%>';
+	var pptp_gateway ='<%nvram_get("pptp_gateway");%>';
+
+	var connection_id ='<%nvram_get("pptp_conn_id");%>';
+	var disconnect_idle_time='<%nvram_get("pptp_idle_time");%>';
+	var pptp_demand='<%nvram_get("pptp_demand");%>';	
+	var lang_code='<%nvram_get("lang_code");%>';
+	var pptp_dhcp='<%nvram_get("pptp_dhcp");%>';
+	
+	//Not in V1
+	//f.pptp_conn_idtext.value = connection_id;
+	
+	t1=ipadder.indexOf('.');
+	if(t1!=-1)f.pptpmyip1.value=ipadder.substring(0,t1);
+	t2=ipadder.indexOf('.',(t1+1));	
+	if(t2!=-1)f.pptpmyip2.value=ipadder.substring((t1+1),t2);
+	t1=ipadder.indexOf('.',(t2+1));
+	if(t1!=-1)f.pptpmyip3.value=ipadder.substring((t2+1),t1);
+	f.pptpmyip4.value=ipadder.substring(t1+1);
+
+	t1=netmask.indexOf('.');
+	if(t1!=-1)f.pptpsubnet1.value=netmask.substring(0,t1);
+	t2=netmask.indexOf('.',(t1+1));
+	if(t2!=-1)f.pptpsubnet2.value=netmask.substring((t1+1),t2);
+	t1=netmask.indexOf('.',(t2+1));
+	if(t1!=-1)f.pptpsubnet3.value=netmask.substring((t2+1),t1);
+	f.pptpsubnet4.value=netmask.substring(t1+1); 
+	
+	t1=pptp_gateway.indexOf('.');
+	if(t1!=-1)f.pptpdw1.value=pptp_gateway.substring(0,t1);
+	t2=pptp_gateway.indexOf('.',(t1+1));
+	if(t2!=-1)f.pptpdw2.value=pptp_gateway.substring((t1+1),t2);
+	t1=pptp_gateway.indexOf('.',(t2+1));
+	if(t1!=-1)f.pptpdw3.value=pptp_gateway.substring((t2+1),t1);
+	f.pptpdw4.value=pptp_gateway.substring(t1+1);
+
+	f.pptp_server_ipaddr_new.value = '<%nvram_get("pptp_server_ipaddr_new");%>';
+/*
+	t1=serverip.indexOf('.');
+	if(t1!=-1)f.Pptpserviceip1.value=serverip.substring(0,t1);
+	t2=serverip.indexOf('.',(t1+1));
+	if(t2!=-1)f.Pptpserviceip2.value=serverip.substring((t1+1),t2);
+	t1=serverip.indexOf('.',(t2+1));
+	if(t1!=-1)f.Pptpserviceip3.value=serverip.substring((t2+1),t1);
+	f.Pptpserviceip4.value=serverip.substring(t1+1);
+*/
+	f.pptp_usernametext.value = pptp_username;
+	f.pptp_passwordtext.value = pptp_password;
+	f.pptp_passwordtext_2.value = pptp_password;
+	f.m_wan_hostname.value = pptp_hostname;
+	
+	if(pptp_demand == '0')
+	{
+		f.pptp_idle_disconnect_box.checked=false;
+	}
+	else
+	{
+		f.pptp_idle_disconnect_box.checked=true;
+	}
+	
+	if( disconnect_idle_time =='' || disconnect_idle_time =='0')
+	{
+		f.idle_interval.value='0';
+	}
+	else
+	{	
+		f.idle_interval.value=parseInt(disconnect_idle_time)/60;
+	}
+	
+	if(pptp_dhcp == '1')
+		f.ip_addr_assign.selectedIndex = '0';
+	else
+		f.ip_addr_assign.selectedIndex = '1';
+	sel_My_Internet_IP();
+}
+
+function toggleAutoDLS()
+{
+	if(document.wan_form.pptp_idle_disconnect_box.checked) 	
+		document.wan_form.idle_interval.disabled = false;
+	else 
+		document.wan_form.idle_interval.disabled = true;
+}
+
+function Init_Value()
+{
+	initData();
+	toggleAutoDLS();
+}
+
+function isBlank(s) 
+{
+for(var i = 0; i < s.length; i++) 
+{
+var c = s.charAt(i);
+if((c !=' ') && (c!='\n') && (c !='\t')) return false;
+}
+return true;
+}
+
+function isNValidIP(s) 
+{
+	if((isBlank(s))||(isNaN(s))||(s<0||s>255) || (!s.match(/^[0-9]{1,3}$/)) || (s.match(/^[0]{1,2}./)))   
+		return true;
+	else 
+		return false;
+}
+function isNValidIP1(s) 
+{
+	if((isBlank(s))||(isNaN(s))||(s<1||s>223) || (!s.match(/^[0-9]{1,3}$/)) || (s.match(/^[0]{1,2}./)))   
+		return true;
+	else 
+		return false;
+}
+function isNValidIP4(s) 
+{
+	if((isBlank(s))||(isNaN(s))||(s<1||s>254) || (!s.match(/^[0-9]{1,3}$/)) || (s.match(/^[0]{1,2}./)))   
+		return true;
+	else 
+		return false;
+}
+function isInteger(val)
+{
+ for(i=0; i<val.length; i++)
+ {
+	if(val.charAt(i)<'0' || val.charAt(i)>'9') 
+		return false;
+ }
+ return true;
+}
+
+function maskcheckIP23(I)
+{
+	if(!(I == 0 || I==128 || I==192 || I==224 || I==240 || I==248 || I==252 || I==254 || I==255))
+		return true;
+}
+function maskcheckIP4(I)
+{
+	if(!(I == 0 || I==128 || I==192 || I==224 || I==240 || I==248 || I==252 || I==254))
+		return true;
+}
+function validateLanNetmask(val)   
+{
+ if(val!='255.255.255.0' && val!='255.255.255.128' && val!='255.255.255.192' && val!='255.255.255.224' &&
+	val!='255.255.255.240' && val!='255.255.255.248' && val!='255.255.255.252' && val!='255.255.255.254'&&
+	val!='255.255.0.0' && val!='255.255.128.0' && val!='255.255.192.0' && val!='255.255.224.0' &&
+	val!='255.255.240.0' && val!='255.255.248.0' && val!='255.255.252.0' && val!='255.255.254.0' &&
+	val!='255.0.0.0' && val!='255.128.0.0' && val!='255.192.0.0' && val!='255.224.0.0' &&
+	val!='255.240.0.0' && val!='255.248.0.0' && val!='255.252.0.0' && val!='255.254.0.0')
+ {
+	alert(str_674);
+	return false;
+ }
+}
+function evaltF() 
+{
+	var f=document.forms[0];
+	var pptpipaddr = f.pptp_server_ipaddr_new.value.split('.');
+	var pptpipaddr_all = f.pptp_server_ipaddr_new.value;
+  
+  t1=pptpipaddr_all.indexOf('.',0);
+  t2=pptpipaddr_all.indexOf('.',t1+1);
+  t3=pptpipaddr_all.indexOf('.',t2+1);
+  t4=pptpipaddr_all.indexOf('.',t3+1);
+  
+  if(pptpipaddr[0]=='' || pptpipaddr[1]=='' || pptpipaddr[2]==''|| pptpipaddr[3]=='' ){alert(pptpipaddr_all+str_3203); return false;}
+  
+  if(pptpipaddr[0].match(/^[0-9]{1,3}$/))
+  {
+  		if(t2==-1){alert(str_3631+pptpipaddr_all); return false;}
+  
+  	if(pptpipaddr[1].match(/^[0-9]{1,3}$/))
+  	{
+  			if(t3==-1){alert(str_3631+pptpipaddr_all); return false;}
+  		
+  		if(pptpipaddr[2].match(/^[0-9]{1,3}$/))
+  		{
+  				if(pptpipaddr[3]==''){alert(str_3631+pptpipaddr_all); return false;}
+  		
+  			if(pptpipaddr[3].match(/^[0-9]{1,3}$/))
+  			{
+  					if(t4!=-1){alert(str_3631+pptpipaddr_all); return false;}
+ 
+						if( pptpipaddr[0] < 1  || pptpipaddr[0] > 223 ){alert(str_1780); return false;}
+						if( pptpipaddr[3] < 1  || pptpipaddr[3] > 254 ){alert(str_2703); return false;}
+	
+						if( pptpipaddr[0] >= 1  && pptpipaddr[0] <= 223 && pptpipaddr[3] >= 1  && pptpipaddr[3] <= 254) 
+    				{
+	 						if(pptpipaddr[2] < 0  || pptpipaddr[2] > 255 || pptpipaddr[1] < 0  || pptpipaddr[1] > 255)
+	   					{alert(str_3631+pptpipaddr_all); return false;}
+  					}	
+				}
+			}	
+		}
+	}			
+	
+	for(i=0;i<pptpipaddr_all.length;i++)
+	{
+		var token=pptpipaddr_all.charAt(i);
+		if(token=='!' || token=='\"' || token=='#' || token=='$' || token=='%'
+		|| token=='&' || token=='\'' || token=='(' || token==')' || token=='*'
+		|| token=='+' || token=='/' || token==':' || token==';' || token=='<'
+		|| token=='=' || token=='>' || token=='?' || token=='@' || token=='['
+		|| token=='\\' || token==']' || token=='^' || token=='\'' || token=='{'
+		|| token=='|' || token=='}' || token=='~' || token=='`' )
+		{
+			alert(str_4011);
+			return false;
+		}	 	
+	}
+	
+	if(f.pptp_usernametext.value.length < 1) {alert(str_755); return false;}
+	if(f.pptp_passwordtext.value.length < 1) {alert(str_740); return false;}
+	if(f.pptp_passwordtext_2.value.length < 1) {alert(str_740); return false;}
+
+	if(f.pptp_passwordtext.value!=f.pptp_passwordtext_2.value)
+	{ 
+		f.pptp_passwordtext.focus();
+		f.pptp_passwordtext.select();
+		alert(str_740);
+		return false;
+	}
+	
+		for(i=0;i<f.m_wan_hostname.value.length;i++)
+	{
+		var token=f.m_wan_hostname.value.charAt(i);
+		if(token=='!' || token=='\"' || token=='#' || token=='$' || token=='%'
+		|| token=='&' || token=='\'' || token=='(' || token==')' || token=='*'
+		|| token=='+' || token=='/' || token==':' || token==';' || token=='<'
+		|| token=='=' || token=='>' || token=='?' || token=='@' || token=='['
+		|| token=='\\' || token==']' || token=='^' || token=='\'' || token=='{'
+		|| token=='|' || token=='}' || token=='~' || token=='`' )
+		{
+			alert(str_4011);
+			return false;
+		}	 
+	}
+	//if(f.m_wan_hostname.value.length < 1) {alert(str_713); return false;} GTK+++ matched for F7D4302 SPEC 20100803
+/*
+	if(isNValidIP1(f.Pptpserviceip1.value) || f.Pptpserviceip1.value==255 || f.Pptpserviceip1.value==0 )
+	{
+		f.Pptpserviceip1.focus();
+		f.Pptpserviceip1.select();
+		alert(str_1379);
+		return false;
+	}
+
+	if(isNValidIP(f.Pptpserviceip2.value))
+	{
+		f.Pptpserviceip2.focus();
+		f.Pptpserviceip2.select();
+		alert(str_1379);
+		return false;
+	}
+
+	if(isNValidIP(f.Pptpserviceip3.value))
+	{
+		f.Pptpserviceip3.focus();
+		f.Pptpserviceip3.select();
+		alert(str_1379);
+		return false;
+	}
+
+	if(isNValidIP4(f.Pptpserviceip4.value) ) //|| f.Pptpserviceip4.value==255 || f.Pptpserviceip4.value==0 )
+	{
+		f.Pptpserviceip4.focus();
+		f.Pptpserviceip4.select();
+		alert(str_1379);
+		return false;
+	}
+*/	
+	if(f.ip_addr_assign.selectedIndex == '0')
+	{
+		f.pptp_dhcp.value = 1;
+	}
+	else
+	{
+		f.pptp_dhcp.value = 0;
+		if(isNValidIP1(f.pptpmyip1.value) || f.pptpmyip1.value == 0 || f.pptpmyip1.value >223)
+		{
+			f.pptpmyip1.focus();
+			f.pptpmyip1.select();
+			alert(str_1780);
+			return false;
+		}
+		
+		if(isNValidIP(f.pptpmyip2.value))
+		{
+			f.pptpmyip2.focus();
+			f.pptpmyip2.select();
+			alert(str_641);
+			return false;
+		}
+		
+		if(isNValidIP(f.pptpmyip3.value))
+		{
+			f.pptpmyip3.focus();
+			f.pptpmyip3.select();
+			alert(str_641);
+			return false;
+		}
+	
+		if(isNValidIP4(f.pptpmyip4.value) || f.pptpmyip4.value == 0 || f.pptpmyip4.value == 255)
+		{
+			f.pptpmyip4.focus();
+			f.pptpmyip4.select();
+			alert(str_1360);
+			return false;
+		}
+	
+				
+		if(isNValidIP(f.pptpsubnet1.value) || !(f.pptpsubnet1.value == 255) )	
+		{
+			f.pptpsubnet1.focus();
+			f.pptpsubnet1.select();
+			alert(str_1242);
+			return false;
+		}
+	
+		if(isNValidIP(f.pptpsubnet2.value) || (maskcheckIP23(f.pptpsubnet2.value)))
+		{
+			f.pptpsubnet2.focus();
+			f.pptpsubnet2.select();
+			alert(str_674);
+			return false;
+		}
+	
+		if(isNValidIP(f.pptpsubnet3.value) || (maskcheckIP23(f.pptpsubnet3.value)) )
+		{
+			f.pptpsubnet3.focus();
+			f.pptpsubnet3.select();
+			alert(str_674);
+			return false;
+		}
+	
+		if(isNValidIP(f.pptpsubnet4.value) || (maskcheckIP4(f.pptpsubnet4.value)))
+		{
+			f.pptpsubnet4.focus();
+			f.pptpsubnet4.select();
+			alert(str_674);
+			return false;
+		}
+		f.pptp_local_netmask.value=f.pptpsubnet1.value+'.'+f.pptpsubnet2.value+'.'+f.pptpsubnet3.value+'.'+f.pptpsubnet4.value;
+		if (validateLanNetmask(f.pptp_local_netmask.value)==false) return false;
+		if(isNValidIP(f.pptpdw1.value) || f.pptpdw1.value==255 || f.pptpdw1.value==0 )
+		{
+		
+			f.pptpdw1.focus();
+			f.pptpdw1.select();
+			alert(str_1780);
+			return false;
+		}
+	
+		if(isNValidIP(f.pptpdw2.value))
+		{
+			f.pptpdw2.focus();
+			f.pptpdw2.select();
+			alert(str_641);
+			return false;
+		}
+	
+		if(isNValidIP(f.pptpdw3.value))
+		{
+			f.pptpdw3.focus();
+			f.pptpdw3.select();
+			alert(str_641);
+			return false;
+		}
+	
+		if(isNValidIP(f.pptpdw4.value) || (f.pptpdw4.value<1 || f.pptpdw4.value>254) )
+		{
+			f.pptpdw4.focus();
+			f.pptpdw4.select();
+			alert(str_1360);
+			return false;
+		}
+	}
+	
+	
+	if(f.pptp_idle_disconnect_box.checked==true)
+	{
+		if((isBlank(f.idle_interval.value))||(isNaN(f.idle_interval.value))|| 
+		   (!isInteger(f.idle_interval.value)) || (f.idle_interval.value<1 || f.idle_interval.value>99))
+		{
+			alert(str_738);
+			f.idle_interval.focus();
+			f.idle_interval.select();
+			return false;
+		}
+	}
+	
+	f.pptp_username.value = f.pptp_usernametext.value;
+	f.pptp_password.value = f.pptp_passwordtext.value;
+	//f.pptp_server_ipaddr.value=f.Pptpserviceip1.value+'.'+f.Pptpserviceip2.value+'.'+f.Pptpserviceip3.value+'.'+f.Pptpserviceip4.value;
+
+	f.pptp_local_ipaddr.value= ""+f.pptpmyip1.value+'.'+f.pptpmyip2.value+'.'+f.pptpmyip3.value+'.'+f.pptpmyip4.value;
+	f.pptp_local_netmask.value=f.pptpsubnet1.value+'.'+f.pptpsubnet2.value+'.'+f.pptpsubnet3.value+'.'+f.pptpsubnet4.value;
+	f.pptp_gateway.value=f.pptpdw1.value+'.'+f.pptpdw2.value+'.'+f.pptpdw3.value+'.'+f.pptpdw4.value;
+	f.wan_hostname.value = f.m_wan_hostname.value;
+	
+	if(f.pptp_idle_disconnect_box.checked==false)
+	{
+		
+		f.pptp_demand.value = '0';
+		 if(f.idle_interval.value == '0')
+			f.pptp_idle_time.value=parseInt(f.idle_interval.value)*60;
+		 else
+			f.pptp_idle_time.value='<%nvram_get("pptp_idle_time");%>';
+		
+	}
+	else
+	{
+			
+		 f.pptp_demand.value = '1';
+		 if(f.idle_interval.value != '0')
+		 {
+			f.pptp_idle_time.value=parseInt(f.idle_interval.value)*60;
+			f.pptp_keep_alive.value = '';
+		 }
+		 else
+			f.pptp_keep_alive.value = '0';
+			
+	}
+
+/*Not in V1        
+	if( f.pptp_conn_idtext.value.length<0 || f.pptp_conn_idtext.value.length>23)
+	{
+		alert(str_1269);
+		return false;
+	}
+		
+	f.pptp_conn_id.value=f.pptp_conn_idtext.value;
+*/
+	return true;
+}
+
+function connect() 
+{
+if(evaltF())
+{
+document.wan_form.submit();
+return true;
+}
+return false;
+}
+function disconnect() 
+{
+if( evaltF())
+{
+document.wan_form.submit();
+return true;
+}
+return false;
+}
+
+function Try_Submit() 
+{
+	var f = document.wan_form;	
+	if(evaltF())
+	{
+		if ( !SubnetCheck_dypptp(f.pptp_local_ipaddr, f.pptp_local_netmask, f.pptp_gateway) )	{	return false;}
+		alert(str_1202);
+		return true;
+	}
+	else
+		return false;
+
+}
+
+function nextF()
+{
+	var f = document.forms[0];
+	if(evaltF())
+	{
+		f.next_page.value="wan_dns.html";
+		f.reboot.value="0";
+		f.submit();
+	}
+	return false;	
+}  
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor="#ffffff" leftMargin="0" topMargin="0" onload="Init_Value();" marginheight="0" marginwidth="0">
+<SCRIPT language="JavaScript">
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name)
+</SCRIPT>
+<FORM id="wan_form" name="wan_form" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wan_pptp.html">
+<input type="hidden" name="redirect_timer" value="45000">
+<input type="hidden" name="reboot" value="1">
+<input type="hidden" name="data1" value="wan_proto pptp_username pptp_password pptp_server_ipaddr pptp_local_ipaddr pptp_local_netmask pptp_idle_time wan_hostname pptp_conn_id 
+ wan_alias1_enabled wan_alias2_enabled wan_alias3_enabled wan_alias4_enabled wan_alias5_enabled 
+ wan_ipaddr1 wan_ipaddr2 wan_ipaddr3 wan_ipaddr4 wan_ipaddr5 
+ pppoe_mtu 
+ wan_netmask1 wan_netmask2 wan_netmask3 wan_netmask4 wan_netmask5 pptp_demand pptp_dhcp pptp_gateway pptp_keep_alive pptp_server_ipaddr_new">
+
+<input type="hidden" name="wan_proto" value="pptp">
+<input type="hidden" name="wan_hostname">
+<input type="hidden" name="pptp_username">
+<input type="hidden" name="pptp_password">
+<input type="hidden" name="pptp_server_ipaddr">
+<input type="hidden" name="pptp_local_ipaddr">
+<input type="hidden" name="pptp_local_netmask">
+<input type="hidden" name="pptp_gateway">
+<input type="hidden" name="pptp_idle_time">
+<input type="hidden" name="pptp_conn_id">
+<input type="hidden" name="pptp_demand">
+<input type="hidden" name="pptp_dhcp" value=''>
+<input type="hidden" name="wan_alias1_enabled" value=''>
+<input type="hidden" name="wan_alias2_enabled" value=''>
+<input type="hidden" name="wan_alias3_enabled" value=''>
+<input type="hidden" name="wan_alias4_enabled" value=''>
+<input type="hidden" name="wan_alias5_enabled" value=''>
+
+<input type="hidden" name="wan_ipaddr1" value=''>
+<input type="hidden" name="wan_ipaddr2" value=''>
+<input type="hidden" name="wan_ipaddr3" value=''>
+<input type="hidden" name="wan_ipaddr4" value=''>
+<input type="hidden" name="wan_ipaddr5" value=''>
+
+<input type="hidden" name="wan_netmask1" value=''>
+<input type="hidden" name="wan_netmask2" value=''>
+<input type="hidden" name="wan_netmask3" value=''>
+<input type="hidden" name="wan_netmask4" value=''>
+<input type="hidden" name="wan_netmask5" value=''>
+<input type="hidden" name="pptp_keep_alive">
+
+<input type="hidden" name="pppoe_mtu" value="<%nvram_get("pptp_mtu");%>">
+
+ <TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_743);</SCRIPT>
+<BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=5 cellPadding=0 width=600 align=left 
+      border=0>
+        <TBODY>
+        <TR>
+          <TD width=36>
+          <TD><A 
+            onclick="window.open('glossary.html#pptp','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"><B><FONT color=#0066FF>
+            <SCRIPT>dw(str_47);</SCRIPT>
+            </FONT></B></A><BR><BR></TD></TR>
+        <TR>
+          <TD width=36>&nbsp;</TD>
+          <TD width=174><B>
+            <SCRIPT>dw(str_744);</SCRIPT>
+            &gt;</B></TD>
+          <TD class=plaintext_bold width=235>
+		  	<INPUT maxLength="63" size="25" name="pptp_usernametext">
+		  </TD></TR>
+        <TR>
+          <TD width=36>&nbsp;</TD>
+          <TD width=174><B>
+            <SCRIPT>dw(str_745);</SCRIPT>
+            &gt;</B></TD>
+          <TD class=plaintext_bold width=235>
+		  	<INPUT type="password" maxLength="63" size="25" name="pptp_passwordtext"> 
+		  </TD></TR>
+        <TR>
+          <TD width=36 height=18>&nbsp;</TD>
+          <TD width=174 height=18><B>
+            <SCRIPT>dw(str_746);</SCRIPT>
+            &gt;</B></TD>
+          <TD class=plaintext_bold width=235 height=18>
+		  	<INPUT type="password" maxLength="63" size="25" name="pptp_passwordtext_2">
+		  </TD></TR>
+        <TR>
+          <TD width=36>&nbsp;</TD>
+          <TD width=174><B>
+            <SCRIPT>dw(str_747);</SCRIPT>
+            &gt;</B></TD>
+          <TD class=plaintext_bold width=235><INPUT maxLength=39 size=25 
+            name=m_wan_hostname></TD><!--modified by henry 20040402 --></TR>
+        <TR>
+          <TD width=36 height=27>&nbsp;</TD>
+          <TD width=174 height=27><B>
+            <SCRIPT>dw(str_748);</SCRIPT>
+            &gt;</B></TD>
+          <TD class=plaintext_bold width=235 height=27>
+          	<INPUT size=25 name=pptp_server_ipaddr_new>
+          	<!--INPUT class="ipbox" maxLength=3 size=3 name=Pptpserviceip1>. 
+          	<INPUT class="ipbox" maxLength=3 size=3 name=Pptpserviceip2>. 
+          	<INPUT class="ipbox" maxLength=3 size=3 name=Pptpserviceip3>. 
+          	<INPUT class="ipbox" maxLength=3 size=3 name=Pptpserviceip4-->
+          </TD></TR>
+        <TR>
+          <TD width=36 height=27>&nbsp;</TD>
+          <TD width=174 height=27><B><SCRIPT>dw(str_1770);</SCRIPT> &gt;</B></TD>
+          <TD class=plaintext_bold width=235 height=27><span class="formText">
+            <!--INPUT onclick="click_pptp_dhcp();" type="checkbox" name="pptp_dhcp_checkbox"-->
+			<select name="ip_addr_assign" onChange="sel_My_Internet_IP();">
+				<option value="1" selected><SCRIPT>dw(str_1771);</SCRIPT></option>
+				<option value="0"><SCRIPT>dw(str_1772);</SCRIPT></option>
+			</select>
+          </span> </TD>
+		  </TR>
+        <TR>
+        <TR>
+          <TD width=36 height=27>&nbsp;</TD>
+          <TD width=174 height=27><B>
+            <SCRIPT>dw(str_749);</SCRIPT>
+            &gt;</B></TD>
+          <TD class=plaintext_bold width=235 height=27><INPUT class="ipbox" maxLength=3 
+            size=3 name=pptpmyip1>. <INPUT class="ipbox" maxLength=3 size=3 name=pptpmyip2>. 
+            <INPUT class="ipbox" maxLength=3 size=3 name=pptpmyip3>. <INPUT class="ipbox" maxLength=3 size=3 
+            name=pptpmyip4> </TD></TR>
+        <TR>
+          <TD width=36 height=27>&nbsp;</TD>
+          <TD width=174 height=27><B>
+            <SCRIPT>dw(str_750);</SCRIPT>
+            &gt;</B></TD>
+          <TD class=plaintext_bold width=235 height=27><INPUT class="ipbox" maxLength=3 
+            size=3 name=pptpsubnet1>. <INPUT class="ipbox" maxLength=3 size=3 
+            name=pptpsubnet2>. <INPUT class="ipbox" maxLength=3 size=3 name=pptpsubnet3>. 
+            <INPUT class="ipbox" maxLength=3 size=3 name=pptpsubnet4> </TD></TR>
+		 <TR>
+          <TD width=36 height=27>&nbsp;</TD>
+          <TD width=174 height=27><B>
+            <SCRIPT>dw(str_338);</SCRIPT>
+            &gt;</B></TD>
+          <TD class=plaintext_bold width=235 height=27><INPUT class="ipbox" maxLength=3 
+            size=3 name=pptpdw1>. <INPUT class="ipbox" maxLength=3 size=3 
+            name=pptpdw2>. <INPUT class="ipbox" maxLength=3 size=3 name=pptpdw3>. 
+            <INPUT class="ipbox" maxLength=3 size=3 name=pptpdw4> </TD></TR>
+        <!--TR>Not in V1
+          <TD width=36 height=27>&nbsp;</TD>
+          <TD width=174 height=27><B>
+            <SCRIPT>dw(str_751);</SCRIPT>
+            &gt;</B></TD>
+          <TD class=plaintext_bold width=235 height=27><INPUT maxLength=23 
+            size=23 name=pptp_conn_idtext></FONT> </TD></TR-->
+        <TR>
+          <TD width=5>&nbsp;</TD>
+          <TD class=formText colSpan=2><INPUT onclick=toggleAutoDLS(); 
+            type=checkbox name=pptp_idle_disconnect_box><B>
+            <SCRIPT>dw(str_736);</SCRIPT>
+             <INPUT maxLength="2" size="10" name="idle_interval">
+            <SCRIPT>dw(str_737);</SCRIPT>
+            </B><A class=plaintext_bold 
+            onclick="window.open('glossary.html#disconnect','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"><B><FONT color=#0066FF>
+            <SCRIPT>dw(str_47);</SCRIPT>
+             </FONT></B></A></TD></TR>
+        <TR>
+          <TD width=36>&nbsp;</TD>
+          <TD class=formText width=409 colSpan=2>
+            <DIV align=center><A href="wan_dns.html"><B><FONT color=#0066FF>
+            <SCRIPT>dw(str_754);</SCRIPT>
+            </FONT></B></A></DIV>&nbsp;</TD></TR>
+        <TR>
+          <TD width=88>&nbsp;</TD>
+          <TD align=middle colSpan=2>
+            <SCRIPT>
+				dw('<input id="submitBtn_clear" type="button" value="');
+				dw(str_48);
+				dw('" style="{width:160px;}" class="submitBtn" onclick="reload_page();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">');
+				dw('<input id="submitBtn_apply" type="submit" style="{width:160px;}" value="');
+				dw(str_49);
+				dw('" onClick="return Try_Submit();" class="submitBtn"></td>');
+						</SCRIPT>
+          			</TD></TR></TBODY></TABLE></FORM></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

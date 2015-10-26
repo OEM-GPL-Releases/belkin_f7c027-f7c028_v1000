@@ -1,0 +1,12 @@
+#! /bin/sh
+set -e
+
+test "$1" = 'purge' || exit 0
+if test -e /tmp/dropbear; then
+  rm -f /tmp/dropbear/dropbear_rsa_host_key
+  rm -f /tmp/dropbear/dropbear_dss_host_key
+  rmdir --ignore-fail-on-non-empty /tmp/dropbear
+fi
+update-rc.d dropbear remove >/dev/null
+rm -f /tmp/default/dropbear
+rm -rf /tmp/dropbear/supervise /tmp/dropbear/log/supervise

@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>DEBUG</title>
+<meta http-equiv="Content-Type" content="text/html; charset=<%nvram_get("charset");%>">
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<SCRIPT>assign_var();</SCRIPT>
+<script language="javascript">
+function stop_ap(passForm)
+{
+	passForm.button_val.value=1;
+	passForm.submit();
+}
+
+function con_tx(passForm)
+{
+	passForm.button_val.value=2;
+	passForm.submit();
+}
+
+function tansmit_frame(passForm)
+{
+	passForm.button_val.value=3;
+	passForm.submit();
+}
+
+function tx_carrier(passForm)
+{
+	passForm.button_val.value=4;
+	passForm.submit();
+}
+
+function rx_sen(passForm)
+{
+	passForm.button_val.value=5;
+	passForm.submit();
+}
+
+function spectrum_mask(passForm)
+{
+	passForm.button_val.value=6;
+	passForm.submit();
+}
+
+function start_ap(passForm)
+{
+	passForm.button_val.value=7;
+	passForm.submit();
+}
+
+function InitValue(passForm) 
+{
+  if('<%nvram_get("Data21");%>'=='')
+   passForm.channel.value ="6";
+  else
+   passForm.channel.value = '<%nvram_get("Data21");%>';
+
+  if('<%nvram_get("Data22");%>'=='')
+   passForm.power0.value ="5";
+  else
+   passForm.power0.value = '<%nvram_get("Data22");%>';
+
+  if('<%nvram_get("Data23");%>'=='')
+   passForm.power1.value ="5";
+  else
+   passForm.power1.value = '<%nvram_get("Data23");%>';
+
+  if('<%nvram_get("Data24");%>'=='')
+   passForm.tx_mode.value ="1";
+  else
+   passForm.tx_mode.value = '<%nvram_get("Data24");%>';
+
+  if('<%nvram_get("Data25");%>'=='')
+   passForm.tx_mcs.value ="7";
+  else
+   passForm.tx_mcs.value = '<%nvram_get("Data25");%>';
+
+  if('<%nvram_get("Data26");%>'=='')
+   passForm.tx_bw.value ="0";
+  else
+   passForm.tx_bw.value = '<%nvram_get("Data26");%>';
+
+  if('<%nvram_get("Data27");%>'=='')
+   passForm.tx_cnt.value ="100";
+  else
+   passForm.tx_cnt.value = '<%nvram_get("Data27");%>';
+
+  if('<%nvram_get("Data28");%>'=='')
+   passForm.tx_len.value ="1024";
+  else
+   passForm.tx_len.value = '<%nvram_get("Data28");%>';
+
+  if('<%nvram_get("Data29");%>'=='')
+   passForm.rx_fer.value ="1";
+  else
+   passForm.rx_fer.value = '<%nvram_get("Data29");%>';
+
+  if('<%nvram_get("Data30");%>'=='')
+   passForm.rx_ant.value ="0";
+  else
+   passForm.rx_ant.value = '<%nvram_get("Data30");%>';
+
+  if('<%nvram_get("Data31");%>'=='')
+   passForm.reset_counter.value ="0";
+  else
+   passForm.reset_counter.value = '<%nvram_get("Data31");%>';
+   
+  if('<%nvram_get("Data32");%>'=='')
+   passForm.tx_ant.value ="0";
+  else
+   passForm.tx_ant.value = '<%nvram_get("Data32");%>';
+   
+  if('<%nvram_get("Data33");%>'=='')
+   passForm.tx_freq_offset.value ="31";
+  else
+   passForm.tx_freq_offset.value = '<%nvram_get("Data33");%>';      
+}
+</script>
+</head>
+
+<body onLoad="InitValue(document.forms[0]);">
+<form method="post" action="marmot.cgi">
+<input type="hidden" name="button_val">
+<script>dw(Channel);</script>:
+<input name="channel" type="text"  size="10" style="font-size: 8pt">
+<p> 
+
+  <script>dw(Power0);</script>:
+    <input name="power0" type="text" size="10"  style="font-size: 8pt">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+<p> 
+
+  <script>dw(Power1);</script>:
+    <input name="power1" type="text" size="10"  style="font-size: 8pt">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+<p> 
+
+  <script>dw(Tx_Mode);</script>:
+    <input name="tx_mode" type="text" size="10"  style="font-size: 8pt">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+<p> 
+
+  <script>dw(Tx_MCS);</script>:
+    <input name="tx_mcs" type="text" size="10"  style="font-size: 8pt">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+<p> 
+
+  <script>dw(Tx_BW);</script>:
+    <input name="tx_bw" type="text" size="10"  style="font-size: 8pt">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+<p> 
+
+  <script>dw(Tx_CNT);</script>:
+    <input name="tx_cnt" type="text" size="10"  style="font-size: 8pt">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+<p> 
+
+  <script>dw(TX_Len);</script>:
+    <input name="tx_len" type="text" size="10"  style="font-size: 8pt">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+<p> 
+
+  <script>dw(Tx_Ant);</script>:
+    <input name="tx_ant" type="text" size="10"  style="font-size: 8pt">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+<p> 
+
+  <script>dw(Tx_Freq_Offset);</script>:
+    <input name="tx_freq_offset" type="text" size="10"  style="font-size: 8pt">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+<p> 
+
+  <script>dw(Rx_FER);</script>:
+    <input name="rx_fer" type="text" size="10"  style="font-size: 8pt">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+<p> 
+
+  <script>dw(Rx_Ant);</script>:
+    <input name="rx_ant" type="text" size="10"  style="font-size: 8pt">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+<p> 
+
+  <script>dw(Reset_Counter);</script>:
+    <input name="reset_counter" type="text" size="10"  style="font-size: 8pt">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+</p>
+<table>
+<tr height="25" >
+<td><input name="apply" type="button" value="Stop AP" style="font-size: 10pt" onClick="stop_ap(this.form);"></td>
+<td><input name="apply" type="button" value="TX Continue" style="font-size: 10pt" onClick="con_tx(this.form);"></td>
+<td><input name="apply" type="button" value="TX Frame" style="font-size: 10pt" onClick="tansmit_frame(this.form);"></td>
+<td><input name="apply" type="button" value="TX Single carrier" style="font-size: 10pt" onClick="tx_carrier(this.form);"></td>
+<td><input name="apply" type="button" value="RX SEN" style="font-size: 10pt" onClick="rx_sen(this.form);"></td>
+<td><input name="apply" type="button" value="Spectrum Mask" style="font-size: 10pt" onClick="spectrum_mask(this.form);"></td>
+<td><input name="apply" type="button" value="Start AP" style="font-size: 10pt" onClick="start_ap(this.form);"></td>
+</tr>
+</table>
+
+
+
+</form>
+<br>
+<hr>
+
+</body>
+</html>

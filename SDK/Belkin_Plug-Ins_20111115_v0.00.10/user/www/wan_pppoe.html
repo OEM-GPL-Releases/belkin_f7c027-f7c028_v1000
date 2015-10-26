@@ -1,0 +1,463 @@
+<HTML><HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="validate.js"></SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_729+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Connection Type';
+var menuSection	='WAN';
+var menuItem	='Connection Type';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function vld_PPPoE_MTU(val) 
+{
+	mval = val; mval=mval-0;
+ 	if( parseInt(mval)<500 || parseInt(mval)>1500)
+ 	{
+		alert(str_659);
+		return false;
+ 	} 
+ 	for(i=0; i<val.length; i++)
+ 	{
+		if(val.charAt(i)<'0' || val.charAt(i)>'9')
+		{	
+			alert(str_652+val.charAt(i)+str_649+ (i+1)+'! '+str_650+' 0123456789');
+			return false;
+		}
+ 	}
+}
+
+function change_ip_assign_isp()
+{
+	var f=document.wan_form;
+
+	for(var i=1;i<=4;i++)
+	{
+		if(f.ip_assign_isp.selectedIndex == '0')
+		{
+				eval("f.pppoeip"+i).disabled = false;
+				eval("f.pppoeip"+i).style.backgroundColor='#ffffff';
+		}
+		else if(f.ip_assign_isp.selectedIndex == '1') 
+		{
+				eval("f.pppoeip"+i).disabled = true;
+				eval("f.pppoeip"+i).style.backgroundColor='#CCCCCC';
+		}
+	}
+	if(f.ip_assign_isp.selectedIndex == '1')	{
+		document.getElementById("assign_ip1").style.display = "none";
+		document.getElementById("assign_ip2").style.display = "none";
+		document.getElementById("assign_ip3").style.display = "none";
+	}
+	else	{
+		document.getElementById("assign_ip1").style.display = "";
+		document.getElementById("assign_ip2").style.display = "";
+		document.getElementById("assign_ip3").style.display = "";
+	}
+	
+}
+function Init_Value()
+{
+	var f=document.wan_form;
+	var username='<%nvram_get("pppoe_username");%>';
+	var passwd='<%nvram_get("pppoe_passwd");%>';
+	var servicename='<%nvram_get("pppoe_service_name");%>';
+	var mtu='<%nvram_get("pppoe_mtu");%>';
+	var idletime='<%nvram_get("pppoe_idle_time");%>';
+	var pppoe_demand='<%nvram_get("pppoe_demand");%>';
+	var lang_code='<%nvram_get("lang_code");%>';
+    var ipadder ='<%nvram_get("pppoe_local_ipaddr");%>';
+	var pppoe_ip_assign_isp = '<%nvram_get("pppoe_ip_assign_isp");%>';
+	
+	f.UN.value=username;
+	f.PW.value=passwd;
+	f.PWV.value=passwd;
+	f.SN.value=servicename;
+	f.mtu.value=mtu;
+	
+	t1=ipadder.indexOf('.');
+	if(t1!=-1)f.pppoeip1.value=ipadder.substring(0,t1);
+	t2=ipadder.indexOf('.',(t1+1));	
+	if(t2!=-1)f.pppoeip2.value=ipadder.substring((t1+1),t2);
+	t1=ipadder.indexOf('.',(t2+1));
+	if(t1!=-1)f.pppoeip3.value=ipadder.substring((t2+1),t1);
+	f.pppoeip4.value=ipadder.substring(t1+1);
+	
+	
+
+	if(pppoe_demand == '0')
+	{
+		f.idletimeadmin.checked = false;
+	}
+	else
+	{
+		f.idletimeadmin.checked = true;
+	}
+	
+	if(pppoe_ip_assign_isp == '0')
+	{
+		f.ip_assign_isp.selectedIndex = '0';
+	}
+	else
+	{
+		f.ip_assign_isp.selectedIndex = '1';
+	}
+
+	var target_country='<%nvram_get("target_country");%>';	
+		
+	if(idletime == '' || idletime == '0' || lang_code == '' || target_country == '') {
+		f.idle.value=0;
+	}
+	else {
+		f.idle.value=parseInt(idletime)/60;
+	}
+}
+function storeData()
+{
+	var f=document.wan_form;
+	f.pppoe_username.value=f.UN.value;
+	f.pppoe_passwd.value=f.PW.value;
+
+	if(f.idletimeadmin.checked==false) {
+		f.pppoe_demand.value='0';
+		if(f.idle.value == '0')
+			f.pppoe_idle_time.value=f.idle.value*60;
+		else
+			f.pppoe_idle_time.value='<%nvram_get("pppoe_idle_time");%>';
+	}
+	else {
+		f.pppoe_demand.value='1';
+		if(f.idle.value != '0')
+		{
+			f.pppoe_idle_time.value=f.idle.value*60;
+			f.pppoe_keep_alive.value = '';
+		}
+		else
+			f.pppoe_keep_alive.value = '0';
+		
+	}
+	
+	f.pppoe_mtu.value=f.mtu.value;
+	f.pppoe_service_name.value=f.SN.value;
+	return true;
+}
+
+function init() 
+{
+	toggleAutoDLS();
+	change_ip_assign_isp();
+}
+function isBlank(s) {
+for(i=0;i<s.length;i++) {
+ c=s.charAt(i);
+ if((c!=' ')&&(c!='\n')&&(c!='\t'))return false;}
+return true;
+}
+
+function checkVaildCharNum(value)
+{
+var localname=value.toLowerCase();
+for(i=0;i<localname.length;i++)
+{
+ var token=localname.charAt(i);
+ if(token=='`' || token=='~' || token=='!' || token=='#'
+ 		|| token=='$' || token=='%' || token=='^' || token=='&' || token=='*'
+ 		|| token=='(' || token==')' || token=='=' || token=='+' || token=='['
+ 		|| token==']' || token=='{' || token=='}' || token=='\\' || token=='|'
+ 		|| token==';' || token==':' || token=='\'' || token=='\"' || token=='<'
+ 		|| token=='>' || token=='/' || token=='?' || token=='.' || token==',' || token=='@' )
+ {
+	alert(str_1268);
+	return false;
+ }
+}
+return true;
+}
+
+function checkVaild(value)
+{
+var localname=value.toLowerCase();
+for(i=0;i<localname.length;i++)
+{
+ var token=localname.charAt(i);
+ if(token=='<' || token=='>' || token=='&')
+ {
+	alert(str_739);
+	return false;
+ }
+}
+return true;
+}
+function isInteger(val)
+{
+ for(i=0; i<val.length; i++)
+ {
+	if(val.charAt(i)<'0' || val.charAt(i)>'9') 
+		return false;
+ }
+ return true;
+}
+function evaltF() 
+{
+	var f=document.wan_form;
+	if(f.UN.value.length < 1) {alert(str_742); return false;}
+	for(i=0;i<f.UN.value.length;i++)
+	{
+ 		var token=f.UN.value.charCodeAt(i);
+/*
+ 		if(token == 32)
+ 		{
+			alert(str_742);
+			return false;
+ 		}
+*/	 
+	}
+	if(f.PW.value.length < 1) {alert(str_740); return false;}
+	if(f.PWV.value!=f.PW.value) { alert(str_740); return false; }
+	if(f.idletimeadmin.checked==true)
+	{
+ 		if((isBlank(f.idle.value))||(isNaN(f.idle.value))|| 
+		   !isInteger(f.idle.value) || (f.idle.value<1||f.idle.value>99))
+		{
+			alert(str_738); 
+			return false;
+		}
+	}
+	
+	if(vld_PPPoE_MTU(f.mtu.value)==false)return false;
+	if(storeData()==false)return false;
+	
+	if(f.ip_assign_isp.selectedIndex == '1') {
+		f.pppoe_ip_assign_isp.value ='1';
+		f.pppoe_local_ipaddr.value='...';
+	}
+	else {
+		f.pppoe_ip_assign_isp.value ='0';
+		if((isBlank(f.pppoeip1.value))||(isNaN(f.pppoeip1.value))||(f.pppoeip1.value<1||f.pppoeip1.value>223) || !f.pppoeip1.value.match(/^[0-9]{1,3}$/) || f.pppoeip1.value.match(/^[0]{1,2}./)) { alert(str_1780); return false; }
+		if((isBlank(f.pppoeip2.value))||(isNaN(f.pppoeip2.value))||(f.pppoeip2.value<0||f.pppoeip2.value>255) || !f.pppoeip2.value.match(/^[0-9]{1,3}$/) || f.pppoeip2.value.match(/^[0]{1,2}./)) { alert(str_1379); return false; }
+		if((isBlank(f.pppoeip3.value))||(isNaN(f.pppoeip3.value))||(f.pppoeip3.value<0||f.pppoeip3.value>255) || !f.pppoeip3.value.match(/^[0-9]{1,3}$/) || f.pppoeip3.value.match(/^[0]{1,2}./)) { alert(str_1379); return false; }
+		if((isBlank(f.pppoeip4.value))||(isNaN(f.pppoeip4.value))||(f.pppoeip4.value<1||f.pppoeip4.value>254) || !f.pppoeip4.value.match(/^[0-9]{1,3}$/) || f.pppoeip4.value.match(/^[0]{1,2}./)) { alert(str_2703); return false; }
+		f.pppoe_local_ipaddr.value=f.pppoeip1.value+'.'+f.pppoeip2.value+'.'+f.pppoeip3.value+'.'+f.pppoeip4.value;
+	}	
+	
+	alert(str_1202);
+	return true;
+}
+
+function connect(){
+var f=document.wan_form;
+if(isBlank(f.UN.value)) return false;
+if(f.PWV.value!=f.PW.value) { alert(str_740); return false; }
+if(isBlank(f.mtu.value) || (parseInt(f.mtu.value) > 1492) || ( parseInt(f.mtu.value) < 576))
+{ alert(str_741); return false; }
+f.connectflag.value=1;
+f.submit();
+return true;
+}
+
+function disconnect() {
+var f=document.wan_form;
+if(isBlank(f.UN.value)){ alert(str_742); return false; }
+if(f.PWV.value!=f.PW.value) { alert(str_740); return false; }
+if(isBlank(f.mtu.value) || (parseInt(f.mtu.value) > 1492) || (parseInt(f.mtu.value) < 576))
+{ alert(str_741); return false; }
+f.connectflag.value=2;
+f.submit();
+return true;
+}
+function submitF() {return evaltF();}
+function logoutF()
+{
+document.wan_form.logout.value=1;
+document.wan_form.submit();
+return true;
+} 
+
+function toggleAutoDLS() 
+{
+	if(document.wan_form.idletimeadmin.checked) 
+		document.wan_form.idle.disabled = false;  
+	else 
+		document.wan_form.idle.disabled = true;
+}
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor="#ffffff" leftMargin="0" topMargin="0" onload="Init_Value();init();" marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name)
+</SCRIPT>
+<FORM id="wan_form" name="wan_form" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wan_pppoe.html">
+<input type="hidden" name="redirect_timer" value="45000">
+<input type="hidden" name="reboot" value="1">
+<input type="hidden" name="data1" value="wan_proto pppoe_username pppoe_passwd pppoe_service_name pppoe_mtu pppoe_idle_time pppoe_demand 
+ wan_alias1_enabled wan_alias2_enabled wan_alias3_enabled wan_alias4_enabled wan_alias5_enabled 
+ wan_ipaddr1 wan_ipaddr2 wan_ipaddr3 wan_ipaddr4 wan_ipaddr5 
+ wan_netmask1 wan_netmask2 wan_netmask3 wan_netmask4 wan_netmask5 pppoe_ip_assign_isp pppoe_local_ipaddr pppoe_keep_alive">
+
+<input type="hidden" name="wan_proto" value="pppoe">
+<input type="hidden" name="pppoe_username">
+<input type="hidden" name="pppoe_passwd">
+<input type="hidden" name="pppoe_service_name">
+<input type="hidden" name="pppoe_mtu">
+<input type="hidden" name="pppoe_idle_time">
+<input type="hidden" name="pppoe_demand">
+<input type="hidden" name="wan_alias1_enabled" value=''>
+<input type="hidden" name="wan_alias2_enabled" value=''>
+<input type="hidden" name="wan_alias3_enabled" value=''>
+<input type="hidden" name="wan_alias4_enabled" value=''>
+<input type="hidden" name="wan_alias5_enabled" value=''>
+
+<input type="hidden" name="wan_ipaddr1" value=''>
+<input type="hidden" name="wan_ipaddr2" value=''>
+<input type="hidden" name="wan_ipaddr3" value=''>
+<input type="hidden" name="wan_ipaddr4" value=''>
+<input type="hidden" name="wan_ipaddr5" value=''>
+
+<input type="hidden" name="wan_netmask1" value=''>
+<input type="hidden" name="wan_netmask2" value=''>
+<input type="hidden" name="wan_netmask3" value=''>
+<input type="hidden" name="wan_netmask4" value=''>
+<input type="hidden" name="wan_netmask5" value=''>
+<input type="hidden" name="pppoe_local_ipaddr">
+<input type="hidden" name="pppoe_ip_assign_isp">
+<input type="hidden" name="pppoe_keep_alive">
+
+
+
+<TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_729);</SCRIPT>
+<BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=0 cellPadding=0 width=550 align=left 
+      border=0>
+        <TBODY>
+        <TR align=left>
+          <TD align=left colSpan=3>
+            <SCRIPT>dw(str_730);</SCRIPT>
+            <A 
+            onclick="window.open('glossary.html#pppoe','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"><B><FONT color=#0066FF>
+            <SCRIPT>dw(str_47);</SCRIPT>
+            </FONT></B></A><BR><BR></TD></TR>
+        <TR>
+          <TD width=35>&nbsp;</TD>
+          <TD width=175><B>
+            <SCRIPT>dw(str_731);</SCRIPT>
+            &gt;</B><BR><BR></TD>
+          <TD align=left width=326><INPUT maxLength=63 size=25 
+          name=UN><BR><BR></TD></TR>
+        <TR>
+          <TD width=35>&nbsp;</TD>
+          <TD width=175><B>
+            <SCRIPT>dw(str_489);</SCRIPT>
+            &gt;</B><BR><BR></TD>
+          <TD class=plaintext_bold width=226><INPUT type=password maxLength=63 
+            size=25 name=PW><BR><BR></TD></TR>
+        <TR>
+          <TD width=35>&nbsp;</TD>
+          <TD width=175><B>
+            <SCRIPT>dw(str_732);</SCRIPT>
+            &gt;</B><BR><BR></TD>
+          <TD class=plaintext_bold width=226 height=18><INPUT type=password 
+            maxLength=63 size=25 name=PWV><BR><BR></TD></TR>
+        <TR>
+          <TD width=35>&nbsp;</TD>
+          <TD noWrap width=175><B>
+            <SCRIPT>dw(str_733);</SCRIPT>
+            &gt;</B><BR><BR></TD>
+          <TD class=plaintext_bold width=226><INPUT maxLength=60 size=25 
+            name=SN><BR><BR></TD></TR>
+		<TR>
+          <TD width=35>&nbsp;</TD>
+          <TD noWrap width=175><B>
+            <SCRIPT>dw(str_1770);</SCRIPT>
+            &gt;</B><BR><BR></TD>
+          <TD class=plaintext_bold width=226>
+		  <select name="ip_assign_isp" onChange="change_ip_assign_isp();">
+			  <option value="0"><SCRIPT>dw(str_1772);</SCRIPT></option>
+			  <option value="1" selected><SCRIPT>dw(str_1771);</SCRIPT></option> 
+		  </select><BR><BR></TD></TR>
+		  
+		<TR>
+          <TD width=35><div id=assign_ip1>&nbsp;</div></TD>
+          <TD noWrap width=175><div id=assign_ip2><B>
+            <SCRIPT>dw(str_760);</SCRIPT>
+            &gt;</B><BR><BR></div></TD>
+          <TD class=plaintext_bold width=226><div id=assign_ip3>
+		  <INPUT class="ipbox" maxLength="3" size="4" name="pppoeip1">. 
+		  <INPUT class="ipbox" maxLength="3" size="4" name="pppoeip2">. 
+		  <INPUT class="ipbox" maxLength="3" size="4" name="pppoeip3">. 
+          <INPUT class="ipbox" maxLength="3" size="4" name="pppoeip4"><BR><BR></div></TD></TR>
+        <TR>
+          <TD width=35>&nbsp;</TD>
+          <TD width=175><B>
+            <SCRIPT>dw(str_734);</SCRIPT>
+            &gt;</B><BR><BR></TD>
+          <TD width=326><INPUT maxLength=4 size=5 value=1454 
+          name=mtu><BR><BR></TD></TR>
+      
+        <TR>
+          <TD width=35>&nbsp;</TD>
+          <TD colSpan=2>
+            <SCRIPT>dw(str_735);</SCRIPT>
+            <A 
+            onclick="window.open('glossary.html#mtu','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"><B><FONT color=#0066FF>
+            <SCRIPT>dw(str_47);</SCRIPT>
+            </FONT></B></A><BR><BR></TD></TR>
+        <TR>
+          <TD width=35>&nbsp;</TD>
+          <TD colSpan=2><INPUT onclick=toggleAutoDLS(); type=checkbox 
+            name="idletimeadmin">
+            <SCRIPT>dw(str_736);</SCRIPT>
+             <INPUT maxLength=2 size=10 name=idle>
+            <SCRIPT>dw(str_737);</SCRIPT>
+            <BR><BR></TD></TR>
+        <TR>
+          <TD width=35>&nbsp;</TD>
+          <TD colSpan=2><A 
+            onclick="window.open('glossary.html#disconnect','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"><B><FONT color=#0066FF>
+            <SCRIPT>dw(str_47);</SCRIPT>
+            </FONT></B></A><BR><BR></TD></TR>
+        <TR>
+          <TD width=35>&nbsp;</TD>
+          <TD align=middle colSpan=2>
+            <SCRIPT>
+				dw('<input id="submitBtn_clear" type="button" value="');
+				dw(str_48);
+				dw('" style="{width:160px;}" class="submitBtn" onclick="Init_Value();init()" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">');
+				dw('<input id="submitBtn_apply" type="submit" style="{width:160px;}" value="');
+				dw(str_49);
+				dw('" onClick="return submitF();" class="submitBtn"></td>');</SCRIPT>
+          </TD></TR></TBODY></TABLE></FORM></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

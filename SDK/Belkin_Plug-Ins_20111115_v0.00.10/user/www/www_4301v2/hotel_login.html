@@ -1,0 +1,88 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>      
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">                 
+<LINK href="styles.css" type=text/css rel=stylesheet>   
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT language=JavaScript src="md5.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_407+'</title>';
+dw(strHtml);
+<!--
+var helpItem ='Login';
+var menuSection	='';
+var menuItem	='';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+
+
+function Try_Submit()
+{
+	var f=document.forms[0];
+	f.hotel_password.value=hex_md5(f.www_password.value);
+	f.www_password.value="";
+
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+</SCRIPT>
+<FORM name="tF" action="hotel_login.cgi" method="post">
+<INPUT type=hidden value=login name=page> 
+<INPUT type=hidden value='<%nvram_get("charset");%>' name="charset"> 
+<INPUT type=hidden value=2 name=>
+<INPUT type=hidden value=2 name=hotel_password>
+<table bgcolor="#cccccc" border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td rowspan="3" valign="bottom" width="20"><a href="http://www.belkin.com/"><img src="head_logo.gif" border="0" height="64" width="140"></a></td><td rowspan="3" valign="bottom" width="1"><img src="line.gif" border="0" height="64" width="1"></td><td colspan="4" align="right" nowrap="nowrap">&nbsp;</td></tr><tr><td colspan="4" height="18"><strong><script>dw(str_1613);</script></strong></td>
+</tr><tr><td class="top_nav" align="right" height="23" nowrap="nowrap"> <nobr></nobr></td></tr></tbody></table>
+ <TD  height="100%" width="99%" valign="top"><BR>
+   <span class="head_bold">&nbsp;&nbsp;<script>dw(str_407);</script></span><BR>
+ <BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=5 cellPadding=0 width=480 align=left 
+      border=0>
+        <TBODY>
+        <TR>
+          <TD width=69 height=41>&nbsp;</TD>
+          <TD colSpan=2 height=41>
+ <SCRIPT>dw(str_1811);</SCRIPT>
+</TD>
+        </TR>
+        <TR>
+          <TD width=69></TD>
+          <TD width=146>&nbsp;</TD>
+          <TD width=250>&nbsp;</TD></TR>
+        <TR>
+          <TD width=69>&nbsp;</TD>
+          <TD width=146><B>
+            <SCRIPT>dw(str_101);</SCRIPT>
+            </B></TD>
+          <TD width=250><INPUT type=password maxLength=32 size=9 name="www_password" value="" > 
+        </TD></TR>
+        <TR>
+          <TD width=69>&nbsp;</TD>
+          <TD colSpan=2><B><FONT color=#6f4afd>
+            </FONT></B></TD></TR>
+        <TR>
+          <TD width=69>&nbsp;</TD>
+          <TD colSpan=2></TD></TR>
+        <TR>
+          <TD width=69>&nbsp;</TD>
+          <TD align=middle colSpan=2>
+            <SCRIPT>strHtml='<input type="reset" value="'+str_411+'" style="{width:120px;}" class="submitBtn" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">';
+dw(strHtml);
+strHtml='<input type="submit" value="'+str_412+'" style="{width:120px;}" class="submitBtn" onClick="return Try_Submit();">';
+dw(strHtml);</SCRIPT>
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD>
+</FORM>
+<SCRIPT language=JavaScript>showTail_no_check_wan()</SCRIPT>
+</BODY></HTML>

@@ -1,0 +1,330 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">                 
+<LINK href="styles.css" type=text/css rel=stylesheet>   
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+fd1+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='MAC Address Filtering';
+var menuSection	='Fire';
+var menuItem	='MAC Address Filtering';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+<%autofw_check();%>
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+     //radioMac[1].checked = true;
+     //pcMac.value = macUsed;
+     macUsed = '';
+
+   }
+     hidedate(1);
+}
+   
+function btnApply(place) {
+  if ( place == "todmngr.tod" ) {
+    with ( document.forms[0] ) {
+  		data1.value = "";
+      if ( username.value == '' ) {
+        alert( 'Please enter a user name' );
+        return;
+//      } else if ( isValidName(username.value) == false ) {
+  //      alert( 'Please enter a user name without spaces or special characters.' );
+    //    return;
+      } else if (  cusMac1.value == '' || cusMac2.value == '' || cusMac3.value == '' || cusMac4.value == '' ||cusMac5.value == '' || cusMac6.value == '' ) {
+        alert( 'Please enter a MAC address.' );
+        return;
+      }
+      cusMac.value = cusMac1.value +':'+cusMac2.value +':'+cusMac3.value +':'+cusMac4.value +':'+cusMac5.value +':'+cusMac6.value;
+      macUsed = cusMac.value;
+      if ( isValidMacAddress( macUsed ) == false ) {
+        alert( macUsed + " is an invalid MAC address." );
+        return;
+      } else {
+      	for ( i = 0; i < 40; i++ ) {
+      		if ( eval("mac_filter"+i).value == "" ) {
+      			eval("mac_filter"+i).value = macUsed;
+      			eval("mac_username"+i).value = username.value;
+      			data1.value = "mac_filter" + i + " mac_username" + i;
+      			break;
+      		}
+      	}
+      }
+    }
+  }
+  document.forms[0].submit();
+}
+
+function radioClick()
+{
+   with (document.forms[0]) {
+      if (radioMac[1].checked == true)
+         macUsed = '';
+      else
+         macUsed = '00:0E:A6:56:FE:F0';
+   }
+}
+
+function cusEnterMac()
+{
+   with (document.forms[0]) {
+      if (radioMac[1].checked == true)
+         macUsed = cusMac.value;
+   }
+}
+
+function hidedate(hide) {
+   var status = 'hidden';
+   if ( hide == 1 )
+      status = 'hidden';
+
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('infoHide').style.visibility = status;
+   else 
+      document.all.infoHide.style.visibility = status;   
+}
+
+function splitMACString (stringToSplit,separator) {
+   
+   arrayOfStrings = stringToSplit.split(separator)
+   with ( document.forms[0] ) {
+
+   cusMac1.value = arrayOfStrings [0];
+   cusMac2.value = arrayOfStrings [1];
+   cusMac3.value = arrayOfStrings [2];
+   cusMac4.value = arrayOfStrings [3];
+   cusMac5.value = arrayOfStrings [4];
+   cusMac6.value = arrayOfStrings [5];
+  }
+}
+
+
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor="#ffffff" leftMargin="0" topMargin="0" marginheight="0" marginwidth="0" onLoad='frmLoad()'>
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem);
+	showMenu(menuSection,menuItem,isAPmode)
+</SCRIPT>
+
+<form name="fw_mac" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="fw_mac_info.htm">
+<input type="hidden" name="redirect_timer" value="30000">
+<input type="hidden" name="reboot" value="1">
+<input type="hidden" name="data1" value="">
+
+<input type="hidden" name="mac_username0">
+<input type="hidden" name="mac_username1">
+<input type="hidden" name="mac_username2">
+<input type="hidden" name="mac_username3">
+<input type="hidden" name="mac_username4">
+<input type="hidden" name="mac_username5">
+<input type="hidden" name="mac_username6">
+<input type="hidden" name="mac_username7">
+<input type="hidden" name="mac_username8">
+<input type="hidden" name="mac_username9">
+<input type="hidden" name="mac_username10">
+<input type="hidden" name="mac_username11">
+<input type="hidden" name="mac_username12">
+<input type="hidden" name="mac_username13">
+<input type="hidden" name="mac_username14">
+<input type="hidden" name="mac_username15">
+<input type="hidden" name="mac_username16">
+<input type="hidden" name="mac_username17">
+<input type="hidden" name="mac_username18">
+<input type="hidden" name="mac_username19">
+<input type="hidden" name="mac_username20">
+<input type="hidden" name="mac_username21">
+<input type="hidden" name="mac_username22">
+<input type="hidden" name="mac_username23">
+<input type="hidden" name="mac_username24">
+<input type="hidden" name="mac_username25">
+<input type="hidden" name="mac_username26">
+<input type="hidden" name="mac_username27">
+<input type="hidden" name="mac_username28">
+<input type="hidden" name="mac_username29">
+<input type="hidden" name="mac_username30">
+<input type="hidden" name="mac_username31">
+<input type="hidden" name="mac_username32">
+<input type="hidden" name="mac_username33">
+<input type="hidden" name="mac_username34">
+<input type="hidden" name="mac_username35">
+<input type="hidden" name="mac_username36">
+<input type="hidden" name="mac_username37">
+<input type="hidden" name="mac_username38">
+<input type="hidden" name="mac_username39">
+<input type="hidden" name="mac_filter0">
+<input type="hidden" name="mac_filter1">
+<input type="hidden" name="mac_filter2">
+<input type="hidden" name="mac_filter3">
+<input type="hidden" name="mac_filter4">
+<input type="hidden" name="mac_filter5">
+<input type="hidden" name="mac_filter6">
+<input type="hidden" name="mac_filter7">
+<input type="hidden" name="mac_filter8">
+<input type="hidden" name="mac_filter9">
+<input type="hidden" name="mac_filter10">
+<input type="hidden" name="mac_filter11">
+<input type="hidden" name="mac_filter12">
+<input type="hidden" name="mac_filter13">
+<input type="hidden" name="mac_filter14">
+<input type="hidden" name="mac_filter15">
+<input type="hidden" name="mac_filter16">
+<input type="hidden" name="mac_filter17">
+<input type="hidden" name="mac_filter18">
+<input type="hidden" name="mac_filter19">
+<input type="hidden" name="mac_filter20">
+<input type="hidden" name="mac_filter21">
+<input type="hidden" name="mac_filter22">
+<input type="hidden" name="mac_filter23">
+<input type="hidden" name="mac_filter24">
+<input type="hidden" name="mac_filter25">
+<input type="hidden" name="mac_filter26">
+<input type="hidden" name="mac_filter27">
+<input type="hidden" name="mac_filter28">
+<input type="hidden" name="mac_filter29">
+<input type="hidden" name="mac_filter30">
+<input type="hidden" name="mac_filter31">
+<input type="hidden" name="mac_filter32">
+<input type="hidden" name="mac_filter33">
+<input type="hidden" name="mac_filter34">
+<input type="hidden" name="mac_filter35">
+<input type="hidden" name="mac_filter36">
+<input type="hidden" name="mac_filter37">
+<input type="hidden" name="mac_filter38">
+<input type="hidden" name="mac_filter39">
+
+<TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(fmc1);</SCRIPT>
+<BR><BR>
+
+ <table height="100%" width="100%">
+ 	<tr>
+ 		<td width="4%"></td>
+ 		<td valign="top">
+            <input type='hidden' size="18" name="cusMac">
+                  <b><font size="2" color="#003399" face="Verdana">Firewall &gt; MAC  
+            Address Filtering</font></b><font color="#004263"><font size="2"><br> 
+            </font><font size="1">
+            <br>
+    <font face="Verdana">This feature lets you set up a list of allowed clients. 
+    When you enable this feature, you must enter the MAC address of each client 
+    on your network to allow network access to each. Please enter a username to 
+	identify which computer is listed. The username must not include any spaces 
+	or special characters.</font> </font> </font> 
+	<a style="text-decoration: none" href="javascript:void(0);" onclick="window.open('help.html#TOD','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1, width=640,height=400,left=150,top=150');"> 
+    <b><font color="#6464C3" size="1">More Info</font></b></a> 
+	<font size="1"><font color="#004263"><br>
+            <br>
+            </font>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width='180'><font color="#004263" size="1" face="Verdana">User Name</font></td> 
+                  <td><font color="#004263"><input type='text' name='username' size='18'></font></td>
+               </tr>
+               <tr>
+                  <td width='180'><font color="#004263">
+                     <font size="1">
+                     <input type="hidden" name="radioMac" onclick='radioClick()' value="1" checked>
+					<font face="Verdana">MAC Address</font></font><font face="Verdana">
+					</font>  
+                  </font></td>
+                  <td><font color="#004263"><input type='text' size="2" name="cusMac1" maxLength="2">:<input type='text' size="2" maxLength="2" name="cusMac2">:<input type='text' size="2" maxLength="2" name="cusMac3">:<input type='text' size="2" maxLength="2" name="cusMac4">:<input type='text' size="2" maxLength="2" name="cusMac5">:<input type='text' size="2" maxLength="2" name="cusMac6">
+                  <font size="1"><font face="Verdana"><b>(</b>Valid MAC address format: <b> 
+                  xx:xx:xx:xx:xx:xx )</b></font> </font></font></td> 
+               </tr>
+               <tr>
+                  <td width='180'></td>
+                  <td></td>
+               </tr>
+               <tr>
+                  <td width='180'>
+            
+               <font color="#004263">
+               <input type='button' value="Add" style="background-color:#006699;color:#FFFFFF;border-style:solid; width:120px; border-color:#006699;" onClick='btnApply("todmngr.tod")' class='submitBtn'></font></td>
+                  <td></td>
+               </tr>
+            </table>
+            <div id='infoHide'>
+            <table border="0" cellpadding="0" cellspacing="0" width="366">
+               <tr>
+                  <td colspan="1" width="362">
+                  <font face="Verdana" color="#004263"><font size="1">Browser's MAC Address&nbsp;</font>
+                     <input type="radio" name="radioMac" onclick='radioClick()' value="2"><input type='text' size="18" name="pcMac"></font></td>
+               </tr>
+               <tr>
+                  <td colspan="1" width="362"></td>
+               </tr>
+            </table>
+            <table border='1' cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width='180'><font color="#004263" face="Verdana" size="1">Days of 
+                  the week</font></td>
+                  <td class='hd'><font color="#004263" face="Verdana">Mon</font></td>
+                  <td class='hd'><font color="#004263" face="Verdana">Tue</font></td>
+                  <td class='hd'><font color="#004263" face="Verdana">Wed</font></td>
+                  <td class='hd'><font color="#004263" face="Verdana">Thu</font></td>
+                  <td class='hd'><font color="#004263" face="Verdana">Fri</font></td>
+                  <td class='hd'><font color="#004263" face="Verdana">Sat</font></td>
+                  <td class='hd'><font color="#004263" face="Verdana">Sun</font></td>
+               </tr>
+               <tr>
+                  <td><font color="#004263" face="Verdana" size="1">Click to select</font></td>
+                  <td><font face="Verdana" color="#004263">
+                  <input type='checkbox' name='monday' value="ON" checked=true></font></td>
+                  <td><font face="Verdana" color="#004263">
+                  <input type='checkbox' name='tuesday' value="ON" checked=true></font></td>
+                  <td><font face="Verdana" color="#004263">
+                  <input type='checkbox' name='wednesday' value="ON" checked=true></font></td>
+                  <td><font face="Verdana" color="#004263">
+                  <input type='checkbox' name='thursday' value="ON" checked=true></font></td>
+                  <td><font face="Verdana" color="#004263">
+                  <input type='checkbox' name='friday' value="ON" checked=true></font></td>
+                  <td><font face="Verdana" color="#004263">
+                  <input type='checkbox' name='saturday' value="ON" checked=true></font></td>
+                  <td><font face="Verdana" color="#004263">
+                  <input type='checkbox' name='sunday' value="ON" checked=true></font></td>
+               </tr>
+            </table>
+            <font color="#004263" face="Verdana">
+            <br>
+            </font>
+            <table border='0' cellpadding='0' cellspacing='0'>
+               <tr>
+                  <td width='180'><font color="#004263" face="Verdana" size="1">Start Blocking Time (hh:mm)&nbsp;&nbsp;</font></td>
+                  <td><font face="Verdana" color="#004263"><input type='text' size='5' name='startTime'></font></td>
+               </tr>
+               <tr>
+                  <td width='180'><font color="#004263" face="Verdana" size="1">End Blocking Time (hh:mm)&nbsp;&nbsp;</font></td>
+                  <td><font face="Verdana" color="#004263"><input type='text' size='5' name='endTime'></font></td>
+               </tr>
+            </table>
+            </div>
+            
+					
+					</TD>
+			   </tr>
+             </TBODY>
+			 </TABLE>
+			</td>
+		</tr>
+		</tbody>
+	</table>
+
+
+</TD></FORM>
+    <SCRIPT language=JavaScript>showTail()</SCRIPT>
+  </BODY></HTML>
+

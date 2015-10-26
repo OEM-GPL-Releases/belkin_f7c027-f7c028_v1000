@@ -1,0 +1,459 @@
+<HTML>
+<HEAD>
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="expires" CONTENT="0">
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+
+
+<LINK href="styles.css" type=text/css rel=stylesheet>
+
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_786+'</title>';
+dw(strHtml);
+<!--
+var ns4 = (document.layers)? true:false ;
+var ie4 = (document.str_376)? true:false;
+var ie5  = (document.all && document.getElementById);
+var ns6 = (!document.all && document.getElementById);
+var cc='ppp0';
+var helpItem 	='Channel and SSID';
+var menuSection	='WLAN';
+var menuItem	='Channel and SSID';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+<%showCurrentChannel();%>
+<!--
+function layerWrite(id,nestref,text) 
+{
+	if(ns4) 
+	{
+		var lyr = (nestref)? eval('document.'+nestref+'.document.'+id+'.document') : document.layers[id].document ;
+		lyr.open();
+		lyr.write(text);
+		lyr.close();
+	}
+	else if (ie4)
+		document.all[id].innerHTML = text ;
+  else if(ns6)
+		document.getElementById(id).innerHTML = text ;
+}
+
+function mark(val)
+{
+	if(val == "0")
+	{
+		document.forms[0].wl_channel.disabled = 1;
+		document.forms[0].wl_ssid.disabled = 1;
+		document.forms[0].wl_gmode_protection.disabled = 1;
+	}
+	else
+	{
+		document.forms[0].wl_channel.disabled = 0;
+		document.forms[0].wl_ssid.disabled = 0;
+		document.forms[0].wl_gmode_protection.disabled = 0;
+		document.forms[0].wl_gmode.disabled = 0;
+	}
+}
+
+function ext_chn_change()
+{
+	var current_chn = (document.forms[0].wl_channel.selectedIndex);
+	var channels = '<%nvram_get("channels");%>';
+	var f = document.forms[0];
+	var cnt = 0;
+	
+	f.wl_ext_channel.options[0]=null;
+	f.wl_ext_channel.options[1]=null;
+  
+  if (current_chn == 0)	{
+  	f.wl_ext_channel.options[0] = new Option("Auto",'0');
+  	return;
+	}
+  if((current_chn-4)>=1)
+  {
+  	f.wl_ext_channel.options[cnt] = new Option(current_chn-4,'0');
+  	cnt++;
+  }
+  if((current_chn+4)<=channels)
+  {
+  	f.wl_ext_channel.options[cnt] = new Option(current_chn+4,'1');
+  	cnt++;
+  }
+}
+
+function ext_chn()
+{
+	var current_chn = (document.forms[0].wl_channel.selectedIndex+1);
+	var channels = '<%nvram_get("channels");%>';
+  var v='<select name="wl_ext_channel">';
+  
+  if((current_chn-4)>=1)
+  	v+='<option value=\'0\'>'+(current_chn-4)+'</option>';
+  if((current_chn+4)<=channels)
+  	v+='<option value=\'1\'>'+(current_chn+4)+'</option>';
+  v+='</select>';
+  document.writeln(v);
+}
+
+function writeChannel()
+{
+	var strHtml='';	
+	var channels = <%nvram_get("channels");%>;
+	strHtml=
+	'<select name="wl_channel" onchange="ext_chn_change();">'
+	+'  <option value="0" >Auto</option>';
+	
+	for( i = 1 ; i <= channels ; i++ )
+	{
+		strHtml += '  <option value="'+i+'" >'+i+'</option>';
+	}
+	strHtml	=	strHtml +'</select>';
+	document.writeln(strHtml);
+}
+
+function isBlank(s) 
+{
+ for(var i = 0; i < s.length; i++) {
+ var c = s.charAt(i);
+ if((c !=' ') && (c!='\n') && (c !='\t') && (c !='')) return false;
+ }
+ return true;
+}
+function Try_Submit() 
+{
+	var f=document.forms[0];
+ 
+ 	if(isBlank(f.wl_ssid.value)) 
+ 	{
+		alert(str_1201);
+		return false;
+ 	}
+/*//Mark the patch from R503 2008.07.24
+ 	for(i=0;i<f.wl_ssid.value.length;i++)
+	{
+ 		var token=f.wl_ssid.value.charAt(i);
+ 		if(token=='`' || token=='~' || token=='!' || token=='@' || token=='#'
+ 		|| token=='$' || token=='%' || token=='^' || token=='&' || token=='*'
+ 		|| token=='(' || token==')' || token=='=' || token=='[' || token==','
+ 		|| token==']' || token=='{' || token=='}' || token=='\\' || token=='|'
+ 		|| token==';' || token==':' || token=='\'' || token=='\"' || token=='<'
+ 		|| token=='>' || token=='/' || token=='?'  || token=='-')
+ 		{
+			alert(str_4010);
+			return false;
+ 		}	 
+	}
+
+*/	
+ 	f.wl0_ssid.value = f.wl_ssid.value;
+	f.wl0_channel.value = f.wl_channel.value;
+	if('<%nvram_get("havebandwidth");%>'  == 'true')
+		f.wl0_nextcha.value = f.wl_ext_channel.value;
+	else	
+		f.wl0_nextcha.value = 1;	
+	if(f.wl_channel.value=='0')
+		f.wl0_autoChannel.value='1';
+	else
+		f.wl0_autoChannel.value='0';
+ 	if(f.closed.checked==true)
+		f.wl0_ssid_bcast_enabled.value='0';
+ 	else
+		f.wl0_ssid_bcast_enabled.value='1';
+
+	if (f.wl_gmode.value == '3')//Off
+		f.wl0_enabled.value = 0;
+	else
+	{
+		f.wl0_enabled.value = 1;
+		f.wl0_mode.value = f.wl_gmode.value;
+	}
+	
+	f.wl0_ctsprotect.value = f.wl_gmode_protection.value;
+	if( f.wl_cwmmode )
+	{
+        f.wl0_nbw.value = f.wl_cwmmode.value;		
+	}
+	else
+	{
+		f.wl0_nbw.value = 0;
+	}
+	if (f.wl_wmm[0].checked == true)
+		f.wl0_wmm.value=1;
+	else
+		f.wl0_wmm.value=0;
+ 	return true;
+}
+function Limit_Bandwidth()
+{
+	var f = document.forms[0];
+	if(f.wl_gmode.selectedIndex == 0 || f.wl_gmode.selectedIndex == 3){
+		f.wl_cwmmode.selectedIndex = 0;
+		f.wl_cwmmode.disabled = 1;
+	}
+	else{ 
+		f.wl_cwmmode.selectedIndex = 1;
+		f.wl_cwmmode.disabled = 0;
+	}
+	Disable_Extension_Channel();
+}
+function Disable_Extension_Channel()
+{
+	var f = document.forms[0];
+	if(f.wl_cwmmode.selectedIndex == 0)
+		f.wl_ext_channel.disabled = 1;
+	else if(f.wl_cwmmode.selectedIndex == 1)
+		f.wl_ext_channel.disabled = 0;
+}
+function Init_Value()
+{
+	var f = document.forms[0];
+	var ssid = '<%nvram_get("wl0_ssid");%>';
+	var wl0_channel = '<%nvram_get("wl0_channel");%>';
+	var wl0_mode = '<%nvram_get("wl0_mode");%>';
+	var wl0_enabled = '<%nvram_get("wl0_enabled");%>';
+	var wl0_ssid_bcast = '<%nvram_get("wl0_ssid_bcast_enabled");%>';
+	var wl0_protection_mode = '<%nvram_get("wl0_ctsprotect");%>';
+	var wl0_cwmmode ='<%nvram_get("wl0_nbw");%>';
+	
+	if (wl0_enabled == '0')
+	{
+		f.wl_gmode.value = 3;
+	}
+	else
+	{
+		f.wl_gmode.value = wl0_mode;
+	}
+	if( f.wl_cwmmode )
+	{
+		if (wl0_cwmmode=='0')
+			f.wl_cwmmode.selectedIndex = 0;
+		else if (wl0_cwmmode=='1')
+			f.wl_cwmmode.selectedIndex = 1;
+		else if (wl0_cwmmode=='2')
+			f.wl_cwmmode.selectedIndex = 2;
+		else
+			f.wl_cwmmode.selectedIndex = 0;		
+	}
+	
+	Limit_Bandwidth();
+	
+	f.wl_ssid.value = ssid;
+	
+	f.wl_channel.selectedIndex = (parseInt(wl0_channel));
+
+	if (wl0_ssid_bcast == "1")
+		f.closed.checked = false;
+	else
+		f.closed.checked = true;
+
+	if(wl0_protection_mode=='0')
+		f.wl_gmode_protection.selectedIndex = 1;
+	else
+		f.wl_gmode_protection.selectedIndex = 0;
+	
+	if('<%nvram_get("havebandwidth");%>'  == 'true')
+	{
+		ext_chn_change();
+		f.wl_ext_channel.value = '<%nvram_get("wl0_nextcha");%>';
+	}
+	
+	Disable_Extension_Channel();
+		
+	if ('<%nvram_get("wl0_wmm");%>' == '1')
+		f.wl_wmm[0].checked=true;
+	else
+		f.wl_wmm[1].checked=true;
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 onload="Init_Value();" marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem,isAPmode);
+	showMenu(menuSection,menuItem,isAPmode)
+</SCRIPT>
+<form name="wlan_main" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wl_channel.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="restart" value="wireless">
+<input type="hidden" name="data1" value="wl0_ssid wl0_ssid_bcast_enabled wl0_enabled wl0_nextcha wl0_channel wl0_mode wl0_brust_mode wl0_ctsprotect wl0_autoChannel dot11_qos_enabled wl0_nbw wl0_wmm">
+<input type="hidden" name="wl0_ssid">
+<input type="hidden" name="wl0_ssid_bcast_enabled">
+<input type="hidden" name="wl0_enabled">
+<input type="hidden" name="wl0_channel">
+<input type="hidden" name="wl0_nextcha">
+<input type="hidden" name="wl0_mode">
+<input type="hidden" name="wl0_brust_mode">
+<input type="hidden" name="wl0_ctsprotect">
+<input type="hidden" name="wl0_autoChannel">
+<input type="hidden" name="dot11_qos_enabled">
+<input type="hidden" name="wl0_nbw">
+<input type="hidden" name="wl0_wmm">
+
+<TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_786);</SCRIPT>
+ <BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=5 cellPadding=0 width=585 align=left 
+      border=0>
+        <TBODY>
+        <TR>
+          <TD width=71>&nbsp;</TD>
+          <TD colSpan=2>
+            <SCRIPT>dw(str_787);</SCRIPT>
+            <A 
+            onclick="window.open('glossary.html#channel_ssid','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"><B><FONT color=#6464c3>
+            <SCRIPT>dw(str_47);</SCRIPT>
+            </FONT></B></A></TD></TR>
+        <TR>
+          <TD width=36>&nbsp;</TD>
+          <TD width=174><B>
+            <SCRIPT>dw(str_788);</SCRIPT>
+            &gt;</B></TD>
+          <TD width=335>
+            <SCRIPT>writeChannel();</SCRIPT>
+            &nbsp;&nbsp; 
+            <SCRIPT>
+				var current_channel='<%nvram_get("wl0_currentChannel");%>'; 
+				var channel = '<%nvram_get("wl0_channel");%>';
+				if(channel =='0')
+					dw("<b>"+str_343+" &gt; </B>&nbsp;"+current_channel);
+				else
+					dw("&nbsp;");
+			</SCRIPT>
+          </TD></TR>
+        <SCRIPT>     
+        if( '<%nvram_get("havebandwidth");%>'  == 'true' )	
+        {
+	        dw("<TR>");
+	          dw("<TD width=36>&nbsp;</TD>");
+	          dw("<TD width=174><B>");
+	           
+	            dw(str_1300);
+	             dw("&gt;</B></TD>");
+	          dw("<TD width=335>");
+	            ext_chn();
+	            dw("</TD></TR>");
+	      }      
+        </SCRIPT>    
+        <TR>
+          <TD width=36>&nbsp;</TD>
+          <TD width=174><B>
+            <SCRIPT>dw(str_343);</SCRIPT>
+            &gt;</B> </TD>
+          <TD class=plaintext_bold width=335>
+		  	<INPUT maxLength="32" size="32" name="wl_ssid" onkeypress="if(event.keyCode==13)return false;"> 
+		  </TD>
+		  </TR>
+        <TR>
+          <TD width=36>&nbsp;</TD>
+          <TD width=174><B>
+            <SCRIPT>dw(str_790);</SCRIPT>
+            &gt;</B></TD>
+          <TD width="335">
+		  	<SELECT name="wl_gmode" onChange="Limit_Bandwidth();">
+			  <OPTION value="0"><SCRIPT>dw(str_4200);</SCRIPT></OPTION>
+			  <OPTION value="6"><SCRIPT>dw(str_2605);</SCRIPT></OPTION>
+			  <OPTION value="9"><SCRIPT>dw(str_4201);</SCRIPT></OPTION> 
+			  <OPTION value="3"><SCRIPT>dw(str_375);</SCRIPT></OPTION>
+			</SELECT>&nbsp;&nbsp;
+			<A onclick="window.open('glossary.html#wireless_mode','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"> <B><FONT color=#6464c3>
+            <SCRIPT>dw(str_47);</SCRIPT>
+            </FONT></B></A></TD></TR>
+        <SCRIPT>
+        if( '<%nvram_get("havebandwidth");%>'  == 'true' )
+        {
+        dw('<TR>');
+          dw('<TD width=36>&nbsp;</TD>');
+          dw('<TD width=174><B>');
+            dw(str_1301);
+            dw('&gt;</B></TD>');
+          dw('<TD width="335">');
+		  	      dw('<SELECT name="wl_cwmmode" onChange="Disable_Extension_Channel();">');
+              dw('<OPTION value="0">20MHz</OPTION> ');
+             
+				        dw('<OPTION value="1">20/40MHz</OPTION> ');
+				        
+			       dw('</SELECT>');
+			    dw('</TD>');
+			  dw('</TR>');
+			  }
+			  </SCRIPT>
+        <TR>
+          <TD width=71>&nbsp;</TD>
+          <TD width=154><B>
+            <SCRIPT>dw(str_794);</SCRIPT>
+            &gt;</B></TD>
+          <TD width=340>
+		  	<INPUT type="checkbox" name="closed"> 
+            &nbsp;&nbsp;<A 
+            onclick="window.open('glossary.html#bro_ssid','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"> <B><FONT color=#6464c3>
+            <SCRIPT>dw(str_47);</SCRIPT>
+            </FONT></B></A></TD></TR>
+        <TR vAlign=top>
+          <TD width=71>&nbsp;</TD>
+          <TD width=154><B>
+            <SCRIPT>dw(str_797);</SCRIPT>
+            &gt;</B></TD>
+          <TD width=340>
+            <TABLE class=copy_1 cellSpacing=1 cellPadding=1 align=left 
+              border=0><TBODY>
+              <TR vAlign=top>
+                <TD>
+					<SELECT name="wl_gmode_protection"> 
+                    	<SCRIPT>dw('<option value="2" >' +str_375+ '</option>');
+						dw('<option value="0">' +str_374+ '</option>');</SCRIPT>
+                    	
+                  	</SELECT>&nbsp;&nbsp;&nbsp; </TD>
+                <TD>
+				<A onclick="window.open('glossary.html#protected_mode','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" href="javascript:void(0);">
+				<B><FONT color=#6464c3>
+                  <SCRIPT>dw(str_47);</SCRIPT>
+                  </FONT></B></A></TD></TR></TBODY></TABLE></TD></TR>
+		<TR>
+          <TD width=36>&nbsp;</TD>
+          <TD width=200><B>
+            <SCRIPT>dw(str_1304);</SCRIPT>
+            &gt;</B></TD>
+          <TD width=390>
+            <input name="wl_wmm" type="radio" value="1">
+			  <b><SCRIPT>dw(str_374);</SCRIPT></b>
+			  <input name="wl_wmm" type="radio" value="0">&nbsp;<b><SCRIPT>dw(str_375);</SCRIPT></b> 
+			  <A onclick="window.open('glossary.html#wmm','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"> <B><FONT color=#6464c3>
+            <SCRIPT>dw(str_47);</SCRIPT>
+            </FONT></B></A>
+					</TD>
+		</TR>
+		 <TR>
+          <TD width=71>&nbsp;</TD>
+          <TD width=154></TD>
+          <TD width=340></TD></TR><INPUT type=hidden value=nothing name=nothing> 
+        <TR>
+          <TD width=71>&nbsp;</TD>
+          <TD class=formText width=154>&nbsp;</TD>
+          <TD class=plaintext_bold width=340>&nbsp; </TD></TR>
+        <TR>
+          <TD width=71>&nbsp;</TD>
+          <TD align=middle colSpan=2>
+            <SCRIPT>dw('<input id="submitBtn_clear" type="button" value="');dw(str_48);dw('" style="{width:160px;}" class="submitBtn" onClick="Init_Value();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">');
+			dw('<input id="submitBtn_apply" type="submit" style="{width:160px;}" value="');dw(str_49);dw('"onClick="return Try_Submit();" class="submitBtn">');</SCRIPT>
+          </TD></TR></TBODY></TABLE></FORM></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

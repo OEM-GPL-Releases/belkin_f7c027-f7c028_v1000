@@ -1,0 +1,169 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="expires" CONTENT="0">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<script language="javascript" type="text/JavaScript" src="validate.js"></script>
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_4220+'</title>';
+dw(strHtml); 
+var cc='ppp0';
+var helpItem 	='WIFI Settings';
+var menuSection	='WLAN';
+var menuItem	='WIFI Settings';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<!--
+function Try_Submit() 
+{
+	var passForm=document.forms[0];		
+	passForm.submit();
+
+}
+function Init_Value()
+{
+	var passForm = document.forms[0];  
+	
+	passForm.wl0_nrdg.value= '<%nvram_get("wl0_nrdg");%>';
+	passForm.wl0_nopmode.value= '<%nvram_get("wl0_nopmode");%>';
+	passForm.wl0_nautoba.value= '<%nvram_get("wl0_nautoba");%>';
+	passForm.wl0_BADecline.value= '<%nvram_get("wl0_BADecline");%>';              
+}	
+	
+function reset_default()
+{
+	var passForm=document.forms[0];
+	passForm.wl0_nrdg.value="0";
+	passForm.wl0_nopmode.value="0";
+	passForm.wl0_nautoba.value="1";
+	passForm.wl0_BADecline.value="0";
+	
+	passForm.submit();
+}
+//-->	 
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 onload="Init_Value();" marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	var havepc = '<%nvram_get("havepc");%>';
+	showHead(wanStatus,helpItem);
+	showMenu(menuSection,menuItem,isAPmode)  
+</SCRIPT>
+<form name="wlan_main" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wireless_wifi_option.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="restart" value="wireless">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="data1" value=" wl0_nrdg wl0_nopmode wl0_nautoba wl0_BADecline ">
+ 
+
+
+<TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw("Wireless > WIFI Settings");</SCRIPT>
+ <BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=5 cellPadding=0 width=626 align=left 
+      border=0>
+        <TBODY>
+        <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD colSpan=2>&nbsp;</TD></TR>
+        <TR><TD colspan=3 align=center>  
+						</TD>
+			  </TR>
+			  <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD colSpan=2>&nbsp;</TD></TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <!--//Wireless Mode
+            //&gt;-->
+             	 <SCRIPT>dw("RDG");</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <select name="wl0_nrdg" style="font-size: 8pt">
+                          <!--//<option value="3">Off</option>-->
+                          <option value="0">0</option>
+                          <option value="1">1</option>                         
+                        </select> 
+					     &nbsp;
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+           <!--	Rate Selection for 802.11b
+            &gt;</B>--> 
+          <SCRIPT>dw("Opmode");</SCRIPT>
+          </TD>
+          <TD class=plaintext_bold>
+		  		  <select name="wl0_nopmode" style="font-size: 8pt">
+                          <!--//<option value="15">All</option>-->
+                          <option value="0">0</option>
+                          <option value="1">1</option>                         
+                        </select> 
+					     &nbsp;  					     
+		      </TD>
+		    </TR>
+        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+             <!--Rate Selection for 802.11g-->
+              <SCRIPT>dw("AutoBA");</SCRIPT>
+            	</B> </TD>
+          <TD class=plaintext_bold>
+		  		  <SELECT name="wl0_nautoba" style="font-size: 8pt"> 
+						<!--<OPTION value=0>Auto</OPTION>-->
+            <OPTION value=0>0</OPTION>
+						<OPTION value=1>1</OPTION>          
+					 </SELECT>
+		      </TD>
+		    </TR>        
+        <TR>
+          <TD>&nbsp;</TD>
+          <TD><B>
+            <SCRIPT>dw("BADecline");</SCRIPT>
+            </B> </TD>
+          <TD class=plaintext_bold>
+		  		  <select name="wl0_BADecline" style="font-size: 8pt">
+						  <option value=0>0</option>
+						  <option value=1>1</option>						  
+						</select>
+		      </TD>
+		    </TR> 
+        <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD width=192></TD>
+          <TD width=340></TD></TR><INPUT type=hidden value=nothing name=nothing> 
+        <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD class=formText width=192>&nbsp;</TD>
+          <TD class=plaintext_bold width=340>&nbsp; </TD></TR>
+        <TR>  
+        <TR>
+          <TD width=74>&nbsp;</TD>
+          <TD align=middle colSpan=2>
+            <SCRIPT>
+            	dw('<input id="submitBtn_save" type="button" style="{width:160px;}" value="');dw(Save);dw('"onClick="return Try_Submit();" class="submitBtn">&nbsp;&nbsp;');
+            	dw('<input id="submitBtn_exit" type="button" value="');dw(Exit);dw('" style="{width:160px;}" class="submitBtn" onClick="Init_Value();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">&nbsp;&nbsp;');
+							dw('<input id="submitBtn_reset" type="button" style="{width:160px;}" value="');dw(Reset);dw('" onClick="reset_default();" class="submitBtn">');
+			</SCRIPT>
+          </TD></TR></TBODY></TABLE></FORM></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

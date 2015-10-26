@@ -1,0 +1,78 @@
+<HTML>
+<HEAD>
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<% wl_get_wps_status(); %>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<SCRIPT>
+<!--
+assign_var();
+strHtml='<title>'+str_1600+'</title>';
+dw(strHtml);
+-->
+</SCRIPT>
+</HEAD>
+<BODY>
+<center>
+<script>
+<!--
+if ('<%nvram_get(wl0_wps_enabled);%>' == '1')
+{
+    if('<%nvram_get(wps_status);%>' == '3')
+    {
+    	dw(str_1400);
+    	dw('<p><input type=button style="{width:160px;}" name="cancel" value="'+str_1399+'" class="submitBtn" onclick="javascript:window.close();window.opener.focus();window.opener.document.Form_WPS_STOP.submit();">');
+    }
+    else
+    if('<%nvram_get(wps_status);%>' == '34')
+    {
+    	dw(str_1366);
+    	dw('<p><input type=button style="{width:160px;}" name="ok" value="'+str_1398+'" class="submitBtn" onclick="javascript:window.close();window.opener.focus();window.opener.location.reload();">');
+    }
+    else
+    if((<%nvram_get(wps_status);%> > 3) && (<%nvram_get(wps_status);%> < 34))
+    {
+    	dw(str_1363);
+    }
+    else
+    if('<%nvram_get(wps_status);%>' == '38')
+    {
+    	dw(str_1363);
+    }
+    else
+    if(('<%nvram_get(wps_status);%>' == '1') || ('<%nvram_get(wps_status);%>' == '2'))
+    {
+    	dw(str_1364);
+    	dw('<p><input type=button style="{width:160px;}" name="close" value="'+str_1298+'" class="submitBtn" onclick="javascript:window.close();window.opener.focus();window.opener.document.Form_WPS_STOP.submit();">');
+    }
+//+++Eric add for WPS session overlap
+	else if('<%nvram_get(wps_status);%>' == "265")
+	{
+		dw(str_1365);
+		dw('<p><input type=button style="{width:160px;}" name="close" value="'+str_1298+'" class="submitBtn" onclick="javascript:window.close();window.opener.focus();window.opener.document.Form_WPS_STOP.submit();">');
+	}
+//---Eric add for WPS session overlap
+    else
+    {
+    	dw(str_1364);
+    	dw('<p><input type=button style="{width:160px;}" name="close" value="'+str_1298+'" class="submitBtn" onclick="javascript:window.close();window.opener.focus();window.opener.document.Form_WPS_STOP.submit();">');
+    }
+    if('<%nvram_get(wps_status);%>' != '34' && '<%nvram_get(wps_status);%>' != '1'&& '<%nvram_get(wps_status);%>' != '2')
+    {
+    	setTimeout('location.replace("wps_info_ok.html")', 1000); 
+    }
+}
+else if(('<%nvram_get(wps_status);%>' == '1') ||('<%nvram_get(wl0_wps_enabled);%>' == '0'))
+{
+   	dw(str_1364);
+  	dw('<p><input type=button style="{width:160px;}" name="close" value="'+str_1298+'" class="submitBtn" onclick="javascript:window.close();window.opener.focus();window.opener.document.Form_WPS_STOP.submit();">');
+}
+-->
+</script>
+</center>
+
+</BODY></HTML>

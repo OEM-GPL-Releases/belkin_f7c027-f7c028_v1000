@@ -1,0 +1,375 @@
+<HTML><HEAD>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT language=JavaScript src="validate.js"></SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_800+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Security';
+var menuSection	='WLAN';
+var menuItem	='Security';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function GURL(x){location=x}
+
+function Init_reset()
+{
+    window.location.href ="wl_security.html";	
+}
+
+function Init_Value()
+{
+	var f=document.forms[0];
+	var obscured = '<%nvram_get("wl0_psk_obscured");%>';
+	var encryption = '<%nvram_get("wl0_wpaenc");%>';
+	var sec_mode = '<%nvram_get("wl0_sec_mode");%>';
+	
+	var tmpstr='';
+	
+	f.wl_wpa_psk.value='<%nvram_get("wl0_pskkey");%>';
+	f.wl_psk_obscure.value='<%nvram_get("wl0_psk_obscured");%>';
+	
+	if (obscured=="1")
+	{ 
+		f.psk_obscure.checked = true;
+		f.wl_wpa_psk2.value = f.wl_wpa_psk.value;
+
+		
+		 $('#wl_wpa_psk1').hide(); 
+     $('#wl_wpa_psk2').show();
+	}	
+	else 
+	{	
+		f.psk_obscure.checked = false;
+		f.wl_wpa_psk1.value = f.wl_wpa_psk.value;
+
+		$('#wl_wpa_psk1').show(); 
+    $('#wl_wpa_psk2').hide();
+	}	
+		
+	if (sec_mode=="WPA2")
+		f.wl_auth.selectedIndex = 1;
+	else if (sec_mode=="WPA1WPA2")
+		f.wl_auth.selectedIndex = 0;
+	else if (sec_mode=="psk")
+		f.wl_auth.selectedIndex = 2;
+	else
+		f.wl_auth.selectedIndex = 0;
+	
+	modify();
+
+	ChangeEncMode();	
+}
+function isBlank(s) {
+ for(var i = 0; i < s.length; i++) {
+ var c = s.charAt(i);
+ if((c !=' ') && (c!='\n') && (c !='\t')) return false;
+ }
+ return true;
+}
+function ChangeSecMode(wl_sec_mode)
+{
+	if(wl_sec_mode.value == "0") GURL('wl_security0.html');
+	else if(wl_sec_mode.value == "psk") GURL('wl_wpa.html');
+	else if(wl_sec_mode.value == "WPA2") GURL('wl_wpa.html');
+	else if(wl_sec_mode.value == "WPA1WPA2") GURL('wl_wpa.html');		
+	else if(wl_sec_mode.value == "128") GURL('wl_128wep.html');	
+	else if(wl_sec_mode.value == "64") GURL('wl_64wep.html');
+	else if(wl_sec_mode.value == "wpa") GURL('wireless_wpa_radius.html');	
+}
+
+function ChangeEncMode()
+{
+	var i ,f ;
+		var wireless_mode= '<%nvram_get("wl0_mode");%>';
+	f = document.forms[0];
+	
+	//if (wireless_mode == '6')
+	if (0)
+	{
+    f.wl_auth.options[f.wl_auth.selectedIndex].value = 'WPA2';
+    $('#wl_auth').attr("disabled", true);
+  }
+  else
+   {
+    $('#wl_auth').attr("disabled", false);
+   }
+	
+   
+   if( f.wl_auth.options[f.wl_auth.selectedIndex].value == 'WPA2' )
+   {
+  	 f.wl_wep.value=0;
+	 document.getElementById("wl_wep_id").innerHTML='AES'; 
+   }
+   else if( f.wl_auth.options[f.wl_auth.selectedIndex].value == 'psk' )
+   {
+  	 f.wl_wep.value=1;
+	 document.getElementById("wl_wep_id").innerHTML='TKIP'; 
+   }
+   else if( f.wl_auth.options[f.wl_auth.selectedIndex].value == 'WPA1WPA2' )
+   {
+   	 f.wl_wep.value=2;
+	 document.getElementById("wl_wep_id").innerHTML='TKIP+AES'; 
+   }
+}
+
+
+function Try_Submit()
+{
+	var f=document.forms[0];
+	var plaintext_psk_v = document.getElementById('plaintext_psk');
+	var obscure_psk_v = document.getElementById('obscure_psk');
+	
+
+  change_psk();
+	f.wl0_pskkey.value = f.wl_wpa_psk.value;
+	if(isBlank(f.wl_wpa_psk.value))
+	{
+		alert(str_851);
+		return false;
+	}
+
+	if (f.wl_wpa_psk.value.length < 8 || f.wl_wpa_psk.value.length > 64)
+	{
+		alert(str_852);
+		return false;
+	}
+
+	if (f.wl_wpa_psk.value.length == 64)
+	{
+		if(!isHex(f.wl_wpa_psk.value))
+		{
+			alert(str_852);
+			return false;
+		}
+	}
+		
+	if (f.psk_obscure.checked == true) 
+		f.wl0_psk_obscured.value = 1;
+	else 
+		f.wl0_psk_obscured.value = 0;
+	
+	f.wl0_wpaenc.value = f.wl_wep.value;
+	f.wl0_sec_mode.value = f.wl_auth.value;
+	return true;
+}
+
+var plaintext_psk_node;
+var obscure_psk_node;
+function modify()
+{
+	var f=document.forms[0];
+	if (f.wl_psk_obscure.value==1)
+	{
+		f.wl_wpa_psk.value=f.wl_wpa_psk2.value;
+	}
+	else
+	{
+		f.wl_wpa_psk.value=f.wl_wpa_psk1.value;
+	}
+
+	if (f.psk_obscure.checked == true)
+	{
+		f.wl_wpa_psk2.value=f.wl_wpa_psk.value;
+		f.wl_psk_obscure.value=1;
+		$('#wl_wpa_psk1').hide(); 
+    $('#wl_wpa_psk2').show();
+	}
+	else 
+	{
+		f.wl_wpa_psk1.value=f.wl_wpa_psk.value;
+		f.wl_psk_obscure.value=0;
+		$('#wl_wpa_psk1').show(); 
+    $('#wl_wpa_psk2').hide();
+	}
+}
+
+function change_psk()
+{
+	var f=document.forms[0];
+ 	if (f.psk_obscure.checked == true) 
+		f.wl_wpa_psk.value=f.wl_wpa_psk2.value;
+ 	else 
+		f.wl_wpa_psk.value=f.wl_wpa_psk1.value;
+}
+
+function isHex(s) {
+var j,x = 0;
+for(var i = 0; i < s.length; i++) {
+var c = s.charAt(i);
+j = parseInt(c,16);
+if(isNaN(j))
+  return false;
+}
+return true;
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor="#ffffff" leftMargin="0" topMargin="0" onload="Init_Value();" marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem,isAPmode);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name)
+</SCRIPT>
+<form name="tF" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wl_wpa.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="restart" value="wireless">
+<input type="hidden" name="data1" value="wl0_sec_mode wl0_psk_obscured wl0_pskkey wl0_wpaenc">
+
+<input type="hidden" name="wl0_sec_mode">
+<input type="hidden" name="wl0_wpaenc">
+<input type="hidden" name="wl0_pskkey">
+<input type="hidden" name="wl0_psk_obscured">
+
+<input type="hidden" name="wl_wpa_psk">
+<input type="hidden" name="wl_psk_obscure">
+<input type="hidden" name="wl_wep">
+
+ <TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_800);</SCRIPT>
+ <BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=0 cellPadding=0 width=650 align=left 
+      border=0>
+        <TBODY>
+        <TR>
+          <TD vAlign=top height=410>
+            <TABLE class=copy_1 cellSpacing=10 cellPadding=0 width=600 
+            align=center border=0>
+              <TBODY>
+              <TR>
+                <TD><B>
+                  <SCRIPT>dw(str_1715);</SCRIPT>
+                  </B></TD>
+                <TD align=left colSpan=2><SELECT onchange=ChangeSecMode(this) 
+                  name=wl_sec_mode> 
+                    <SCRIPT>dw('<option value="0">'+str_318+'</option>');
+														dw('<option value="psk" selected>'+str_802+'</option>');
+														dw('<option value="128">'+str_803+'</option>');
+														dw('<option value="64">'+str_804+'</option>');
+														//dw('<option value="wpa" >'+str_805+'</option>');
+</SCRIPT>
+                  </SELECT> </TD></TR>
+              <TR>
+                <TD><B>
+                  <SCRIPT>dw(str_842);</SCRIPT>
+                  </B></TD>
+                <TD align=left colSpan=2>
+                
+                	<SCRIPT>
+                	
+                		//if( '<%nvram_get("wl0_mode");%>' == '6' || '<%nvram_get("wl0_mode");%>' == '9' ){
+                		if( 0 ){
+							dw('<SELECT id="wl_auth" name="wl_auth" onchange="ChangeEncMode();">\n');
+							dw('<OPTION value="WPA1WPA2">');
+							dw(str_4207);
+							dw('</OPTION>\n');
+							dw('<OPTION value="WPA2">');
+							dw(str_4208);
+							dw('</OPTION>\n');
+							dw('</SELECT>\n');
+							
+                		}
+                		else{
+
+							dw('<SELECT id="wl_auth" name="wl_auth" onchange="ChangeEncMode();">\n'); 
+							dw('<OPTION value="WPA1WPA2">');
+							dw(str_4207);
+							dw('</OPTION>\n');	 
+							dw('<OPTION value="WPA2">');
+							dw(str_4208);
+							dw('</OPTION>\n');
+							dw('<OPTION value="psk">');
+							dw(str_4209);
+							dw('</OPTION>\n');
+							dw('</SELECT>\n');
+                		}
+         
+					</SCRIPT>
+					
+                   </TD></TR>
+                   
+                   
+                   
+                   
+              <TR>
+                <TD><B>
+                  <SCRIPT>dw(str_845);</SCRIPT>
+                  </B></TD>
+                <TD align=left colSpan=2>
+					<span id="wl_wep_id"></span>
+                   </TD></TR>
+			
+			
+			
+			
+              <TR>
+                <TD><div id="div_wpa_psk1" align=left><B>
+                  <SCRIPT>dw(str_854);</SCRIPT>
+                  </B>
+						        </div>
+				        </TD>
+                <TD  align=left colSpan=2 >
+			<INPUT maxLength=64  onchange=change_psk(); size="40" name=wl_wpa_psk1 id=wl_wpa_psk1 class="wl_wpa_password_width"> 
+			<INPUT type=password maxLength=64  onchange=change_psk(); size=40 name=wl_wpa_psk2 id=wl_wpa_psk2 class="wl_wpa_password_width">
+			</TD>
+			</TR>
+			 <!--div id="div_wpa_psk2_2" -->
+
+			  
+			  
+			  
+				<TR>
+              
+                <TD><B>&nbsp;</B></TD>
+                <TD align=left colSpan=2><B>
+                  <INPUT onclick=modify(); type=checkbox value="" name=psk_obscure>
+                  <SCRIPT>dw(str_857);</SCRIPT>
+</B></TD>
+              </TR>
+              <TR>
+                <TD><B>&nbsp;</B></TD>
+                <TD align=left colSpan=2><B>
+                  <SCRIPT>dw(str_802);</SCRIPT>
+                  </B><BR>
+                  <SCRIPT>dw(str_856);</SCRIPT>
+                  <A class=plaintext_bold 
+                  onclick="window.open('glossary.html#wireless_security','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+                  href="javascript:void(0);"><B><FONT color=#0066FF>
+                  <SCRIPT>dw(str_47);</SCRIPT>
+                  </FONT></B></A></TD></TR>
+              <TR>
+                <TD width=166>&nbsp;</TD>
+                <TD width=174>&nbsp;</TD>
+                <TD width=335>&nbsp;</TD></TR>
+              <TR>
+                <TD align=left colSpan=3>&nbsp;</TD></TR>
+              <TR>
+                <TD width=166>&nbsp;</TD>
+                <TD align=middle colSpan=2>
+                  <SCRIPT>
+				  	dw('<input id="submitBtn_clear" type="button" value="'+str_48+'" style="{width:160px;}" class="submitBtn" onclick="document.tF.reset();Init_reset();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">');
+					dw('<input id="submitBtn_apply" type="submit" value="'+str_49+'" style="{width:160px;}" class="submitBtn" onClick="return Try_Submit();">');</SCRIPT>
+                </TD></TR></TABLE></TD></TR></TBODY></TABLE></FORM></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

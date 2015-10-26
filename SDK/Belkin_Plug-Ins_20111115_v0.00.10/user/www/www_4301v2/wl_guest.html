@@ -1,0 +1,427 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="expires" CONTENT="0">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_1613+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Guest Access';
+var menuSection	='WLAN';
+var menuItem	='Guest Access';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+<!--
+function GURL(x){location=x}
+
+function wpa_isHex(s) {
+    var j,x = 0;
+    for(var i = 0; i < s.length; i++) {
+    var c = s.charAt(i);
+    j = parseInt(c,16);
+    if(isNaN(j))
+      return false;
+    }
+    return true;
+}
+
+
+function isBlank(s) {
+     for(var i = 0; i < s.length; i++) {
+     
+        var c = s.charAt(i);
+        if((c !=' ') && (c!='\n') && (c !='\t')) return false;
+        
+     }
+ return true;
+}
+
+function checkVaildCharNum(value)
+{
+var localname=value.toLowerCase();
+for(i=0;i<localname.length;i++)
+{
+ var token=localname.charAt(i);
+ if(token=='`' || token=='~' || token=='!' || token=='#'|| token=='-'
+ 		|| token=='$' || token=='%' || token=='^' || token=='&' || token=='*'
+ 		|| token=='(' || token==')' || token=='=' || token=='+' || token=='['
+ 		|| token==']' || token=='{' || token=='}' || token=='\\' || token=='|'
+ 		|| token==';' || token==':' || token=='\'' || token=='\"' || token=='<'
+ 		|| token=='>' || token=='/' || token=='?' || token=='.' || token==',' || token=='@' )
+ {
+	alert(str_1268);
+	return false;
+ }
+}
+return true;
+}
+
+function ChangeMode()
+{
+   var 	f = document.forms[0];
+   
+   document.getElementById("enter_key").style.display = "none";
+   document.getElementById("key_length_info").style.display="none";
+   document.getElementById("enter_wepkey").style.display = "none";
+   document.getElementById("wepkey_length_info").style.display="none";	  	  
+  
+   if (f.wl_security[2].checked == true)
+     {
+         document.getElementById("enter_wepkey").style.display = "";
+         document.getElementById("wepkey_length_info").style.display="";	
+     }
+   else if (f.wl_security[0].checked == true || f.wl_security[1].checked == true)
+      {
+         document.getElementById("enter_key").style.display = "";
+         document.getElementById("key_length_info").style.display="";
+      }
+}
+
+function Init_Value()
+{
+	var f=document.wireless_mssid;
+	f.Clear_Changes.value=str_48;
+	f.Apply_Changes.value=str_49;
+	
+   var guest_enabled ='<%nvram_get("wl0_mssid_enabled");%>';	
+	 //var sec_mode = '<%nvram_get("wl0_sec_mode_2nd");%>';
+	 var sec_mode = '<%nvram_get("wl0_mssid_mode");%>';
+	 	f.wl_ssid.value='<%nvram_get("wl0_ssid_2nd");%>';
+   
+  	
+   if(guest_enabled=='1')
+    {
+       f.Radio[0].checked=true;
+    } 
+	else
+    { 
+	     f.Radio[1].checked=true;
+	     f.wl_security[0].disabled=true;
+	     f.wl_security[1].disabled=true;
+	     f.wl_security[2].disabled=true;
+	     f.wl_security[3].disabled=true;
+	     f.wl_ssid.disabled=true;
+	     f.pskkey.disabled=true;
+	     f.key1.disabled=true;
+    } 
+	
+	if (sec_mode=="hotel")
+	 {
+      f.wl_security[0].checked = true;
+      f.pskkey.value='<%nvram_get("wl0_hotel_key");%>';
+   }	
+	else if (sec_mode=="wpa")
+	 {
+      f.wl_security[1].checked = true;
+      f.pskkey.value='<%nvram_get("wl0_pskkey_2nd");%>'; 
+   }
+  else if (sec_mode=="wep")
+   {
+      f.wl_security[2].checked = true;
+      f.key1.value='<%nvram_get("wl0_key1_2nd");%>';
+   }    
+  else if (sec_mode=="none")
+    f.wl_security[3].checked = true;  
+    
+    ChangeMode();
+	
+}
+
+
+function Try_Submit()
+{
+	var f=document.forms[0];
+	
+
+ if(f.Radio[0].checked==true) 
+		f.wl0_mssid_enabled.value='1';
+	else 
+	  f.wl0_mssid_enabled.value='0';
+	  
+/*GTK+++ remove check blank to accept blank to match F7D83xx difinition 20100825 	
+	if(isBlank(f.wl_ssid.value)) 
+ 	{
+		alert(str_1201);	
+		return false;
+ 	}
+GTK --- 20100825 */
+	for(i=0;i<f.wl_ssid.value.length;i++)
+	{
+		var token=f.wl_ssid.value.charAt(i);
+		if(token=='`' || token=='~' || token=='!' || token=='@' || token=='#'
+		|| token=='$' || token=='%' || token=='^' || token=='&' || token=='*'
+		|| token=='(' || token==')' || token=='=' || token=='[' || token==','
+		|| token==']' || token=='{' || token=='}' || token=='\\' || token=='|'
+		|| token==';' || token==':' || token=='\'' || token=='\"' || token=='<'
+		|| token=='>' || token=='/' || token=='?'  || token=='-')
+		{
+			alert(str_4011);
+			return false;
+		}	 
+	}
+			
+	f.wl0_ssid_2nd.value=f.wl_ssid.value;
+  if(f.wl_security[0].checked == true)
+  {
+	    f.wl0_mssid_mode.value='hotel';
+	    f.wl0_sec_mode_2nd.value='OPEN';
+	}
+	if(f.wl_security[1].checked == true)
+	{
+		f.wl0_mssid_mode.value='wpa';
+	    f.wl0_sec_mode_2nd.value='WPA1WPA2';
+	}
+	if(f.wl_security[2].checked == true)
+	{
+		f.wl0_mssid_mode.value='wep';
+	    f.wl0_sec_mode_2nd.value='wep';
+	}
+	if(f.wl_security[3].checked == true)
+	{
+		f.wl0_mssid_mode.value='none';
+      f.wl0_sec_mode_2nd.value='none';
+    f.wl0_authtype_2nd.value = "WEPAUTO";
+  }
+      
+	//if(f.wl0_sec_mode_2nd.value=='hotel' || f.wl0_sec_mode_2nd.value=='WPA1WPA2')
+	if(f.wl0_mssid_mode.value=='hotel' || f.wl0_mssid_mode.value=='wpa')
+	{			
+			if (isBlank(f.pskkey.value))
+			{ 
+				alert(str_812); 
+				f.pskkey.focus();
+				return false; 
+			}
+			
+			if ( f.pskkey.value.length < 8 || f.pskkey.value.length > 63)
+			{ 
+				alert(str_852);
+				f.pskkey.focus();
+				return false; 
+			}	
+			
+     if (f.pskkey.value.length == 64)
+      { 
+      if(!wpa_isHex(f.pskkey.value))
+        {
+            alert(str_852);
+          	return false;
+        }
+      }
+      
+        if(!checkVaildCharNum(f.pskkey.value))
+            	{ 
+            		alert(str_1268); 
+            	  	return false; 
+            	}
+  
+    //if (f.wl0_sec_mode_2nd.value=='hotel')
+    if (f.wl0_mssid_mode.value=='hotel')   		
+			f.wl0_hotel_key.value=f.pskkey.value;
+	  if (f.wl0_mssid_mode.value=='wpa')
+	    f.wl0_pskkey_2nd.value=f.pskkey.value;
+	    checkVaildCharNum(f.wl0_pskkey_2nd.value);
+	}
+	else if (f.wl0_sec_mode_2nd.value=='wep')
+	{
+
+			if(isBlank(f.key1.value))
+			{
+				alert(str_1812);
+				return false;
+			}
+			
+		
+		      if(!checkVaildCharNum(f.key1.value))
+            	{ 
+            		alert(str_1268); 
+            	  	return false; 
+            	}
+            	
+            	
+			if (f.key1.value.length < 10 || f.key1.value.length > 10)
+			{
+				alert(str_666);
+				return false;
+			}
+				
+			f.wl0_key1_2nd.value = f.key1.value;
+			f.wl0_authtype_2nd.value = "WEPAUTO";
+   		
+	}
+
+	f.submit();
+	return true;
+}
+
+function OpenSetting()
+{
+    var f=document.wireless_mssid;
+    
+    if(f.Radio[0].checked==true)
+    {
+       f.wl_security[0].disabled=false;
+	     f.wl_security[1].disabled=false;
+	     f.wl_security[2].disabled=false;
+	     f.wl_security[3].disabled=false;
+	     f.wl_ssid.disabled=false;
+	     f.pskkey.disabled=false;
+	     f.key1.disabled=false;
+    } 
+    else
+    {
+       f.wl_security[0].disabled=true;
+	     f.wl_security[1].disabled=true;
+	     f.wl_security[2].disabled=true;
+	     f.wl_security[3].disabled=true;
+	     f.wl_ssid.disabled=true;
+	     f.pskkey.disabled=true;
+	     f.key1.disabled=true;
+    }
+}
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 onload="Init_Value();" marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name);
+</SCRIPT>
+<form name="wireless_mssid" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wl_guest.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="restart" value="wireless">
+<input type="hidden" name="data1" value="wl0_mssid_enabled wl0_ssid_2nd wl0_sec_mode_2nd wl0_psk_obscured_2nd wl0_pskkey_2nd wl0_wpaenc_2nd wl0_mssid_mode wl0_hotel_key wl0_key1_2nd wl0_authtype_2nd">
+<input type="hidden" name="wl0_mssid_enabled" value="">
+<input type="hidden" name="wl0_ssid_2nd" value="" >
+<input type="hidden" name="wl0_sec_mode_2nd" value="">
+<input type="hidden" name="wl0_psk_obscured_2nd" value="">
+<input type="hidden" name="wl0_pskkey_2nd" value="">
+<input type="hidden" name="wl0_wpaenc_2nd" value="2">
+<input type="hidden" name="wl_wpa_psk_2nd" value="">
+<input type="hidden" name="wl_psk_obscure_2nd" value="">
+<input type="hidden" name="wl0_mssid_mode" value="">
+<input type="hidden" name="wl0_hotel_key" value="">
+<input type="hidden" name="wl0_key1_2nd" value="">
+<input type="hidden" name="wl0_authtype_2nd" value="">
+
+
+<TD class=head_bold height="100%" width="99%" valign="top"><BR>
+&nbsp;&nbsp;
+<span class="head_bold"><SCRIPT>dw(str_1615);</SCRIPT></span><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD align="left">
+<table class="copy_1" border="0" align="left">
+<tbody>
+<tr>
+<td width="5">&nbsp;</td>
+<td align="left">
+
+<table class="copy_1" align="left" border="0" cellpadding="0" cellspacing="0" width="620">
+<tbody>
+    <tr height="15"><td colspan="2"></td></tr>
+   
+    <tr>
+    <td width="5">&nbsp;</td>
+    <td colspan="2">
+    <SCRIPT>dw(str_1811);</SCRIPT>
+    <a onclick="window.open('glossary.html#guess_access','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" href="javascript:void(0);">
+    <b><font color="#0066FF"> <SCRIPT>dw(str_47);</SCRIPT>
+    </font></b></a></td>
+    </tr>
+    
+    <tr height="30"><td colspan="3">&nbsp;</td></tr>
+
+    <tr height="40">
+    <td width="5">&nbsp;</td>
+    <td width="200"><b>
+    <SCRIPT>dw(str_1613);</SCRIPT>
+    &gt;</b></td>
+    <td width="350">
+    <input type="radio" name="Radio"  value="1" onclick="OpenSetting();"><SCRIPT>dw(str_317);</SCRIPT>
+    <input type="radio" name="Radio"  value="0" onclick="OpenSetting();"><SCRIPT>dw(str_318);</SCRIPT>
+      </td>
+    </tr>
+
+
+ <tr><td>&nbsp;</td>
+    <td><b><SCRIPT>dw(str_67);</SCRIPT>&gt;</b></td>
+    <td><input type="radio" id="hotel_mode" name="wl_security" value="hotel" onClick="ChangeMode();"><script>dw(str_1828);</script></td></tr>
+
+  <tr><td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td><input type="radio" id="wpa_mode" name="wl_security" value="WPA1WPA2" onClick="ChangeMode();"><script>dw(str_1619);</script></td></tr>
+    
+   <tr><td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td><input type="radio" id="wep_mode" name="wl_security" value="wep" onClick="ChangeMode();"><script>dw(str_1829);</script></td></tr>
+  
+   <tr><td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td><input type="radio" id="open_mode" name="wl_security" value="none" onClick="ChangeMode();"><script>dw(str_1830);</script>
+    
+   
+    </td></tr>
+    <tr height="10"><td colspan="2"></td></tr>    
+<tr height="40">
+<td>&nbsp;</td>
+<td><b>
+<SCRIPT>dw(str_1335);</SCRIPT>
+&gt;</b> </td>
+<td class="plaintext_bold" width="340">
+<input maxlength="32" size="32" name="wl_ssid"> 
+</td>
+</tr>
+
+<tr><td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td><SCRIPT>dw(str_1831);</SCRIPT></td></tr>
+    
+<tr id="enter_key" height="40">
+  <td>&nbsp;</td>
+  <td><b><script>dw(str_1617);</script>&gt;</b></td>
+  <td><input maxlength="63" size="32" name="pskkey"></td>
+</tr>
+
+<tr id="key_length_info"><td></td>
+    <td></td>
+    <td id="show_key_length"><SCRIPT>dw(str_1825);</SCRIPT></td></tr>
+    
+<tr id="enter_wepkey" height="40">
+  <td></td>
+  <td><b><script>dw(str_1617);</script>&gt;</b></td>
+  <td><input maxlength="32" size="32" name="key1"></td>
+</tr>
+
+<tr id="wepkey_length_info"><td></td>
+    <td></td>
+    <td id="show_key_length"><SCRIPT>dw(str_1826);</SCRIPT></td></tr>    
+    
+
+  <tr height="30"><td colspan="3">&nbsp;</td></tr>
+    
+<tr>
+<td width="5">&nbsp;</td>
+<td colspan="2" align="center">
+<input id="submitBtn_clear" value="" name="Clear_Changes" style="width: 160px;" class="submitBtn" onclick="Init_Value();" onmouseover="window.status='Clear'; return true;" onmouseout="window.status=''; return true;" type="button"><input id="submitBtn_apply"style="width: 160px;" value="" name="Apply_Changes" onclick="return Try_Submit();" class="submitBtn" type="submit"></td></tr></tbody></table></td></tr></tbody></table><SCRIPT language=JavaScript>showTail()</SCRIPT></BODY></HTML>

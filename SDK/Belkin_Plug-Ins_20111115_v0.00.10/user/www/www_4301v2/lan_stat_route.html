@@ -1,0 +1,311 @@
+<HTML>
+<HEAD>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="routing.js"></SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_1806+'</title>';
+dw(strHtml);
+<!--
+var cty_lang_code='<%nvram_get("lang_code");%>';
+var helpItem 	='Static Routing(TBD)';
+var menuSection	='LAN';
+var menuItem	='Static Routing(TBD)';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+<%autofw_check();%>
+
+var TBLHeader_ClientTBL = "<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse: collapse;\"  bordercolor=\"#FFFFFF\" id=\"AutoNumber4\" width=\"560\">" ;			
+var TBLFooter = "</table>" ;
+var TRHeader =  "<tr>" ;
+var TRFooter = "</tr>" ;
+var TDHeader_ClientTBL = "<td height=\"30\" width=\"141\" align=\"left\" style=\"border-color:#FFFFFF;border-left-style: solid; border-left-width: 1; border-right-style: solid; border-right-width: 1; \
+			    border-top-style: solid; border-top-width: 1; border-bottom-style: none; border-bottom-width: medium\" bgcolor=\"#CCCCCC\" bordercolor=\"#FFFFFF\">\
+									<font face=\"Arial\" style=\"font-size: 8pt\">";
+var TDFooter = "</font></td>" ;
+
+function DataShow() {
+	var list = "" ;
+	var w = "";
+	var remove = "" ;
+	var ip_tmp,ip_value,ip_field,name_value;
+	w += TBLHeader_ClientTBL ;
+	var passForm = document.forms[0];
+
+	for (var j=0;j<6;j++)	{
+			if (eval("passForm.static_route_gateway"+j).value !="")	{		 
+				remove = "<input id= \"submitBtn_remove_"+ j +" \" type=\"button\" value=\""+str_3200+"\" onClick=\"return DelClientTable(document.forms[0],"+ j +");\">" ;
+				ip_value = eval("passForm.static_route_netmask"+j).value;
+				name_value = eval("passForm.static_route_ipaddr"+j).value;
+				
+				w += TRHeader + TDHeader_ClientTBL + "&nbsp;&nbsp;&nbsp;"+ eval("passForm.static_route_ipaddr"+j).value + TDFooter + 
+							    TDHeader_ClientTBL + "&nbsp;&nbsp;&nbsp;"+ eval("passForm.static_route_netmask"+j).value + TDFooter +
+							    TDHeader_ClientTBL + "&nbsp;&nbsp;&nbsp;"+ eval("passForm.static_route_gateway"+j).value + TDFooter +
+								TDHeader_ClientTBL + "&nbsp;&nbsp;&nbsp;"+ remove + TDFooter + TRFooter ;
+			}
+	}
+	w += TBLFooter ;
+	
+	layerWrite('myDiv2', null, w);  
+}
+
+var ns4 = (document.layers)? true:false ;
+var ie4 = (document.all)? true:false;
+var ie5  = (document.all && document.getElementById);
+var ns6 = (!document.all && document.getElementById);
+function layerWrite(id,nestref,text) 
+{
+	if(ns4) 
+	{
+		var lyr = (nestref)? eval('document.'+nestref+'.document.'+id+'.document') : document.layers[id].document ;
+		lyr.open();
+		lyr.write(text);
+		lyr.close();
+	}
+	else if (ie4)
+		document.all[id].innerHTML = text ;
+  else if(ns6)
+		document.getElementById(id).innerHTML = text ;
+}
+function DelClientTable(passForm, n)
+{	
+  var i;
+	
+	eval("passForm.static_route_ipaddr"+n).value = "";
+	eval("passForm.static_route_netmask"+n).value = "";
+	eval("passForm.static_route_gateway"+n).value = "";
+	eval("passForm.static_route_type"+n).value = "0";
+	
+	DataShow();
+}
+function maskcheckIP23(I)
+{
+	if(!(I == 0 || I==128 || I==192 || I==224 || I==240 || I==248 || I==252 || I==254 || I==255))
+		return true;
+}
+function maskcheckIP4(I)
+{
+	if(!(I == 0 || I==128 || I==192 || I==224 || I==240 || I==248 || I==252 || I==254 || I==255)) //add 255 to match PRD 20100913
+		return true;
+}
+
+function Add1(passForm)
+{
+	var f=passForm;
+	var ip_address_add = passForm.static_route_ipaddr.value;
+	var netmask_address_add = passForm.static_route_netmask.value;
+	var gateway_address_add = passForm.static_route_gateway.value;
+
+	var default_gateway , default_netmask, default_ip = default_netmask = default_gateway = "0.0.0.0";
+
+
+	/*-------------check network address and gateway -----------------*/
+	var str = '<%nvram_get("lan_ipaddr");%>';
+	var tmp = "", tmp1,lan_tmp;
+
+	for(var arr = str.split("."), i = 0; i < arr.length - 1; i ++) {
+		tmp += arr[i] + ".";
+		
+	}
+	
+	lan_tmp = tmp;
+	tmp1 = tmp;
+	tmp += "0";
+	tmp1 += "255";
+	
+	var sr_ipaddr;
+  var srnetmask;
+	var sr_gateway;
+	sr_ipaddr = ip_address_add.split(".");
+	sr_netmask = netmask_address_add.split(".");
+  sr_gateway = gateway_address_add.split(".");	
+	var network_address_add = sr_ipaddr[0] + "."+ sr_ipaddr[1] +"."+ sr_ipaddr[2]+".";
+	var gateway_add = sr_gateway[0] + "."+ sr_gateway[1] +"."+ sr_gateway[2]+".";
+	
+	var wan_str = '<%nvram_get("wan_ipaddr");%>';
+	var wan_tmp = "";
+	
+ 	if((sr_ipaddr[0]<1||sr_ipaddr[0]>223) || !sr_ipaddr[0].match(/^[0-9]{1,3}$/) || sr_ipaddr[0].match(/^[0]{1,2}./)) { f.static_route_ipaddr.focus(); f.static_route_ipaddr.select(); alert(str_1780); return ; }
+ 	if((sr_ipaddr[1]<0||sr_ipaddr[1]>255) || !sr_ipaddr[1].match(/^[0-9]{1,3}$/) || sr_ipaddr[1].match(/^[0]{1,2}./)) { f.static_route_ipaddr.focus(); f.static_route_ipaddr.select();alert(str_641); return ; }
+ 	if((sr_ipaddr[2]<0||sr_ipaddr[2]>255) || !sr_ipaddr[2].match(/^[0-9]{1,3}$/) || sr_ipaddr[2].match(/^[0]{1,2}./)) { f.static_route_ipaddr.focus(); f.static_route_ipaddr.select();alert(str_641); return ; }
+ 	if((sr_ipaddr[3]<0||sr_ipaddr[3]>254) || !sr_ipaddr[3].match(/^[0-9]{1,3}$/) || sr_ipaddr[3].match(/^[0]{1,2}./)) { f.static_route_ipaddr.focus(); f.static_route_ipaddr.select();alert(str_1360); return ; }
+	if(!(sr_netmask[0]== 255) || !sr_netmask[0].match(/^[0-9]{1,3}$/) || sr_netmask[0].match(/^[0]{1,2}./)) { f.static_route_netmask.focus(); f.static_route_netmask.select(); alert(str_766); return false; }
+	if((maskcheckIP23(sr_netmask[1])) || !sr_netmask[1].match(/^[0-9]{1,3}$/) || sr_netmask[1].match(/^[0]{1,2}./)) { f.static_route_netmask.focus(); f.static_route_netmask.select(); alert(str_766); return false; }
+ 	if((maskcheckIP23(sr_netmask[2])) || !sr_netmask[2].match(/^[0-9]{1,3}$/) || sr_netmask[2].match(/^[0]{1,2}./)) { f.static_route_netmask.focus(); f.static_route_netmask.select(); alert(str_766); return false; }
+ 	if((maskcheckIP4(sr_netmask[3])) || !sr_netmask[3].match(/^[0-9]{1,3}$/) || sr_netmask[3].match(/^[0]{1,2}./)) { f.static_route_netmask.focus(); f.static_route_netmask.select(); alert(str_766); return false; }
+	if((sr_gateway[0]<1||sr_gateway[0]>223) || !sr_gateway[0].match(/^[0-9]{1,3}$/) || sr_gateway[0].match(/^[0]{1,2}./)) { f.static_route_gateway.focus(); f.static_route_gateway.select();alert(str_1231); return ; }
+ 	if((sr_gateway[1]<0||sr_gateway[1]>255) || !sr_gateway[1].match(/^[0-9]{1,3}$/) || sr_gateway[1].match(/^[0]{1,2}./)) { f.static_route_gateway.focus(); f.static_route_gateway.select();alert(str_1231); return ; }
+ 	if((sr_gateway[2]<0||sr_gateway[2]>255) || !sr_gateway[2].match(/^[0-9]{1,3}$/) || sr_gateway[2].match(/^[0]{1,2}./)) { f.static_route_gateway.focus(); f.static_route_gateway.select();alert(str_1231); return ; }
+ 	if((sr_gateway[3]<1||sr_gateway[3]>255) || !sr_gateway[3].match(/^[0-9]{1,3}$/) || sr_gateway[3].match(/^[0]{1,2}./)) { f.static_route_gateway.focus(); f.static_route_gateway.select();alert(str_1231); return ; }
+
+	for(var wan_arr = wan_str.split("."), k = 0; k < wan_arr.length - 1; k ++) {
+		wan_tmp += wan_arr[k] + ".";
+		
+	}
+	
+	for(index = 0; index < 6; index ++) {
+			ip_address_index = eval("passForm.static_route_ipaddr"+index).value;
+			netmask_address_index = eval("passForm.static_route_netmask"+index).value;
+			gateway_address_index = eval("passForm.static_route_gateway"+index).value;
+
+			if(ip_address_index == ip_address_add)
+			{
+
+				alert(str_3203);
+				return;
+			}
+	}
+	
+	if (passForm.static_route_ipaddr.value == "0.0.0.0") {
+
+	} 
+	else {
+		if(!AddEntry(passForm))
+			return;
+			
+	}
+
+	if(gateway_address_add == tmp || gateway_address_add == tmp1) {
+		alert(str_3203);
+		return;
+	}
+	
+	
+	if(ip_address_add == default_ip && (netmask_address_add != default_netmask || gateway_address_add != default_gateway)) { 
+		alert(str_3203);
+		return;
+	}
+	DataShow();
+}
+function ValidateForm(passForm)
+{
+	passForm.submit();
+}
+function InitValue(passForm) 
+{
+	passForm.add.value = str_113;
+	for(var i=0;i<6;i++)	{
+		if(eval("passForm.static_route_ipaddr"+i).value == "" )
+		{
+			eval("passForm.static_route_ipaddr"+i).value = "";
+			eval("passForm.static_route_netmask"+i).value = "";
+			eval("passForm.static_route_gateway"+i).value = "";
+			eval("passForm.static_route_type"+i).value = "";
+		}
+	}
+	DataShow();	
+}
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 marginheight="0" marginwidth="0" onLoad="InitValue(document.forms[0]);">
+
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	var havepc = '<%nvram_get("havepc");%>';
+	showHead(wanStatus,helpItem);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name);
+</SCRIPT>
+<FORM id="lan_static_routing" name="lan_static_routing" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="lan_stat_route.html">
+<input type="hidden" name="redirect_timer" value="45000">
+<input type="hidden" name="reboot" value="1">
+<input type="hidden" name="data1" value="static_route_ipaddr0 static_route_ipaddr1 static_route_ipaddr2 static_route_ipaddr3 static_route_ipaddr4 static_route_ipaddr5 static_route_ipaddr6 static_route_ipaddr7 static_route_ipaddr8 static_route_ipaddr9 static_route_netmask0 static_route_netmask1 static_route_netmask2 static_route_netmask3 static_route_netmask4 static_route_netmask5 static_route_netmask6 static_route_netmask7 static_route_netmask8 static_route_netmask9 static_route_gateway0 static_route_gateway1 static_route_gateway2 static_route_gateway3 static_route_gateway4 static_route_gateway5 static_route_gateway6 static_route_gateway7 static_route_gateway8 static_route_gateway9 static_route_type0 static_route_type1 static_route_type2 static_route_type3 static_route_type4 static_route_type5 static_route_type6 static_route_type7 static_route_type8 static_route_type9">
+<input type="hidden" name="static_route_ipaddr0"  value='<%nvram_get("static_route_ipaddr0");%>' >
+<input type="hidden" name="static_route_ipaddr1"  value='<%nvram_get("static_route_ipaddr1");%>' >
+<input type="hidden" name="static_route_ipaddr2"  value='<%nvram_get("static_route_ipaddr2");%>' >
+<input type="hidden" name="static_route_ipaddr3"  value='<%nvram_get("static_route_ipaddr3");%>' >
+<input type="hidden" name="static_route_ipaddr4"  value='<%nvram_get("static_route_ipaddr4");%>' >
+<input type="hidden" name="static_route_ipaddr5"  value='<%nvram_get("static_route_ipaddr5");%>' >
+<input type="hidden" name="static_route_netmask0"  value='<%nvram_get("static_route_netmask0");%>' >
+<input type="hidden" name="static_route_netmask1"  value='<%nvram_get("static_route_netmask1");%>' >
+<input type="hidden" name="static_route_netmask2"  value='<%nvram_get("static_route_netmask2");%>' >
+<input type="hidden" name="static_route_netmask3"  value='<%nvram_get("static_route_netmask3");%>' >
+<input type="hidden" name="static_route_netmask4"  value='<%nvram_get("static_route_netmask4");%>' >
+<input type="hidden" name="static_route_netmask5"  value='<%nvram_get("static_route_netmask5");%>' >
+<input type="hidden" name="static_route_gateway0"  value='<%nvram_get("static_route_gateway0");%>' >
+<input type="hidden" name="static_route_gateway1"  value='<%nvram_get("static_route_gateway1");%>' >
+<input type="hidden" name="static_route_gateway2"  value='<%nvram_get("static_route_gateway2");%>' >
+<input type="hidden" name="static_route_gateway3"  value='<%nvram_get("static_route_gateway3");%>' >
+<input type="hidden" name="static_route_gateway4"  value='<%nvram_get("static_route_gateway4");%>' >
+<input type="hidden" name="static_route_gateway5"  value='<%nvram_get("static_route_gateway5");%>' >
+<input type="hidden" name="static_route_type0"  value='<%nvram_get("static_route_type0");%>' >
+<input type="hidden" name="static_route_type1"  value='<%nvram_get("static_route_type1");%>' >
+<input type="hidden" name="static_route_type2"  value='<%nvram_get("static_route_type2");%>' >
+<input type="hidden" name="static_route_type3"  value='<%nvram_get("static_route_type3");%>' >
+<input type="hidden" name="static_route_type4"  value='<%nvram_get("static_route_type4");%>' >
+<input type="hidden" name="static_route_type5"  value='<%nvram_get("static_route_type5");%>' >
+
+	<TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+	<script language="javascript">dw(str_358+" > "+str_1802);</script>
+	<BR><BR>
+	<table class="copy_1" border="0"><TBODY>
+ 	<TR>
+    	<TD width=5>&nbsp;</TD>
+    	<TD><TABLE class="copy_1" cellSpacing="0" cellPadding="0" width="600" align="center" border="0"><TBODY>
+        	<TR>
+          		<TD><TABLE class="copy_1" height="90%" cellSpacing="0" cellPadding="10" width="100%" border="0"><TBODY>
+              		<TR>
+                		<TD vAlign="top">
+							<p align="left"><script language="javascript">dw(str_1803);</script></p>
+									
+							<table class="copy_1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" border="1" bordercolor="#FFFFFF" id="AutoNumber4" width="560">
+								<tr>
+									<TH align="middle" width="140" bgColor="#666666" height="30"><FONT color="#ffffff"><script language="javascript">dw(str_1804);</script></FONT></TH>
+									<TH align="middle" width="140" bgColor="#666666" height="30"><FONT color="#ffffff"><script language="javascript">dw(str_761);</script></FONT></TH>
+									<TH align="middle" width="140" bgColor="#666666" height="30"><FONT color="#ffffff"><script language="javascript">dw(str_1805);</script></FONT></TH>
+									<TH align="middle" width="140" bgColor="#666666" height="30"><FONT color="#ffffff">&nbsp;</FONT></TH>
+								</tr>
+							</table>
+							<DIV ID="myDiv2"></div>
+							<table cellpadding="0" cellspacing="0" style="border-collapse: collapse" border="1" bordercolor="#FFFFFF" id="AutoNumber4" width="560">
+								<tr>
+									<td height="30" width="140" align="left" bgcolor="#CCCCCC" bordercolor="#FFFFFF">
+										<span style="font-weight: 700"><font face="Arial" style="font-size: 8pt">&nbsp;&nbsp;
+											<INPUT class=num maxLength=15 size=12 name="static_route_ipaddr" style="font-size:8pt;font-family:Arial;" value="">
+									</font></span></td>
+									<td height="30" width="140" align="left" bgcolor="#CCCCCC" bordercolor="#FFFFFF">
+										<span style="font-weight: 700"><font face="Arial" style="font-size: 8pt">&nbsp;&nbsp;
+											<INPUT class=num maxLength=15 size=12 name="static_route_netmask" style="font-size:8pt; font-family:Arial;" value="">&nbsp;
+									</font></span></td>
+									<td height="30" width="140" align="left" bgcolor="#CCCCCC" bordercolor="#FFFFFF">
+										<span style="font-weight: 700"><font face="Arial" style="font-size: 8pt">&nbsp;&nbsp;
+			                				<INPUT class=num maxLength=15 size=12 name="static_route_gateway" style="text-transform:uppercase; font-size:8pt; font-family:Arial;" value="">
+			      			</font></span></td>
+									<td height="30" width="140" align="left" bgcolor="#CCCCCC" bordercolor="#FFFFFF">
+										<span style="font-weight: 700"><font face="Arial" style="font-size: 8pt">&nbsp;&nbsp;
+											<input id ="submitBtn_add" type="button" value="" name="add" onClick="Add1(document.forms[0]);">
+									</font></span></td>
+								</tr>
+								</table>
+								<table cellpadding="0" cellspacing="0" style="border-collapse: collapse" border="1" bordercolor="#FFFFFF" id="AutoNumber4" width="560">
+								<TR>
+								<TD width=19>&nbsp;</TD>
+								<TD colSpan=2>
+								  <DIV align=right>
+									<SCRIPT>
+										strHtml='<input id="submitBtn_clear" type="button" value="'+str_48+'" style="{width:160px;}" onClick="window.location.reload();" class="submitBtn" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">&nbsp;&nbsp;';
+										dw(strHtml);
+										strHtml='<input id="submitBtn_apply" type="submit" style="{width:160px;}" value="'+str_49+'" onClick="return ValidateForm(document.forms[0]);" class="submitBtn">';
+										dw(strHtml);
+									</SCRIPT>
+								  </DIV></TD></TR>
+							</table>
+							
+									</TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></form>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

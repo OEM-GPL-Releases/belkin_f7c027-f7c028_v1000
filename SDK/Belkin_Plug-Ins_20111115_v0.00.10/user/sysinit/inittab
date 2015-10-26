@@ -1,0 +1,2 @@
+# slog:unknown:/sbin/syslogd -n
+# klog:unknown:/sbin/klogd -n

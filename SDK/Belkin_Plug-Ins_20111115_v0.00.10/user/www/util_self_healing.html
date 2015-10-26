@@ -1,0 +1,577 @@
+<HTML>
+<HEAD>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=Content-Type content="text/html; charset=<%nvram_get("charset");%>">
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_2152+' '+'>'+str_2153+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Self Healing';
+var menuSection	='Util';
+var menuItem	='Self Healing';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+function not_every_day_check(passForm)
+{
+	sh_week_init();
+<!--
+/*	
+	if("<%nvram_get("sh_sun");%>" == "1")
+		passForm.sh_day_7.checked = true ;
+	else
+		passForm.sh_day_7.checked = false ;
+		
+	if("<%nvram_get("sh_mon");%>" == "1")
+		passForm.sh_day_1.checked = true ;
+	else
+		passForm.sh_day_1.checked = false ;
+		
+	if("<%nvram_get("sh_tue");%>" == "1")
+		passForm.sh_day_2.checked = true ;
+	else
+		passForm.sh_day_2.checked = false ;
+		
+	if("<%nvram_get("sh_wed");%>" == "1")
+		passForm.sh_day_3.checked = true ;
+	else
+		passForm.sh_day_3.checked = false ;
+		
+	if("<%nvram_get("sh_thu");%>" == "1")
+		passForm.sh_day_4.checked = true ;
+	else
+		passForm.sh_day_4.checked = false ;
+
+	if("<%nvram_get("sh_fri");%>" == "1")
+		passForm.sh_day_5.checked = true ;
+	else
+		passForm.sh_day_5.checked = false ;
+		
+	if("<%nvram_get("sh_sat");%>" == "1")
+		passForm.sh_day_6.checked = true ;
+	else
+		passForm.sh_day_6.checked = false ;
+*/
+-->
+}
+
+function sh_week_disabled(result){
+
+	passForm.sh_day_7.disabled = result ;
+	passForm.sh_day_1.disabled = result ;
+	passForm.sh_day_2.disabled = result ;
+	passForm.sh_day_3.disabled = result ;
+	passForm.sh_day_4.disabled = result ;
+	passForm.sh_day_5.disabled = result ;
+	passForm.sh_day_6.disabled = result ;
+}
+
+function sh_week_checked(result){
+
+	passForm.sh_day_7.checked = result ;
+	passForm.sh_day_1.checked = result ;
+	passForm.sh_day_2.checked = result ;
+	passForm.sh_day_3.checked = result ;
+	passForm.sh_day_4.checked = result ;
+	passForm.sh_day_5.checked = result ;
+	passForm.sh_day_6.checked = result ;
+}
+
+function sh_enable_click(i)
+{
+	passForm = document.forms[0] ;
+	
+	if( i == "0"){
+		passForm.sh_everyday_form.disabled = true ;
+		sh_week_disabled(true);
+		
+
+		passForm.sh_everyday_form.checked = false ;
+		sh_week_checked(false);
+
+		passForm.sh_time_form.disabled = true ;
+	}
+	else{
+
+		passForm.sh_everyday_form.disabled = false ;
+		passForm.sh_time_form.disabled = false ;
+		
+		if("<%nvram_get("sh_everyday");%>" == "1"){
+
+			sh_week_disabled(true);
+
+			passForm.sh_everyday_form.checked = true ;
+
+			sh_week_checked(true);
+		}
+		else{
+			passForm.sh_everyday_form.checked = false ;
+			sh_week_disabled(false);
+			not_every_day_check(passForm);
+
+		}
+		sh_week_init();
+		sh_time_init();
+	}
+}
+
+function every_check(passForm){
+	var sh_day = '<%nvram_get("sh_ar_day");%>';
+	if(passForm.sh_everyday_form.checked){
+		sh_week_disabled(true);
+		sh_week_checked(true);
+	}
+	else{
+		sh_week_disabled(false);
+		if(sh_day != "127")
+			not_every_day_check(passForm);
+	}
+
+}
+
+function if_every_check(passForm){
+	if(passForm.sh_day_7.checked && passForm.sh_day_1.checked && 
+	   passForm.sh_day_2.checked && passForm.sh_day_3.checked && 
+	   passForm.sh_day_4.checked && passForm.sh_day_5.checked && 
+	   passForm.sh_day_5.checked){
+	   
+	   passForm.sh_everyday_form.checked = true;
+	   every_check(passForm);
+	}
+
+}
+
+function sh_week_init(){
+	passForm = document.forms[0];
+
+	var sh_day = '<%nvram_get("sh_ar_day");%>';
+
+	if(sh_day == "127"){
+		passForm.sh_everyday_form.checked = 1 ;
+		sh_week_disabled(true);
+	}
+	else{
+		sh_week_disabled(false);
+		passForm.sh_everyday_form.checked = 0 ;
+	}
+	
+	var days_index = sh_day;
+		
+	for(j=0;j<7;j++) {
+		if((days_index >> j & 0x1)) {
+			if(j==0)
+				passForm.sh_day_7.checked=1;
+			else
+				eval("passForm.sh_day_"+j).checked=1;
+		}			
+		else {
+			if(j==0)
+				passForm.sh_day_7.checked=0;
+			else
+				eval("passForm.sh_day_"+j).checked=0;
+		}	
+	}
+
+}
+
+function sh_time_init(){
+	passForm = document.forms[0];
+	
+	switch("<%nvram_get("sh_time");%>")
+	{
+		case '0:0':
+			passForm.sh_time_form.selectedIndex = 0;
+			break;
+		case '0:30':
+			passForm.sh_time_form.selectedIndex = 1;
+			break;
+		case '1:0':
+			passForm.sh_time_form.selectedIndex = 2;
+			break;
+		case '1:30':
+			passForm.sh_time_form.selectedIndex = 3;
+			break;
+		case '2:0':
+			passForm.sh_time_form.selectedIndex = 4;
+			break;
+		case '2:30':
+			passForm.sh_time_form.selectedIndex = 5;
+			break;
+		case '3:0':
+			passForm.sh_time_form.selectedIndex = 6;
+			break;
+		case '3:30':
+			passForm.sh_time_form.selectedIndex = 7;
+			break;
+		case '4:0':
+			passForm.sh_time_form.selectedIndex = 8;
+			break;
+		case '4:30':
+			passForm.sh_time_form.selectedIndex = 9;
+			break;
+		case '5:0':
+			passForm.sh_time_form.selectedIndex = 10;
+			break;
+		case '5:30':
+			passForm.sh_time_form.selectedIndex = 11;
+			break;
+		case '6:0':
+			passForm.sh_time_form.selectedIndex = 12;
+			break;
+		case '6:30':
+			passForm.sh_time_form.selectedIndex = 13;
+			break;
+		case '7:0':
+			passForm.sh_time_form.selectedIndex = 14;
+			break;
+		case '7:30':
+			passForm.sh_time_form.selectedIndex = 15;
+			break;
+		case '8:0':
+			passForm.sh_time_form.selectedIndex = 16;
+			break;
+		case '8:30':
+			passForm.sh_time_form.selectedIndex = 17;
+			break;
+		case '9:0':
+			passForm.sh_time_form.selectedIndex = 18;
+			break;
+		case '9:30':
+			passForm.sh_time_form.selectedIndex = 19;
+			break;
+		case '10:0':
+			passForm.sh_time_form.selectedIndex = 20;
+			break;
+		case '10:30':
+			passForm.sh_time_form.selectedIndex = 21;
+			break;
+		case '11:00':
+			passForm.sh_time_form.selectedIndex = 22;
+			break;
+		case '11:30':
+			passForm.sh_time_form.selectedIndex = 23;
+			break;
+		case '12:0':
+			passForm.sh_time_form.selectedIndex = 24;
+			break;
+		case '12:30':
+			passForm.sh_time_form.selectedIndex = 25;
+			break;
+		case '13:0':
+			passForm.sh_time_form.selectedIndex = 26;
+			break;
+		case '13:30':
+			passForm.sh_time_form.selectedIndex = 27;
+			break;
+		case '14:0':
+			passForm.sh_time_form.selectedIndex = 28;
+			break;
+		case '14:30':
+			passForm.sh_time_form.selectedIndex = 29;
+			break;
+		case '15:0':
+			passForm.sh_time_form.selectedIndex = 30;
+			break;
+		case '15:30':
+			passForm.sh_time_form.selectedIndex = 31;
+			break;
+		case '16:0':
+			passForm.sh_time_form.selectedIndex = 32;
+			break;
+		case '16:30':
+			passForm.sh_time_form.selectedIndex = 33;
+			break;
+		case '17:0':
+			passForm.sh_time_form.selectedIndex = 34;
+			break;
+		case '17:30':
+			passForm.sh_time_form.selectedIndex = 35;
+			break;
+		case '18:0':
+			passForm.sh_time_form.selectedIndex = 36;
+			break;
+		case '18:30':
+			passForm.sh_time_form.selectedIndex = 37;
+			break;
+		case '19:0':
+			passForm.sh_time_form.selectedIndex = 38;
+			break;
+		case '19:30':
+			passForm.sh_time_form.selectedIndex = 39;
+			break;
+		case '20:0':
+			passForm.sh_time_form.selectedIndex = 40;
+			break;
+		case '20:30':
+			passForm.sh_time_form.selectedIndex = 41;
+			break;
+		case '21:0':
+			passForm.sh_time_form.selectedIndex = 42;
+			break;
+		case '21:30':
+			passForm.sh_time_form.selectedIndex = 43;
+			break;
+		case '22:0':
+			passForm.sh_time_form.selectedIndex = 44;
+			break;
+		case '22:30':
+			passForm.sh_time_form.selectedIndex = 45;
+			break;
+		case '23:0':
+			passForm.sh_time_form.selectedIndex = 46;
+			break;
+		case '23:30':
+			passForm.sh_time_form.selectedIndex = 47;
+			break;
+		case '24:0':
+			passForm.sh_time_form.selectedIndex = 48;
+			break;
+		default:
+			passForm.sh_time_form.selectedIndex = 0 ;
+			break;
+	}
+}
+
+function Try_Submit(){
+	passForm = document.forms[0];
+
+	if(!passForm.sh_day_7.checked && !passForm.sh_day_1.checked && 
+	   !passForm.sh_day_2.checked && !passForm.sh_day_3.checked && 
+	   !passForm.sh_day_4.checked && !passForm.sh_day_5.checked && 
+	   !passForm.sh_day_6.checked && !passForm.sh_enable_form[1].checked ){
+
+		alert(str_3630);
+		return ;
+
+	}
+
+
+	var k=0;
+
+	if(passForm.sh_enable_form[0].checked){
+
+		passForm.sh_enable.value = "1";
+		passForm.sh_reboot.value = "1";
+
+		var sh_time=passForm.sh_time_form.value.split(":");
+		passForm.sh_time_hour.value=parseInt(sh_time[0],10);
+		passForm.sh_time_min.value=parseInt(sh_time[1],10);
+		
+		passForm.sh_time.value=passForm.sh_time_form.value ;
+		
+		for(j=1;j<8;j++) {
+			if (eval("passForm.sh_day_"+j).checked==1) {				
+				k+=parseInt(eval("passForm.sh_day_"+j).value,10);
+			}
+		}
+		passForm.sh_ar_day.value=k;
+	}
+	else{
+		passForm.sh_enable.value = "0";
+		passForm.sh_reboot.value = "0";
+		
+		passForm.sh_time_hour.value= "0" ;
+		passForm.sh_time_min.value= "0" ;
+		
+		passForm.sh_time.value="0:0";
+		
+		passForm.sh_ar_day.value="0";
+
+	}
+
+	passForm.submit();
+
+}
+
+
+function InitValue(passForm) 
+{
+	if("<%nvram_get("sh_enable");%>" == "1"){
+		passForm.sh_enable_form[0].checked = true ;
+		sh_week_init();
+		sh_time_init();
+
+	}
+	else{
+		passForm.sh_enable_form[1].checked = true ;
+		sh_enable_click("0");
+	}
+	
+	
+}
+
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor="#ffffff" leftMargin="0" topMargin="0" marginheight="0" marginwidth="0" onLoad="InitValue(document.forms[0]);">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem,isAPmode);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name)
+</SCRIPT>
+<form name="system" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="util_self_healing.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="reboot" value="0">
+<!--input type="hidden" name="data1" value="timezone_diff timezone_daylightsaving timezone_index upnp_enabled login_password login_timeout remote_mgmt_ip_start remote_mgmt_ip_end allow_remote_ip remote_mgmt_enabled remote_mgmt_port remote_auto_fwchk ntp_server1 ntp_server2 country_code sh_time_start sh_time_stop sh_ar_day sh_start_hour sh_start_min sh_end_hour sh_end_min sh_enable"-->
+<input type="hidden" name="data1" value="sh_enable sh_ar_day sh_time sh_time_hour sh_time_min sh_reboot ">
+<input type="hidden" name="sh_enable" >
+<input type="hidden" name="sh_reboot">
+<input type="hidden" name="sh_ar_day" >
+<INPUT type="hidden" name="sh_time">
+<INPUT type="hidden" name="sh_time_hour">
+<INPUT type="hidden" name="sh_time_min">
+
+<TD class="head_bold" height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_2152+' '+'>'+str_2153);</SCRIPT><BR><BR>
+<TABLE class="copy_1" border="0">
+<TBODY>
+	<TR>
+    	<TD width=5>&nbsp;</TD>
+    	<TD>
+      	<TABLE class="copy_1" cellSpacing="3" cellPadding="0" width="600" align="left" border="0">
+        <TBODY>
+        <TR>
+        	<TD class="verdana12">
+            	<SCRIPT>dw(str_2154);</SCRIPT>
+          	</TD>
+		</TR>
+        <TR>
+          	<TD><BR><BR>
+          		<table class="copy_1" cellSpacing="3" cellPadding="0" align="left" border="0">
+	          		<tr>
+	          			<td>
+	          				<B><SCRIPT>dw(str_2155);</SCRIPT></B>
+	          			</td>
+          				<td class="copy_1">
+          					<input name="sh_enable_form" value="ON" type="radio" onclick="sh_enable_click(1);"><script>dw(str_317);</script>
+							                &nbsp;&nbsp;&nbsp;&nbsp;
+					        <input name="sh_enable_form" value="OFF" type="radio" onclick="sh_enable_click(0);">
+							        <script>dw(str_318);</script>    <br>
+	          			</td>
+	          		</tr>
+	          		<tr>
+	          			<td>
+	          				&nbsp;
+	          			</td>
+          				<td class="copy_1">
+							&nbsp;
+	          			</td>
+	          		</tr>
+	          		<tr>
+	          			<td valign=top>
+	          				<B><SCRIPT>dw(str_2156+' >');</SCRIPT></B>
+	          			</td>
+          				<td class="copy_1">
+          					<input name="sh_everyday_form" type="checkbox" onclick="every_check(document.forms[0]);"><script>dw(str_2157);</script>
+							                <br><br>
+					        <input name="sh_day_7"  value="1" type="checkbox" onclick="if_every_check(document.forms[0]);"><script>dw(str_75);</script><br>
+					        <input name="sh_day_1"  value="2" type="checkbox" onclick="if_every_check(document.forms[0]);"><script>dw(str_76);</script><br>
+					        <input name="sh_day_2"  value="4" type="checkbox" onclick="if_every_check(document.forms[0]);"><script>dw(str_77);</script><br>
+					        <input name="sh_day_3"  value="8" type="checkbox" onclick="if_every_check(document.forms[0]);"><script>dw(str_78);</script><br>
+					        <input name="sh_day_4"  value="16" type="checkbox" onclick="if_every_check(document.forms[0]);"><script>dw(str_79);</script><br>
+					        <input name="sh_day_5"  value="32" type="checkbox" onclick="if_every_check(document.forms[0]);"><script>dw(str_80);</script><br>
+					        <input name="sh_day_6"  value="64" type="checkbox" onclick="if_every_check(document.forms[0]);"><script>dw(str_81);</script><br>
+	          			</td>
+	          		</tr>
+	          		<tr>
+	          			<td>
+	          				&nbsp;
+	          			</td>
+          				<td class="copy_1">
+							&nbsp;
+	          			</td>
+	          		</tr>
+	          		<tr>
+	          			<td valign=top>
+	          				<B><SCRIPT>dw(str_2158+' >');</SCRIPT></B>
+	          			</td>
+          				<td class="copy_1">
+                <select name="sh_time_form" style="font-size:8pt;font-family:Arial">
+                  <option value="0:0">12:00 AM</option>
+                  <option value="0:30">12:30 AM</option>
+                  <option value="1:0">01:00 AM</option>
+                  <option value="1:30">01:30 AM</option>
+                  <option value="2:0">02:00 AM</option>
+                  <option value="2:30">02:30 AM</option>
+                  <option value="3:0">03:00 AM</option>
+                  <option value="3:30">03:30 AM</option>
+                  <option value="4:0">04:00 AM</option>
+                  <option value="4:30">04:30 AM</option>
+                  <option value="5:0">05:00 AM</option>
+                  <option value="5:30">05:30 AM</option>
+                  <option value="6:0">06:00 AM</option>
+                  <option value="6:30">06:30 AM</option>
+                  <option value="7:0">07:00 AM</option>
+                  <option value="7:30">07:30 AM</option>
+                  <option value="8:0">08:00 AM</option>
+                  <option value="8:30">08:30 AM</option>
+                  <option value="9:0">09:00 AM</option>
+                  <option value="9:30">09:30 AM</option>
+                  <option value="10:0">10:00 AM</option>
+                  <option value="10:30">10:30 AM</option>
+                  <option value="11:0">11:00 AM</option>
+                  <option value="11:30">11:30 AM</option>
+				  <option value="12:0">12:00 PM</option>
+				  <option value="12:30">12:30 PM</option>
+				  <option value="13:0">01:00 PM</option>
+                  <option value="13:30">01:30 PM</option>
+                  <option value="14:0">02:00 PM</option>
+                  <option value="14:30">02:30 PM</option>
+                  <option value="15:0">03:00 PM</option>
+                  <option value="15:30">03:30 PM</option>
+                  <option value="16:0">04:00 PM</option>
+                  <option value="16:30">04:30 PM</option>
+                  <option value="17:0">05:00 PM</option>
+                  <option value="17:30">05:30 PM</option>
+                  <option value="18:0">06:00 PM</option>
+                  <option value="18:30">06:30 PM</option>
+                  <option value="19:0">07:00 PM</option>
+                  <option value="19:30">07:30 PM</option>
+                  <option value="20:0">08:00 PM</option>
+                  <option value="20:30">08:30 PM</option>
+                  <option value="21:0">09:00 PM</option>
+                  <option value="21:30">09:30 PM</option>
+                  <option value="22:0">10:00 PM</option>
+                  <option value="22:30">10:30 PM</option>
+                  <option value="23:0">11:00 PM</option>
+                  <option value="23:30">11:30 PM</option>
+				  <option value="24:0">12:00 AM</option>
+                </select>
+	          			<br></td>
+	          		</tr>
+          		</table>
+				
+		  </TD>
+		</TR>
+		<TR>
+			<td align=center><br>
+            	<SCRIPT>
+					strHtml='<input id="submitBtn_Clear" type="button" value="'+str_127+'" style="{width:120px;}" class="submitBtn" onclick="InitValue(document.forms[0]);" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">';
+					dw(strHtml);
+					strHtml='<input id="submitBtn_submit" type="button" value="'+str_412+'" style="{width:120px;}" class="submitBtn"  onClick="Try_Submit()">';
+					dw(strHtml);
+				</SCRIPT>
+			</td>
+		</tr>
+	</TBODY>
+</TABLE></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</form>
+</BODY></HTML>

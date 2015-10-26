@@ -1,0 +1,147 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=Content-Type content="text/html; charset=<%nvram_get("charset");%>">
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_708+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Connection Type';
+var menuSection	='WAN';
+var menuItem	='Connection Type';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+var timer = setTimeout('location.replace("wan_dynamic.html")', 1000000); 
+
+function submitF()
+{
+	var f = document.forms[0];
+	var localname=f.HN.value.toLowerCase();
+
+	f.next_page.value='wan_mac.html';
+
+	alert(str_1202);
+	f.wan_hostname.value=f.HN.value;
+	return true;
+}
+
+function Init_Value()
+{
+	var f = document.forms[0];
+	var hostname = '<%nvram_get("wan_hostname");%>';
+ 	f.HN.value= hostname;
+}
+function Try_Submit()
+{
+	var f = document.forms[0];
+	
+	var localname=f.HN.value.toLowerCase();
+	
+	alert(str_1202);
+	f.wan_hostname.value=f.HN.value;
+	return true;
+}
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 onload="Init_Value();" marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name)
+</SCRIPT>
+<FORM name="wan_conn"action="post.cgi"method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="redirect_timer" value="45000">
+<input type="hidden" name="reboot" value="1">
+<input type="hidden" name="next_page" value="wan_dynamic.html">
+<input type="hidden" name="data1" value="wan_proto wan_hostname 
+ wan_alias1_enabled wan_alias2_enabled wan_alias3_enabled wan_alias4_enabled wan_alias5_enabled 
+ wan_ipaddr1 wan_ipaddr2 wan_ipaddr3 wan_ipaddr4 wan_ipaddr5 
+ wan_netmask1 wan_netmask2 wan_netmask3 wan_netmask4 wan_netmask5">
+<input type="hidden" name="wan_proto" value="dhcp">
+<input type="hidden" name="wan_hostname">
+<input type="hidden" name="wan_alias1_enabled" value=''>
+<input type="hidden" name="wan_alias2_enabled" value=''>
+<input type="hidden" name="wan_alias3_enabled" value=''>
+<input type="hidden" name="wan_alias4_enabled" value=''>
+<input type="hidden" name="wan_alias5_enabled" value=''>
+
+<input type="hidden" name="wan_ipaddr1" value=''>
+<input type="hidden" name="wan_ipaddr2" value=''>
+<input type="hidden" name="wan_ipaddr3" value=''>
+<input type="hidden" name="wan_ipaddr4" value=''>
+<input type="hidden" name="wan_ipaddr5" value=''>
+
+<input type="hidden" name="wan_netmask1" value=''>
+<input type="hidden" name="wan_netmask2" value=''>
+<input type="hidden" name="wan_netmask3" value=''>
+<input type="hidden" name="wan_netmask4" value=''>
+<input type="hidden" name="wan_netmask5" value=''>
+<TD class="head_bold" height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_708);</SCRIPT><BR><BR>
+<TABLE class="copy_1" border="0"><TBODY>
+	<TR>
+    	<TD width="5">&nbsp;</TD>
+    	<TD>
+	    	<TABLE class="copy_1" cellSpacing="0" cellPadding="0" width="600" align="center" border="0"><TBODY>
+        		<TR>
+          			<TD>
+						<SCRIPT>dw(str_709);</SCRIPT>
+            			<A href="javascript:void(0);" onclick="window.open('glossary.html#dynamic_ip','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');">
+							<B><FONT color="#6464c3"><SCRIPT>dw(str_47);</SCRIPT></FONT></B>
+						</A><BR><BR>
+					</TD>
+				</TR>
+			</TBODY></TABLE>
+      		<TABLE class="copy_1" cellSpacing="5" cellPadding="0" width="600" align="center" border="0"><TBODY>
+        		<TR>
+          			<TD width="88">&nbsp;</TD>
+			        <TD width="151"><B><SCRIPT>dw(str_710);</SCRIPT>&gt;</B></TD>
+          			<TD width="226"><INPUT name="HN" maxLength="39" size="33" onkeypress="if(event.keyCode==13)return false;"></TD>
+				</TR>
+        		<TR>
+          			<TD width="88">&nbsp;</TD>
+          			<TD colSpan="2"><SPAN><SCRIPT>dw(str_711);</SCRIPT></SPAN></TD>
+				</TR>
+        		<TR>
+          			<TD width="88">&nbsp;</TD>
+          			<TD colSpan="2"><BR><BR><A href="wan_mac.html">
+						<FONT color=#0066FF><B><SCRIPT>dw(str_712);</SCRIPT></FONT></B></A>
+					</TD>
+				</TR>
+       	 		<TR><BR><BR>
+          			<TD width="88">&nbsp;</TD>
+          			<TD align=middle colSpan=2>
+            			<SCRIPT>
+
+				dw('<input id="submitBtn_clear" type="button" value="');
+				dw(str_48);
+				dw('" style="{width:160px;}" class="submitBtn" onclick="Init_Value();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">');
+				dw('<input id="submitBtn_apply" type="submit" style="{width:160px;}" value="');
+				dw(str_49);
+				dw('" onClick="return Try_Submit();" class="submitBtn"></td>');
+						</SCRIPT>
+          			</TD>
+				</TR>
+			</TBODY></TABLE>
+		</FORM></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

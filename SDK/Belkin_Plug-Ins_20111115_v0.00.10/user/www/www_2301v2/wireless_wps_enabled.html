@@ -1,0 +1,376 @@
+<HTML>
+<HEAD>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language="JavaScript" src="validate.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_4007+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Wi-Fi Protected Setup';
+var menuSection	='WLAN';
+var menuItem	='Wi-Fi Protected Setup';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function GURL(x){location=x}
+function logoutF()
+{
+document.tF.logout.value=1;
+document.tF.submit();
+return true;
+}
+
+function Init_Value()
+{
+}
+function Try_Submit()
+{
+	if(document.tf.wl_wps_enabled.value == 0)
+		document.tf.wl0_wps_enabled.value = 0;
+	else
+	{
+		document.tf.wl0_wps_enabled.value = 1;
+	}
+		
+	if('<%nvram_get("wl0_sec_mode");%>' == 'wep')
+	{
+		alert(str_3516);
+		return;
+	}		
+	document.tf.submit();
+}
+
+function ValidateWPSChecksum(WPSPIN)
+{
+ if(WPSPIN.length<8)
+  	return false;
+
+ if(WPSPIN==0|| WPSPIN=='')
+ 	return false;
+
+ accum=0;	
+ for (i=0 ;i<8;i++)
+ {
+    PIN=WPSPIN.charAt(i);
+	
+	if(PIN=='0')
+		PIN=0;
+	else
+		PIN=parseInt(PIN,10);
+		
+    if( (i%2)==0)
+	{	
+	 accum+=3 *PIN ;
+	}
+	else
+	{
+	 accum+=1 *PIN;
+	}
+ }//end-of-for
+ return (0 == (accum % 10));
+}
+
+function set_enroll_pin()
+{
+	var PIN = document.tf.enroll_pin.value;
+	for (i=0 ;i<8;i++)
+	{
+ 		data = PIN.match(/[^0-9]/g);
+		if (data || PIN.length < 8)
+		{
+			alert(str_1391);
+			document.tf.enroll_pin.focus();
+  			return false;
+		}
+	}
+
+	 if(!ValidateWPSChecksum(PIN))
+	 {
+	 	alert(str_1394);
+	 	document.tf.enroll_pin.focus();
+  			return false;
+	}
+	
+	document.Form_enroll_pin.wl0_enrollee_pin.value = document.tf.enroll_pin.value;
+	document.Form_enroll_pin.submit();
+	self.open('wps_info.html','WPS_STATUS','alwaysRaised,resizable,scrollbars,width=600,height=150').focus();
+}
+
+function generate_new_pin()
+{
+	var f=document.Form_WPS_PIN_Enrollee;
+	f.wl0_wps_pin_enrollee_random_generate.value = '1';
+	f.wl0_wps_pin_enrollee_restore_router_pin.value = '0';
+	f.submit();
+}
+
+function restore_default_pin()
+{
+	var f=document.Form_WPS_PIN_Enrollee;
+	f.wl0_wps_pin_enrollee_random_generate.value = '0';
+	f.wl0_wps_pin_enrollee_restore_router_pin.value = '1';
+	f.submit();
+}
+
+function start_PBC()
+{
+	document.Form_WPS_PBC.submit();
+	self.open('wps_info.html','WPS_STATUS','alwaysRaised,resizable,scrollbars,width=600,height=150').focus();
+}
+
+function show_info()
+{
+	var wl_sec_mode = '<% nvram_get("wl0_sec_mode"); %>';
+	var wl_wpaenc = '<% nvram_get("wl0_wpaenc"); %>';
+	var wl_key = '<% nvram_get("wl0_txkey"); %>';
+	var wl_pskkey = '<% nvram_get("wl0_pskkey"); %>';
+	var wl0_key1 = '<% nvram_get("wl0_key1"); %>';
+	var wl0_key2 = '<% nvram_get("wl0_key2"); %>';
+	var wl0_key3 = '<% nvram_get("wl0_key3"); %>';
+	var wl0_key4 = '<% nvram_get("wl0_key4"); %>';
+	var wl0_txkey = '<% nvram_get("wl0_txkey"); %>';
+	var str_auth = '', str_enc = '', str_key = '';
+	
+	if(wl_sec_mode == 'wep')
+	{
+		str_auth = Auto;
+		str_enc= 'WEP'
+		if(wl0_txkey == '1')
+			str_key = wl0_key1;
+		else if(wl0_txkey == '2')
+			str_key = wl0_key2;
+		else if(wl0_txkey == '3')
+			str_key = wl0_key3;
+		else if(wl0_txkey == '4')
+			str_key = wl0_key4;						
+	}
+	else if(wl_sec_mode == 'wparadius')
+	{
+		str_auth = 'WPA-RADIUS';
+		if(wl_wpaenc == 0)
+			str_enc= 'AES';
+		else if(wl_wpaenc == 1)
+			str_enc= 'TKIP';
+		str_key = wl_pskkey;
+	}
+	else if(wl_sec_mode == 'wpa2radius')
+	{
+		str_auth = 'WPA2-RADIUS';
+		if(wl_wpaenc == 0)
+			str_enc= 'AES';
+		else if(wl_wpaenc == 1)
+			str_enc= 'TKIP';
+		str_key = wl_pskkey;
+	}
+	else if(wl_sec_mode == 'psk')
+	{
+		str_auth = 'WPA-PSK';
+		if(wl_wpaenc == 0)
+			str_enc= 'AES';
+		else if(wl_wpaenc == 1)
+			str_enc= 'TKIP';
+		str_key = wl_pskkey;
+	}
+	else if(wl_sec_mode == 'WPA2')
+	{
+		str_auth = 'WPA2-PSK';
+		if(wl_wpaenc == 0)
+			str_enc= 'AES';
+		else if(wl_wpaenc == 1)
+			str_enc= 'TKIP';
+		str_key = wl_pskkey;		
+	}
+	else if(wl_sec_mode == 'WPA1WPA2')
+	{
+		str_auth = 'WPA-PSK+WPA2-PSK';
+		str_enc= 'TKIP+AES';
+
+		str_key = wl_pskkey;		
+	}
+			
+	var str ='<TR>'+
+			'<TD colspan=3><B>'+str_1321+'</B></TD>'+
+		'</TR>'+
+		'<TR>'+
+			'<TD colspan=3>'+str_1322+'</TD>'+
+		'</TR>'+
+		'<TR>'+
+		'<TD colspan=2>'+str_1323+
+		'&nbsp;&nbsp;&nbsp;<input type=text name="enroll_pin" maxlength=8 onkeypress="if(event.keyCode==13)return false;" ></TD>'+
+		'<TD><input id="submitBtn_enroll" type=button style="{width:160px;}" name="set_enroll" value='+str_1324+' class="submitBtn" onclick="set_enroll_pin();"></TD>'+
+		'</TR>'+
+		'<TR>'+
+			'<TD colspan=3>'+str_1325+'</TD>'+
+		'</TR>'+
+		'<TR>'+
+		'<TD><B>'+str_1326+'</B>&nbsp;&nbsp;';
+		
+		str +='<%nvram_get("wps_router_pin");%>';
+		
+		str += '</TD>'+
+		'<TD><input id="submitBtn_generate_pin" type=button style="{width:240px;}" name="generate_pin" value="'+str_1327+'" class="submitBtn" onclick="generate_new_pin();"></TD>'+
+		'<TD><input id="submitBtn_restore_pin" type=button style="{width:240px;}" name="restore_pin" value="'+str_1328+'" class="submitBtn" onclick="restore_default_pin();"></TD>'+
+		'</TR>';
+	document.write(str);
+	
+	str = '<TR>'+
+			'<TD colspan=3><B>'+str_1329+'</B></TD>'+
+		'</TR>'+
+		'<TR>'+
+			'<TD colspan=3>'+str_1330+'</TD>'+
+		'</TR>'+
+		'<TR>'+
+		'<TD colspan=2></TD><TD><input id="submitBtn_start_pbc" type=button style="{width:160px;}" name="start_pbc" value="'+str_1331+'" class="submitBtn" onclick="start_PBC();"></TD>'+
+		'</TR>';
+	document.write(str);
+	
+	str = '<TR>'+
+			'<TD colspan=3><B>'+str_1332+'</B></TD>'+
+		'</TR>'+
+		'<TR>'+
+			'<TD colspan=3>'+str_1333+'</TD>'+
+		'</TR>'+
+		'<TR>'+'<td colspan=3><table class=copy_1 cellSpacing=10 cellPadding=0><tr>'+
+			'<TD><B>'+str_1335+'</B></TD><TD colspan=2>'+'<%nvram_get("wl0_ssid");%>'+'</TD>'+
+		'</TR>'+
+		'<TR>'+
+			'<TD><B>'+str_1148+'</B></TD><TD colspan=2>';
+	if('<%nvram_get("wl0_sec_mode");%>' == 'none')
+	{
+		str += str_1395+'</TD>'+
+			'</TR><TR><TD>&nbsp;</TD><TD colspan=2>'+str_1396+
+			'&nbsp;<a href="wl_security.html"><b>'+str_1148+'</b></a></TD></TR></table></td></tr>';
+	}	
+	else
+	{	
+	 str += str_1392+'</TD>'+
+	 	'</TR>'+
+		'<TR>'+
+			'<TD><B>'+str_1336+'</B></TD><TD colspan=2>'+str_auth+'</TD>'+
+		'</TR>'+
+		'<TR>'+
+			'<TD><B>'+str_1337+'</B></TD><TD colspan=2>'+str_enc+'</TD>'+
+		'</TR>'+
+		'<TR>'+
+			'<TD><B>'+str_1338+'</B></TD><TD colspan=2>'+str_key+'</TD>'+
+		'</TR>'+'</table></td></tr>';
+	}
+	dw(str);
+}
+
+function ChangeWPSMode(wl_wps_mode)
+{
+	if(wl_wps_mode.value == "0") 
+		window.location.href = 'wireless_wps_disbled.html';
+	else if(wl_wps_mode.value == "1")
+		window.location.href = 'wireless_wps_enabled.html';
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor="#ffffff" leftMargin="0" topMargin="0" onload="Init_Value();" marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem,isAPmode);
+	showMenu(menuSection,menuItem,isAPmode)
+</SCRIPT>
+<form name="tf" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wl_wps.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="restart" value="wireless">
+<input type="hidden" name="data1" value="wl0_wps_enabled">
+<input type="hidden" name="wl0_wps_enabled">
+ <TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_4007);</SCRIPT><!-- Wireless > Wi-Fi Protected Setup (WPS) -->
+ <BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=0 cellPadding=0 width=750 align=left 
+      border=0>
+        <TBODY>
+        <TR>
+          <TD vAlign=top height=410>
+            <TABLE class=copy_1 cellSpacing=10 cellPadding=0 width=750 
+            align=center border=0>
+              <TBODY>
+              <TR>
+                <TD width=35%><B>
+                  <SCRIPT>dw(str_1319);</SCRIPT><!-- Wi-Fi Protected Setup (WPS) -->
+                  </B></TD>
+                <TD align=center width=35%>
+					<SELECT name="wl_wps_enabled" onchange="ChangeWPSMode(this)"> 
+                    <SCRIPT>
+						dw('<option value="0">'+str_318+'</option>');
+						dw('<option value="1" selected >'+str_317+'</option>');
+						
+					</SCRIPT>
+                  	</SELECT> 
+				</TD><TD width=35%>&nbsp;</TD></TR>
+              <TR>
+                <TD colSpan=3>
+                  <SCRIPT>dw(str_1320);</SCRIPT>
+                  </TD></TR>
+              <TR>
+                <TD>&nbsp;</TD>
+                <TD>&nbsp;</TD>
+                <TD>
+                  <SCRIPT>dw('<input id="submitBtn_apply" type="button" style="{width:160px;}" value="'+str_49+'" class="submitBtn" onclick="Try_Submit();">');</SCRIPT>
+                </TD></TR>
+                
+                <script>show_info();</script>
+                
+                </TBODY></TABLE></TD></TR></TBODY></TABLE></FORM></TD></TR></TBODY></TABLE></TD>
+<form name="Form_enroll_pin" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wl_wps.html">
+<input type="hidden" name="redirect_timer" value="100">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="data1" value="wl0_enrollee_pin">
+<input type="hidden" name="wl0_enrollee_pin">
+<input type="hidden" name="wl0_wps_pin" value="1">
+</form>
+<form name="Form_WPS_PBC" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wl_wps.html">
+<input type="hidden" name="redirect_timer" value="100">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="data1" value="">
+<input type="hidden" name="wl0_wps_pbc" value="1">
+</form>
+<form name="Form_WPS_PIN_Enrollee" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wl_wps.html">
+<input type="hidden" name="redirect_timer" value="100">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="data1" value="">
+<input type="hidden" name="wl0_wps_pin_enrollee_random_generate" value="0">
+<input type="hidden" name="wl0_wps_pin_enrollee_restore_router_pin" value="0">
+</form>
+<form name="Form_WPS_STOP" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wl_wps.html">
+<input type="hidden" name="redirect_timer" value="100">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="data1" value="">
+<input type="hidden" name="wl0_wps_stop" value="1">
+</form>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

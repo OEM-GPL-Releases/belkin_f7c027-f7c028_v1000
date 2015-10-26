@@ -1,0 +1,66 @@
+<HTML>
+<HEAD>
+	<META http-equiv=Content-Type content="text/html; charset=<%nvram_get("charset");%>">
+  <SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+  <LINK href="styles.css" type=text/css rel=stylesheet>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+	<META HTTP-EQUIV="expires" CONTENT="0">
+	<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+	<SCRIPT>assign_var();</SCRIPT>
+	<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_532+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Restore Previous Settings';
+var menuSection	='Util';
+var menuItem	='Restore Previous Settings';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function redirect()
+	{
+		location.href="util_prev.html"
+	}
+	//setTimeout('redirect()',600000);
+	
+
+
+function logoutF()
+{
+	document.RebootForm.logout.value=1;
+	document.RebootForm.submit();
+	return true;
+}
+
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem,isAPmode);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name)
+</SCRIPT>
+ <TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;&nbsp;
+<SCRIPT>dw(str_438+" > "+str_438);</SCRIPT><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    
+    <TD >
+      <TABLE class=copy_1 cellSpacing=3 cellPadding=0 width=800 align=left 
+      border=0>
+        <TBODY>
+        
+        <TR>
+          <TD align=left>
+		    <FONT face=arial size=2><BR>&nbsp;&nbsp;&nbsp;<SCRIPT>dw(str_439);</SCRIPT><BR><BR>&nbsp;&nbsp;
+            <SCRIPT>dw('<input id="submitBtn_back" type="submit" style="{width:150px;}" class="submitBtn" onClick="return redirect()" value="');dw(str_1299);dw('">');</SCRIPT>
+			</FORM>
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

@@ -1,0 +1,328 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<LINK href="styles.css" type=text/css rel=stylesheet>             
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">                                       
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="validate.js"></SCRIPT>
+<SCRIPT language=JavaScript src="dl.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_116+' '+str_1710+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='DHCP Client List';
+var menuSection	='LAN';
+var menuItem	='DHCP Client List';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var Degree=21;
+
+<%autofw_check();%>
+function translate_str( category, s_number )
+{
+	return eval(category+"["+s_number+"]");
+}
+
+var DataArray = new Array();
+
+var myData = [<%dhcp_client_table("showarray");%>];
+var TBLHeader = "<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse: collapse\" bordercolor=\"#FFFFFF\" name=\"rsTable\" id=\"rsTable\" width=\"560\" cols=\"6\">\
+              <tr>\
+                <td height=\"30\" width=\"160\" align=\"center\" style=\"border-color:#FFFFFF;border-left-style: solid; border-left-width: 1; border-right-style: solid; border-right-width: 1; border-top-style: solid; border-top-width: 1; border-bottom-style: none; border-bottom-width: medium\" bgColor=\"#666666\">\
+                <span style=\"font-weight: 700\">\
+                <font face=\"Arial\" style=\"font-size: 8pt;color:#ffffff\">"+str_1731+"</font></span></td>\
+                <td height=\"30\" width=\"80\" align=\"center\" style=\"border-color:#FFFFFF;border-left-style: solid; border-left-width: 1; border-right-style: solid; border-right-width: 1; border-top-style: solid; border-top-width: 1; border-bottom-style: none; border-bottom-width: medium\" bgColor=\"#666666\">\
+                <span style=\"font-weight: 700\">\
+                <font face=\"Arial\" style=\"font-size: 8pt;color:#ffffff\">"+str_760+"</font></span></td>\
+                <td height=\"30\" width=\"190\" align=\"center\" style=\"border-color:#FFFFFF;border-left-style: solid; border-left-width: 1; border-right-style: solid; border-right-width: 1; border-top-style: solid; border-top-width: 1; border-bottom-style: none; border-bottom-width: medium\" bgColor=\"#666666\">\
+                <span style=\"font-weight: 700\">\
+                <font face=\"Arial\" style=\"font-size: 8pt;color:#ffffff\">"+str_357+"</font></span></td>\
+                <td height=\"30\" width=\"80\" align=\"center\" style=\"border-color:#FFFFFF;border-left-style: solid; border-left-width: 1; border-right-style: solid; border-right-width: 1; border-top-style: solid; border-top-width: 1; border-bottom-style: none; border-bottom-width: medium\" bgColor=\"#666666\">\
+                <span style=\"font-weight: 700\">\
+                <font face=\"Arial\" style=\"font-size: 8pt;color:#ffffff\">"+str_1599+"</font></span></td>\
+				 </tr>" ;
+
+var TBLFooter = "</table>" ;
+var TRHeader =  "<tr>" ;
+var TRFooter = "</tr>" ;
+var TDHeader = "<td height=\"30\" width=\"100\" align=\"center\" style=\"border-color:#FFFFFF;border-left-style: solid; border-left-width: 1; border-right-style: solid; border-right-width: 1; \
+			    border-top-style: solid; border-top-width: 1; border-bottom-style: none; border-bottom-width: medium\" bgcolor=\"CCCCCC\" bordercolor=\"#FFFFFF\">\
+				<font face=\"Arial\" style=\"font-size: 8pt\">" ;
+
+var TDFooter = "</font></td>" ;
+var mac_form ="<INPUT class=\"mac\" maxLength=2 size=2 name=MACaddr1>- \
+		<INPUT class=\"mac\" maxLength=2 size=2 name=MACaddr2>- \
+		<INPUT class=\"mac\" maxLength=2 size=2 name=MACaddr3>- \
+		<INPUT class=\"mac\" maxLength=2 size=2 name=MACaddr4>- \
+		<INPUT class=\"mac\" maxLength=2 size=2 name=MACaddr5>- \
+		<INPUT class=\"mac\" maxLength=2 size=2 name=MACaddr6>"
+
+
+function DataShow_LeftText(n)
+{
+	var v = "";
+	v += TBLHeader_Left + Left_Space ;
+	for (var i=0; i<=n ;i++)
+		v += Left_Space;
+	v += TBLFooter_Left;
+	
+	layerWrite('left_text', null, v);  
+	
+}
+function Data(name,interfx, ip, mac) 
+{
+
+	this.Name = name;
+	this.Interface = interfx;
+	this.IP = ip ;
+	this.MAC = mac ;
+	
+}
+function DataShow(type) {
+
+	var v = "";
+	
+	v += TBLHeader ;
+	
+	
+	
+	if( type != 1 )
+	{
+		for (var i=0; i<DataArray.length; i++) 
+		{
+
+			Add_btn = "<input id=\"submitBtn_add"+i+"\" type=\"button\" value=\""+str_113+"\"onClick=\"return AddClientList("+ i +");\">" ;
+			
+			v +=  TRHeader + 
+							 TDHeader + DataArray[i].Name      + TDFooter + 
+							 TDHeader + DataArray[i].IP        + TDFooter +
+							 TDHeader + DataArray[i].MAC       + TDFooter +
+							 TDHeader + Add_btn	        		   + TDFooter + TRFooter ;
+							
+			
+			
+		}	
+	}
+  
+	GuestAdd = "<input id=\"submitBtn_add"+i+"\" type=\"button\" value=\""+str_113+"\"onClick=\"return Addgustadd("+ i +");\">" ;
+	
+	v +=  TRHeader + 
+							 TDHeader + str_1757 + TDFooter + 
+							 TDHeader +  "" + TDFooter +
+							 TDHeader +  "" + TDFooter +
+							 TDHeader + GuestAdd  + TDFooter + TRFooter ;
+  
+	UseAdd = "<input id=\"submitBtn_addl\" type=\"button\" value=\""+str_113+"\"onClick=\"return Adduseradd("+ i +");\">" ;							
+	v +=  TRHeader + 
+				 TDHeader + "" + TDFooter + 
+				 TDHeader + "" + TDFooter +
+				 TDHeader + mac_form   + TDFooter +
+				 TDHeader + UseAdd	   + TDFooter + TRFooter ;
+	v += TBLFooter ;
+	if( type == 2 )
+		layerWrite('myDiv', null, v); 
+	else
+		layerWrite('myDiv', null, v);
+}
+
+function Checkonlist(index)
+{
+	passForm=document.forms[0];
+	var getcount=0;
+
+	for (var i=0 ;i< DataArray.length ;i++)
+	{
+
+		if (eval("passForm.onlist"+i).checked ==true) 
+		getcount +=1;
+		
+	}
+
+	if (getcount >20)
+ 	{
+		alert(str_905);
+		eval("passForm.onlist"+index).checked =0;
+	}
+}
+
+function getLayer(layerID) 
+{
+	if (self.parent.document.getElementById)
+		return self.parent.document.getElementById(layerID);
+	else if (self.parent.document.all)
+		return self.parent.document.all[layerID];
+	else 
+		return null;
+}
+
+function InitValue(passForm) 
+{
+	passForm.Cancel.value = str_1399;
+	var height,h=0;
+	for( i=0 ; i<myData.length ; i++ )	{
+		DataArray[DataArray.length++] = new Data(myData[i][0], myData[i][1], myData[i][2], myData[i][3]);
+	}
+	while(h<=myData.length)	{
+		height= 25*h;
+		h++;
+	}
+
+	
+	if( myData.length == 0 )
+		DataShow(1);
+	else
+		DataShow(2);
+}
+function Addgustadd()
+{
+		var  f=window.opener.document.forms[0];
+		eval("f.ar_hotel_mac_enabled").value= 1 ;
+		AddMACList("00:00:00:00:00:00");
+		window.opener.InitValue(document.forms[0]);
+		window.close();
+
+}
+function Adduseradd()
+{
+		return evaltF();
+
+}
+function evaltF() 
+{
+	var f=document.forms[0];
+	var mac_str;
+	
+	if(!(isBlank(f.MACaddr1.value))||!(isBlank(f.MACaddr2.value))||!(isBlank(f.MACaddr3.value))||
+ 	   !(isBlank(f.MACaddr4.value))||!(isBlank(f.MACaddr5.value))||!(isBlank(f.MACaddr6.value)))
+	{
+		if (isNValid(f.MACaddr1.value)||isNValid(f.MACaddr2.value)||isNValid(f.MACaddr3.value)
+	      ||isNValid(f.MACaddr4.value) ||isNValid(f.MACaddr5.value)||isNValid(f.MACaddr6.value))
+		{
+			alert(str_115); 
+			return false;
+		} 
+		mac_str = f.MACaddr1.value + ':' + f.MACaddr2.value + ':' + f.MACaddr3.value + ':' + 
+		          f.MACaddr4.value + ':' + f.MACaddr5.value + ':' + f.MACaddr6.value;
+ 		
+		if (mac_str.toLowerCase() == 'ff:ff:ff:ff:ff:ff' || mac_str == '00:00:00:00:00:00')
+		{
+			alert(str_902);
+			return false;
+		}
+		
+		mac_str = f.MACaddr1.value + ':' + f.MACaddr2.value + ':' + f.MACaddr3.value;
+		
+		if (mac_str.toLowerCase() == '01:00:5e')
+		{
+			alert(str_902);
+			return false;
+		}
+	}
+	if((isBlank(f.MACaddr1.value))&&(isBlank(f.MACaddr2.value))&&(isBlank(f.MACaddr3.value))&&
+           (isBlank(f.MACaddr4.value))&&(isBlank(f.MACaddr5.value))&&(isBlank(f.MACaddr6.value)))             
+	{
+		alert(str_115);
+		return false;
+	}
+
+	mac_str=f.MACaddr1.value+':'+f.MACaddr2.value+':'+f.MACaddr3.value+':'+f.MACaddr4.value+':'+f.MACaddr5.value+':'+f.MACaddr6.value;
+	AddMACList(mac_str.toUpperCase());
+	return true;
+}
+function AddClientList(n)
+{
+	var  f=window.opener.document.forms[0];
+	var  checksamemac=0;
+	for( i=1 ; i<Degree ; i++ )	{
+		
+		if(eval("f.ar_mac"+i).value==DataArray[n].MAC)
+		{
+			checksamemac=1;
+			break;
+		}
+	}
+	if(checksamemac!=1)
+	{
+		for( i=1 ; i<Degree ; i++ )	{
+		
+			if(eval("f.ar_mac"+i).value=="")
+			{
+				eval("f.ar_name"+i).value=  DataArray[n].Name ;
+				eval("f.ar_mac"+i).value=  DataArray[n].MAC ;
+				f.ar_enabled.value="1";
+
+				break;
+			}
+		}
+	}
+  	window.opener.InitValue(document.forms[0]);
+	window.close();
+}
+function AddMACList(mac)
+{
+	var  f=window.opener.document.forms[0];
+	var  checksamemac=0;
+	for( i=1 ; i<Degree ; i++ )	{
+		
+		if(eval("f.ar_mac"+i).value==mac)
+		{
+			checksamemac=1;
+			break;
+		}
+	}
+	if(checksamemac!=1)
+	{
+		for( i=1 ; i<Degree ; i++ )	{
+		
+			if(eval("f.ar_mac"+i).value=="")
+			{
+				if(mac=="00:00:00:00:00:00")//All devices from Guest SSID
+				{
+					eval("f.ar_name"+i).value= "All devices from Guest SSID" ;
+					eval("f.ar_mac"+i).value=  mac ;
+					f.ar_hotel_mac_index.value= i ;
+					f.ar_enabled.value="1";
+					
+				}
+				else
+				{
+					eval("f.ar_name"+i).value= "User-defined" ;
+					eval("f.ar_mac"+i).value=  mac ;
+					f.ar_enabled.value="1";
+				}
+				break;
+			}
+		}
+	}
+  	window.opener.InitValue(document.forms[0]);
+	window.close();
+}
+//-->
+</SCRIPT>
+<META content="Microsoft FrontPage 5.0" name=GENERATOR></HEAD>
+<body onLoad="InitValue(document.forms[0]);"><CENTER>
+<form method="post" action="post.cgi">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value='192.168.2.1'>
+<input type="hidden" name="next_page" value="clienttable.html">
+<input type="hidden" name="redirect_timer" value="1">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="data1" value="">
+
+<table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber4" width="560" height="16">
+	<tr>
+	 
+	  <td height="25" bgcolor="#FFFFFF">
+	   <div align="left" class="head_bold"><script>dw(str_1432);</script>
+	  </div>
+			<DIV ID="myDiv"></DIV>	  <input id="submitBtn_cancel" name="Cancel" type="button" value="" onClick="window.close();"> 
+	  </td>
+	</tr>
+</table>&nbsp;
+<div align="left">
+  
+  </div>
+</form>
+</body></HTML>

@@ -1,0 +1,1010 @@
+<HTML>
+<HEAD>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="expires" CONTENT="0">
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language="javascript" src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_129+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Virtual Servers';
+var menuSection	='Fire';
+var menuItem	='Virtual Servers';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+<%autofw_check();%>
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+function checkVaildCharNum(value)
+{
+var localname=value.toLowerCase();
+for(i=0;i<localname.length;i++)
+{
+ var token=localname.charAt(i);
+if(token=='\\' || token=='\"')
+ {
+	alert(str_4012);
+	return false;
+ }
+}
+return true;
+}
+
+function storeData()
+{
+	var f = document.forms[0];
+	var in_port_low, in_port_high, pr_port_low, pr_port_high, type;
+	var in_port_low_j, in_port_high_j;
+	var i=1;
+	var lan_ipaddr ='<%nvram_get("lan_ipaddr");%>';
+	var tmp = lan_ipaddr.split(".");
+	var lan_ipaddr_prefix = tmp[0] + "." + tmp[1] + "." + tmp[2] + ".";
+	var tmp_ipaddr4;
+	var ip_addr;
+	
+	while(i<=20)
+	{
+			if(eval("f.private_ip_"+i+".value")=='')
+				eval("f.private_ip_"+i).value='';
+				
+			if(eval("f.enable_"+i+".checked")==true)
+				eval("f.vserver_enabled"+i+".value=1");
+			else
+				eval("f.vserver_enabled"+i+".value=0");
+			if (checkVaildCharNum(eval("f.description_"+i+".value"))==false)
+				{eval("f.description_"+i).focus() ; return false; }
+			else(checkVaildCharNum(eval("f.description_"+i+".value"))==true)
+				eval("f.vserver_desc"+i+".value= f.description_"+i+".value");
+				
+			in_port_low=eval("document.forms[0].inbound_port_low_"+i+".value");
+			in_port_high=eval("document.forms[0].inbound_port_high_"+i+".value");
+			pr_port_low=eval("document.forms[0].private_port_low_"+i+".value");
+			pr_port_high=eval("document.forms[0].private_port_high_"+i+".value");
+	
+			type=eval("f.type_"+i+".value;");
+	
+			if (eval("f.enable_"+i+".checked")==true)
+			{
+				for (j=1;j<i;j++)
+				{
+	 				if (eval("f.type_"+j+".value")==type)
+	 				{
+	 	 				in_port_low_j=eval("f.inbound_port_low_"+j+".value");
+	 					in_port_high_j=eval("f.inbound_port_high_"+j+".value");	
+	 
+			 			if ((in_port_low_j-0)>=in_port_low && (in_port_low_j-0)<=in_port_high
+	 					 || (in_port_high_j-0)>=in_port_low && (in_port_high_j-0)<=in_port_high
+			 			 || (in_port_low-0)>=in_port_low_j && (in_port_low-0)<=in_port_high_j
+	 					 || (in_port_high-0)>=in_port_low_j && (in_port_low-0)<=in_port_high_j) 
+						{
+	 						alert(j+"  "+str_1373);
+	 						eval("f.inbound_port_low_"+i+".focus();"); 
+							return false;	
+	 					}		 
+	 				}		
+				}
+			}
+			eval("f.vserver_inport_start"+i+".value = in_port_low");
+			eval("f.vserver_inport_end"+i+".value = in_port_high");
+			eval("f.vserver_protocol"+i+".value = type");
+			
+			tmp_ipaddr4 = eval("f.private_ip_"+i+".value");
+			
+			eval("f.priv_ip"+i+".value = tmp_ipaddr4");
+			ip_addr = lan_ipaddr_prefix + tmp_ipaddr4;
+			
+			eval("f.vserver_ip"+i+".value = ip_addr");
+			eval("f.vserver_private_port_start"+i+".value = pr_port_low;");
+			eval("f.vserver_private_port_end"+i+".value = pr_port_high;");
+
+ 		i++;
+	}
+	return true;
+}
+
+function isBlank(s) 
+{
+	for(i=0;i<s.length;i++)	
+	{
+		c=s.charAt(i);
+		if((c!=' ')&&(c!='\n')&&(c!='\t'))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+function isNValidIP(s)
+{
+	var lan_ipaddr ='<%nvram_get("lan_ipaddr");%>';
+	var tmp = lan_ipaddr.split(".");
+	if((isBlank(s))||(isNaN(s))||(s<1||s>254) || (!s.match(/^[0-9]{1,3}$/)) )//|| s==tmp[3])   //eric add  !s.match(/^[0-9]{1,3}$/)
+		return true;
+	else 
+		return false;
+}
+
+function isNValidPort(s)
+{
+
+	if((isBlank(s))||(isNaN(s)) || (s>65535) || (s<1) || (!s.match(/^[0-9]{1,5}$/)))   //eric add !s.match(/^[0-9]{1,5}$/)
+		return true;
+	else	
+		return false;
+}
+function Try_Submit() 
+{
+	var f = document.forms[0];
+	var i=1;
+  var lan_ipaddr ='<%nvram_get("lan_ipaddr");%>';
+	var tmp = lan_ipaddr.split(".");
+	var lan_ipaddr_post=tmp[3];
+	var tmp_ipaddr4;
+	var tmp_inbound_port_low;
+	var tmp_inbound_port_high;
+	var tmp_private_port_low;
+	var tmp_private_port_high;
+	
+	for(i=1;i<=20;i++)
+	{	
+		
+		if(eval("f.enable_"+i+".checked")== true)
+		{
+						
+				if (isNValidIP(eval("f.private_ip_"+i+".value"))){ alert(str_84); eval("f.private_ip_"+i).focus() ; return false; }
+				
+				tmp_ipaddr4 = eval("f.private_ip_"+i+".value");
+			  eval("f.priv_ip"+i+".value = tmp_ipaddr4");
+				if(eval("f.priv_ip"+i+".value") == lan_ipaddr_post){ alert("No." +i+ " "+str_1240); eval("f.private_ip_"+i).focus() ; return false; }
+				
+				tmp_inbound_port_low = eval("f.inbound_port_low_"+i+".value");
+				tmp_inbound_port_high = eval("f.inbound_port_high_"+i+".value");
+				tmp_private_port_low = eval("f.private_port_low_"+i+".value");
+				tmp_private_port_high = eval("f.private_port_high_"+i+".value");
+				if(i<=19)
+				{
+				for(var j=i+1 ; j<=20 ; j++)
+				{
+						if((eval("f.inbound_port_low_"+j+".value") == tmp_inbound_port_low) && (eval("f.inbound_port_high_"+j+".value") == tmp_inbound_port_high) && (eval("f.private_port_low_"+j+".value") == tmp_private_port_low) && (eval("f.private_port_high_"+j+".value") == tmp_private_port_high))
+					{ 
+						alert(str_1373+str_135+"("+tmp_inbound_port_low+")<-->"+str_135+"("+tmp_inbound_port_low+")"); eval("f.inbound_port_low_"+i).focus() ;return false; 
+					}
+				
+			  }
+			  }
+				
+				
+				if (isNValidPort(eval("f.private_port_low_"+i+".value"))){ alert(str_1772+i+"."+str_672); eval("f.private_port_low_"+i).focus() ;return false; }
+				if (isNValidPort(eval("f.inbound_port_low_"+i+".value"))){ alert(str_1772+i+"."+str_672); eval("f.inbound_port_low_"+i).focus() ;return false; }
+				
+				if (isNValidPort(eval("f.private_port_high_"+i+".value"))){ alert(str_1772+i+"."+str_672); eval("f.private_port_high_"+i).focus() ;return false; }
+				if (isNValidPort(eval("f.inbound_port_high_"+i+".value"))){ alert(str_1772+i+"."+str_672); eval("f.inbound_port_high_"+i).focus() ;return false; }				
+				if (!(isBlank(eval("f.inbound_port_high_"+i+".value")))&&(parseInt(eval("f.inbound_port_low_"+i+".value"))>parseInt(eval("f.inbound_port_high_"+i+".value")))) { alert(str_132); eval("f.inbound_port_high_"+i).focus() ;return false; }
+				if (!(isBlank(eval("f.private_port_high_"+i+".value")))&&(parseInt(eval("f.private_port_low_"+i+".value"))>parseInt(eval("f.private_port_high_"+i+".value")))) { alert(str_133); eval("f.private_port_high_"+i).focus() ;return false; }
+		}
+	}
+	
+	if(storeData()==false)return false;
+	f.submit();
+}
+//-->
+</SCRIPT>
+<SCRIPT language=JavaScript src="fw_virt.js"></SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name)
+</SCRIPT>
+<form name="fw_virt" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="fw_virtual.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="restart" value="firewall">
+<input type="hidden" name="data1" value="
+ vserver_ip1 vserver_ip2 vserver_ip3 vserver_ip4 vserver_ip5 vserver_ip6 vserver_ip7 vserver_ip8 vserver_ip9 vserver_ip10 
+ vserver_ip11 vserver_ip12 vserver_ip13 vserver_ip14 vserver_ip15 vserver_ip16 vserver_ip17 vserver_ip18 vserver_ip19 vserver_ip20 
+ vserver_desc1 vserver_desc2 vserver_desc3 vserver_desc4 vserver_desc5 vserver_desc6 vserver_desc7 vserver_desc8 vserver_desc9 vserver_desc10 
+ vserver_desc11 vserver_desc12 vserver_desc13 vserver_desc14 vserver_desc15 vserver_desc16 vserver_desc17 vserver_desc18 vserver_desc19 vserver_desc20 
+ vserver_inport_start1 vserver_inport_start2 vserver_inport_start3 vserver_inport_start4 vserver_inport_start5 vserver_inport_start6 vserver_inport_start7 vserver_inport_start8 vserver_inport_start9 vserver_inport_start10 
+ vserver_inport_start11 vserver_inport_start12 vserver_inport_start13 vserver_inport_start14 vserver_inport_start15 vserver_inport_start16 vserver_inport_start17 vserver_inport_start18 vserver_inport_start19 vserver_inport_start20 
+ vserver_inport_end1 vserver_inport_end2 vserver_inport_end3 vserver_inport_end4 vserver_inport_end5 vserver_inport_end6 vserver_inport_end7 vserver_inport_end8 vserver_inport_end9 vserver_inport_end10 
+ vserver_inport_end11 vserver_inport_end12 vserver_inport_end13 vserver_inport_end14 vserver_inport_end15 vserver_inport_end16 vserver_inport_end17 vserver_inport_end18 vserver_inport_end19 vserver_inport_end20 
+ vserver_private_port_start1 vserver_private_port_start2 vserver_private_port_start3 vserver_private_port_start4 vserver_private_port_start5 vserver_private_port_start6 vserver_private_port_start7 vserver_private_port_start8 vserver_private_port_start9 vserver_private_port_start10 
+ vserver_private_port_start11 vserver_private_port_start12 vserver_private_port_start13 vserver_private_port_start14 vserver_private_port_start15 vserver_private_port_start16 vserver_private_port_start17 vserver_private_port_start18 vserver_private_port_start19 vserver_private_port_start20 
+ vserver_private_port_end1 vserver_private_port_end2 vserver_private_port_end3 vserver_private_port_end4 vserver_private_port_end5 vserver_private_port_end6 vserver_private_port_end7 vserver_private_port_end8 vserver_private_port_end9 vserver_private_port_end10 
+ vserver_private_port_end11 vserver_private_port_end12 vserver_private_port_end13 vserver_private_port_end14 vserver_private_port_end15 vserver_private_port_end16 vserver_private_port_end17 vserver_private_port_end18 vserver_private_port_end19 vserver_private_port_end20 
+ vserver_enabled1 vserver_enabled2 vserver_enabled3 vserver_enabled4 vserver_enabled5 vserver_enabled6 vserver_enabled7 vserver_enabled8 vserver_enabled9 vserver_enabled10 
+ vserver_enabled11 vserver_enabled12 vserver_enabled13 vserver_enabled14 vserver_enabled15 vserver_enabled16 vserver_enabled17 vserver_enabled18 vserver_enabled19 vserver_enabled20 
+ vserver_protocol1 vserver_protocol2 vserver_protocol3 vserver_protocol4 vserver_protocol5 vserver_protocol6 vserver_protocol7 vserver_protocol8 vserver_protocol9 vserver_protocol10 
+ vserver_protocol11 vserver_protocol12 vserver_protocol13 vserver_protocol14 vserver_protocol15 vserver_protocol16 vserver_protocol17 vserver_protocol18 vserver_protocol19 vserver_protocol20 
+ priv_ip1 priv_ip2 priv_ip3 priv_ip4 priv_ip5 priv_ip6 priv_ip7 priv_ip8 priv_ip9 priv_ip10 priv_ip11 priv_ip12 priv_ip13 priv_ip14 priv_ip15 priv_ip16 priv_ip17 priv_ip18 priv_ip19 priv_ip20"> 
+
+<input type="hidden" name="vserver_ip1" value='<%nvram_get("vserver_ip1");%>'>
+<input type="hidden" name="vserver_ip2" value='<%nvram_get("vserver_ip2");%>'>
+<input type="hidden" name="vserver_ip3" value='<%nvram_get("vserver_ip3");%>'>
+<input type="hidden" name="vserver_ip4" value='<%nvram_get("vserver_ip4");%>'>
+<input type="hidden" name="vserver_ip5" value='<%nvram_get("vserver_ip5");%>'>
+<input type="hidden" name="vserver_ip6" value='<%nvram_get("vserver_ip6");%>'>
+<input type="hidden" name="vserver_ip7" value='<%nvram_get("vserver_ip7");%>'>
+<input type="hidden" name="vserver_ip8" value='<%nvram_get("vserver_ip8");%>'>
+<input type="hidden" name="vserver_ip9" value='<%nvram_get("vserver_ip9");%>'>
+<input type="hidden" name="vserver_ip10" value='<%nvram_get("vserver_ip10");%>'>
+<input type="hidden" name="vserver_ip11" value='<%nvram_get("vserver_ip11");%>'>
+<input type="hidden" name="vserver_ip12" value='<%nvram_get("vserver_ip12");%>'>
+<input type="hidden" name="vserver_ip13" value='<%nvram_get("vserver_ip13");%>'>
+<input type="hidden" name="vserver_ip14" value='<%nvram_get("vserver_ip14");%>'>
+<input type="hidden" name="vserver_ip15" value='<%nvram_get("vserver_ip15");%>'>
+<input type="hidden" name="vserver_ip16" value='<%nvram_get("vserver_ip16");%>'>
+<input type="hidden" name="vserver_ip17" value='<%nvram_get("vserver_ip17");%>'>
+<input type="hidden" name="vserver_ip18" value='<%nvram_get("vserver_ip18");%>'>
+<input type="hidden" name="vserver_ip19" value='<%nvram_get("vserver_ip19");%>'>
+<input type="hidden" name="vserver_ip20" value='<%nvram_get("vserver_ip20");%>'>
+
+<input type="hidden" name="vserver_desc1" value='<%nvram_get("vserver_desc1");%>'>
+<input type="hidden" name="vserver_desc2" value='<%nvram_get("vserver_desc2");%>'>
+<input type="hidden" name="vserver_desc3" value='<%nvram_get("vserver_desc3");%>'>
+<input type="hidden" name="vserver_desc4" value='<%nvram_get("vserver_desc4");%>'>
+<input type="hidden" name="vserver_desc5" value='<%nvram_get("vserver_desc5");%>'>
+<input type="hidden" name="vserver_desc6" value='<%nvram_get("vserver_desc6");%>'>
+<input type="hidden" name="vserver_desc7" value='<%nvram_get("vserver_desc7");%>'>
+<input type="hidden" name="vserver_desc8" value='<%nvram_get("vserver_desc8");%>'>
+<input type="hidden" name="vserver_desc9" value='<%nvram_get("vserver_desc9");%>'>
+<input type="hidden" name="vserver_desc10" value='<%nvram_get("vserver_desc10");%>'>
+<input type="hidden" name="vserver_desc11" value='<%nvram_get("vserver_desc11");%>'>
+<input type="hidden" name="vserver_desc12" value='<%nvram_get("vserver_desc12");%>'>
+<input type="hidden" name="vserver_desc13" value='<%nvram_get("vserver_desc13");%>'>
+<input type="hidden" name="vserver_desc14" value='<%nvram_get("vserver_desc14");%>'>
+<input type="hidden" name="vserver_desc15" value='<%nvram_get("vserver_desc15");%>'>
+<input type="hidden" name="vserver_desc16" value='<%nvram_get("vserver_desc16");%>'>
+<input type="hidden" name="vserver_desc17" value='<%nvram_get("vserver_desc17");%>'>
+<input type="hidden" name="vserver_desc18" value='<%nvram_get("vserver_desc18");%>'>
+<input type="hidden" name="vserver_desc19" value='<%nvram_get("vserver_desc19");%>'>
+<input type="hidden" name="vserver_desc20" value='<%nvram_get("vserver_desc20");%>'>
+
+<input type="hidden" name="vserver_inport_start1" value='<%nvram_get("vserver_inport_start1");%>'>
+<input type="hidden" name="vserver_inport_start2" value='<%nvram_get("vserver_inport_start2");%>'>
+<input type="hidden" name="vserver_inport_start3" value='<%nvram_get("vserver_inport_start3");%>'>
+<input type="hidden" name="vserver_inport_start4" value='<%nvram_get("vserver_inport_start4");%>'>
+<input type="hidden" name="vserver_inport_start5" value='<%nvram_get("vserver_inport_start5");%>'>
+<input type="hidden" name="vserver_inport_start6" value='<%nvram_get("vserver_inport_start6");%>'>
+<input type="hidden" name="vserver_inport_start7" value='<%nvram_get("vserver_inport_start7");%>'>
+<input type="hidden" name="vserver_inport_start8" value='<%nvram_get("vserver_inport_start8");%>'>
+<input type="hidden" name="vserver_inport_start9" value='<%nvram_get("vserver_inport_start9");%>'>
+<input type="hidden" name="vserver_inport_start10" value='<%nvram_get("vserver_inport_start10");%>'>
+<input type="hidden" name="vserver_inport_start11" value='<%nvram_get("vserver_inport_start11");%>'>
+<input type="hidden" name="vserver_inport_start12" value='<%nvram_get("vserver_inport_start12");%>'>
+<input type="hidden" name="vserver_inport_start13" value='<%nvram_get("vserver_inport_start13");%>'>
+<input type="hidden" name="vserver_inport_start14" value='<%nvram_get("vserver_inport_start14");%>'>
+<input type="hidden" name="vserver_inport_start15" value='<%nvram_get("vserver_inport_start15");%>'>
+<input type="hidden" name="vserver_inport_start16" value='<%nvram_get("vserver_inport_start16");%>'>
+<input type="hidden" name="vserver_inport_start17" value='<%nvram_get("vserver_inport_start17");%>'>
+<input type="hidden" name="vserver_inport_start18" value='<%nvram_get("vserver_inport_start18");%>'>
+<input type="hidden" name="vserver_inport_start19" value='<%nvram_get("vserver_inport_start19");%>'>
+<input type="hidden" name="vserver_inport_start20" value='<%nvram_get("vserver_inport_start20");%>'>
+
+<input type="hidden" name="vserver_inport_end1" value='<%nvram_get("vserver_inport_end1");%>'>
+<input type="hidden" name="vserver_inport_end2" value='<%nvram_get("vserver_inport_end2");%>'>
+<input type="hidden" name="vserver_inport_end3" value='<%nvram_get("vserver_inport_end3");%>'>
+<input type="hidden" name="vserver_inport_end4" value='<%nvram_get("vserver_inport_end4");%>'>
+<input type="hidden" name="vserver_inport_end5" value='<%nvram_get("vserver_inport_end5");%>'>
+<input type="hidden" name="vserver_inport_end6" value='<%nvram_get("vserver_inport_end6");%>'>
+<input type="hidden" name="vserver_inport_end7" value='<%nvram_get("vserver_inport_end7");%>'>
+<input type="hidden" name="vserver_inport_end8" value='<%nvram_get("vserver_inport_end8");%>'>
+<input type="hidden" name="vserver_inport_end9" value='<%nvram_get("vserver_inport_end9");%>'>
+<input type="hidden" name="vserver_inport_end10" value='<%nvram_get("vserver_inport_end10");%>'>
+<input type="hidden" name="vserver_inport_end11" value='<%nvram_get("vserver_inport_end11");%>'>
+<input type="hidden" name="vserver_inport_end12" value='<%nvram_get("vserver_inport_end12");%>'>
+<input type="hidden" name="vserver_inport_end13" value='<%nvram_get("vserver_inport_end13");%>'>
+<input type="hidden" name="vserver_inport_end14" value='<%nvram_get("vserver_inport_end14");%>'>
+<input type="hidden" name="vserver_inport_end15" value='<%nvram_get("vserver_inport_end15");%>'>
+<input type="hidden" name="vserver_inport_end16" value='<%nvram_get("vserver_inport_end16");%>'>
+<input type="hidden" name="vserver_inport_end17" value='<%nvram_get("vserver_inport_end17");%>'>
+<input type="hidden" name="vserver_inport_end18" value='<%nvram_get("vserver_inport_end18");%>'>
+<input type="hidden" name="vserver_inport_end19" value='<%nvram_get("vserver_inport_end19");%>'>
+<input type="hidden" name="vserver_inport_end20" value='<%nvram_get("vserver_inport_end20");%>'>
+
+<input type="hidden" name="vserver_private_port_start1" value='<%nvram_get("vserver_private_port_start1");%>'>
+<input type="hidden" name="vserver_private_port_start2" value='<%nvram_get("vserver_private_port_start2");%>'>
+<input type="hidden" name="vserver_private_port_start3" value='<%nvram_get("vserver_private_port_start3");%>'>
+<input type="hidden" name="vserver_private_port_start4" value='<%nvram_get("vserver_private_port_start4");%>'>
+<input type="hidden" name="vserver_private_port_start5" value='<%nvram_get("vserver_private_port_start5");%>'>
+<input type="hidden" name="vserver_private_port_start6" value='<%nvram_get("vserver_private_port_start6");%>'>
+<input type="hidden" name="vserver_private_port_start7" value='<%nvram_get("vserver_private_port_start7");%>'>
+<input type="hidden" name="vserver_private_port_start8" value='<%nvram_get("vserver_private_port_start8");%>'>
+<input type="hidden" name="vserver_private_port_start9" value='<%nvram_get("vserver_private_port_start9");%>'>
+<input type="hidden" name="vserver_private_port_start10" value='<%nvram_get("vserver_private_port_start10");%>'>
+<input type="hidden" name="vserver_private_port_start11" value='<%nvram_get("vserver_private_port_start11");%>'>
+<input type="hidden" name="vserver_private_port_start12" value='<%nvram_get("vserver_private_port_start12");%>'>
+<input type="hidden" name="vserver_private_port_start13" value='<%nvram_get("vserver_private_port_start13");%>'>
+<input type="hidden" name="vserver_private_port_start14" value='<%nvram_get("vserver_private_port_start14");%>'>
+<input type="hidden" name="vserver_private_port_start15" value='<%nvram_get("vserver_private_port_start15");%>'>
+<input type="hidden" name="vserver_private_port_start16" value='<%nvram_get("vserver_private_port_start16");%>'>
+<input type="hidden" name="vserver_private_port_start17" value='<%nvram_get("vserver_private_port_start17");%>'>
+<input type="hidden" name="vserver_private_port_start18" value='<%nvram_get("vserver_private_port_start18");%>'>
+<input type="hidden" name="vserver_private_port_start19" value='<%nvram_get("vserver_private_port_start19");%>'>
+<input type="hidden" name="vserver_private_port_start20" value='<%nvram_get("vserver_private_port_start20");%>'>
+
+<input type="hidden" name="vserver_private_port_end1" value='<%nvram_get("vserver_private_port_end1");%>'>
+<input type="hidden" name="vserver_private_port_end2" value='<%nvram_get("vserver_private_port_end2");%>'>
+<input type="hidden" name="vserver_private_port_end3" value='<%nvram_get("vserver_private_port_end3");%>'>
+<input type="hidden" name="vserver_private_port_end4" value='<%nvram_get("vserver_private_port_end4");%>'>
+<input type="hidden" name="vserver_private_port_end5" value='<%nvram_get("vserver_private_port_end5");%>'>
+<input type="hidden" name="vserver_private_port_end6" value='<%nvram_get("vserver_private_port_end6");%>'>
+<input type="hidden" name="vserver_private_port_end7" value='<%nvram_get("vserver_private_port_end7");%>'>
+<input type="hidden" name="vserver_private_port_end8" value='<%nvram_get("vserver_private_port_end8");%>'>
+<input type="hidden" name="vserver_private_port_end9" value='<%nvram_get("vserver_private_port_end9");%>'>
+<input type="hidden" name="vserver_private_port_end10" value='<%nvram_get("vserver_private_port_end10");%>'>
+<input type="hidden" name="vserver_private_port_end11" value='<%nvram_get("vserver_private_port_end11");%>'>
+<input type="hidden" name="vserver_private_port_end12" value='<%nvram_get("vserver_private_port_end12");%>'>
+<input type="hidden" name="vserver_private_port_end13" value='<%nvram_get("vserver_private_port_end13");%>'>
+<input type="hidden" name="vserver_private_port_end14" value='<%nvram_get("vserver_private_port_end14");%>'>
+<input type="hidden" name="vserver_private_port_end15" value='<%nvram_get("vserver_private_port_end15");%>'>
+<input type="hidden" name="vserver_private_port_end16" value='<%nvram_get("vserver_private_port_end16");%>'>
+<input type="hidden" name="vserver_private_port_end17" value='<%nvram_get("vserver_private_port_end17");%>'>
+<input type="hidden" name="vserver_private_port_end18" value='<%nvram_get("vserver_private_port_end18");%>'>
+<input type="hidden" name="vserver_private_port_end19" value='<%nvram_get("vserver_private_port_end19");%>'>
+<input type="hidden" name="vserver_private_port_end20" value='<%nvram_get("vserver_private_port_end20");%>'>
+
+<input type="hidden" name="vserver_enabled1" value='<%nvram_get("vserver_enabled1");%>'>
+<input type="hidden" name="vserver_enabled2" value='<%nvram_get("vserver_enabled2");%>'>
+<input type="hidden" name="vserver_enabled3" value='<%nvram_get("vserver_enabled3");%>'>
+<input type="hidden" name="vserver_enabled4" value='<%nvram_get("vserver_enabled4");%>'>
+<input type="hidden" name="vserver_enabled5" value='<%nvram_get("vserver_enabled5");%>'>
+<input type="hidden" name="vserver_enabled6" value='<%nvram_get("vserver_enabled6");%>'>
+<input type="hidden" name="vserver_enabled7" value='<%nvram_get("vserver_enabled7");%>'>
+<input type="hidden" name="vserver_enabled8" value='<%nvram_get("vserver_enabled8");%>'>
+<input type="hidden" name="vserver_enabled9" value='<%nvram_get("vserver_enabled9");%>'>
+<input type="hidden" name="vserver_enabled10" value='<%nvram_get("vserver_enabled10");%>'>
+<input type="hidden" name="vserver_enabled11" value='<%nvram_get("vserver_enabled11");%>'>
+<input type="hidden" name="vserver_enabled12" value='<%nvram_get("vserver_enabled12");%>'>
+<input type="hidden" name="vserver_enabled13" value='<%nvram_get("vserver_enabled13");%>'>
+<input type="hidden" name="vserver_enabled14" value='<%nvram_get("vserver_enabled14");%>'>
+<input type="hidden" name="vserver_enabled15" value='<%nvram_get("vserver_enabled15");%>'>
+<input type="hidden" name="vserver_enabled16" value='<%nvram_get("vserver_enabled16");%>'>
+<input type="hidden" name="vserver_enabled17" value='<%nvram_get("vserver_enabled17");%>'>
+<input type="hidden" name="vserver_enabled18" value='<%nvram_get("vserver_enabled18");%>'>
+<input type="hidden" name="vserver_enabled19" value='<%nvram_get("vserver_enabled19");%>'>
+<input type="hidden" name="vserver_enabled20" value='<%nvram_get("vserver_enabled20");%>'>
+
+<input type="hidden" name="vserver_protocol1" value='<%nvram_get("vserver_protocol1");%>'>
+<input type="hidden" name="vserver_protocol2" value='<%nvram_get("vserver_protocol2");%>'>
+<input type="hidden" name="vserver_protocol3" value='<%nvram_get("vserver_protocol3");%>'>
+<input type="hidden" name="vserver_protocol4" value='<%nvram_get("vserver_protocol4");%>'>
+<input type="hidden" name="vserver_protocol5" value='<%nvram_get("vserver_protocol5");%>'>
+<input type="hidden" name="vserver_protocol6" value='<%nvram_get("vserver_protocol6");%>'>
+<input type="hidden" name="vserver_protocol7" value='<%nvram_get("vserver_protocol7");%>'>
+<input type="hidden" name="vserver_protocol8" value='<%nvram_get("vserver_protocol8");%>'>
+<input type="hidden" name="vserver_protocol9" value='<%nvram_get("vserver_protocol9");%>'>
+<input type="hidden" name="vserver_protocol10" value='<%nvram_get("vserver_protocol10");%>'>
+<input type="hidden" name="vserver_protocol11" value='<%nvram_get("vserver_protocol11");%>'>
+<input type="hidden" name="vserver_protocol12" value='<%nvram_get("vserver_protocol12");%>'>
+<input type="hidden" name="vserver_protocol13" value='<%nvram_get("vserver_protocol13");%>'>
+<input type="hidden" name="vserver_protocol14" value='<%nvram_get("vserver_protocol14");%>'>
+<input type="hidden" name="vserver_protocol15" value='<%nvram_get("vserver_protocol15");%>'>
+<input type="hidden" name="vserver_protocol16" value='<%nvram_get("vserver_protocol16");%>'>
+<input type="hidden" name="vserver_protocol17" value='<%nvram_get("vserver_protocol17");%>'>
+<input type="hidden" name="vserver_protocol18" value='<%nvram_get("vserver_protocol18");%>'>
+<input type="hidden" name="vserver_protocol19" value='<%nvram_get("vserver_protocol19");%>'>
+<input type="hidden" name="vserver_protocol20" value='<%nvram_get("vserver_protocol20");%>'>
+
+<input type="hidden" name="priv_ip1" value='<%nvram_get("priv_ip1");%>'>
+<input type="hidden" name="priv_ip2" value='<%nvram_get("priv_ip2");%>'>
+<input type="hidden" name="priv_ip3" value='<%nvram_get("priv_ip3");%>'>
+<input type="hidden" name="priv_ip4" value='<%nvram_get("priv_ip4");%>'>
+<input type="hidden" name="priv_ip5" value='<%nvram_get("priv_ip5");%>'>
+<input type="hidden" name="priv_ip6" value='<%nvram_get("priv_ip6");%>'>
+<input type="hidden" name="priv_ip7" value='<%nvram_get("priv_ip7");%>'>
+<input type="hidden" name="priv_ip8" value='<%nvram_get("priv_ip8");%>'>
+<input type="hidden" name="priv_ip9" value='<%nvram_get("priv_ip9");%>'>
+<input type="hidden" name="priv_ip10" value='<%nvram_get("priv_ip10");%>'>
+<input type="hidden" name="priv_ip11" value='<%nvram_get("priv_ip11");%>'>
+<input type="hidden" name="priv_ip12" value='<%nvram_get("priv_ip12");%>'>
+<input type="hidden" name="priv_ip13" value='<%nvram_get("priv_ip13");%>'>
+<input type="hidden" name="priv_ip14" value='<%nvram_get("priv_ip14");%>'>
+<input type="hidden" name="priv_ip15" value='<%nvram_get("priv_ip15");%>'>
+<input type="hidden" name="priv_ip16" value='<%nvram_get("priv_ip16");%>'>
+<input type="hidden" name="priv_ip17" value='<%nvram_get("priv_ip17");%>'>
+<input type="hidden" name="priv_ip18" value='<%nvram_get("priv_ip18");%>'>
+<input type="hidden" name="priv_ip19" value='<%nvram_get("priv_ip19");%>'>
+<input type="hidden" name="priv_ip20" value='<%nvram_get("priv_ip20");%>'>
+
+<TD class="head_bold" height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_129);</SCRIPT><BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=0 cellPadding=0 width=580 border=0>
+        <TBODY>
+        <TR>
+          <TD width=35>&nbsp;</TD>
+          <TD class=verdana12>
+            <SCRIPT>dw(str_134);</SCRIPT>
+            <A class=plaintext_bold 
+            onclick="window.open('glossary.html#virtual_server','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" 
+            href="javascript:void(0);"><FONT color=#0066FF><B>
+            <SCRIPT>dw(str_47);</SCRIPT>
+            </B></FONT></A></TD></TR></TBODY></TABLE><BR>
+      <TABLE class="copy_1" cellSpacing="1" cellPadding="5" width="700" align="left" border="0">
+        <TBODY>
+        <TR>
+          <TD class=formText noWrap align=middle colSpan=2>&nbsp;</TD>
+          <TD class=plaintext_bold colSpan=4>
+            <TABLE class=copy_1 border=0>
+              <TBODY>
+              <TR align=middle>
+                <TD colSpan=3>
+                  <SCRIPT>strHtml='<input id="submitBtn_clear" type="reset" name="reset" value="'+str_48+'" style="{width:160px;}" class="submitBtn" onMouseOver="window.status=\'Clear\'; return true;" onclick="window.location.reload();" onMouseOut="window.status=\'\'; return true;">';
+dw(strHtml);
+strHtml='<input id="submitBtn_apply" type="button" value="'+str_49+'" style="{width:160px;}" class="submitBtn" onClick="return Try_Submit();">';
+dw(strHtml);</SCRIPT>
+                </TD></TR>
+              <TR>
+                <TD class="plaintext_bold"><B><SCRIPT>dw(str_113);</SCRIPT>&nbsp;</B> 
+				  <SELECT name="virtual_server_list"> 
+<SCRIPT>
+dw('<option value="Active Worlds">'+str_135+'</option>');
+dw('<option value="Age of Empires">'+str_136+'</option>');
+dw('<option value="Age of Empires Expansion: The Rise of Rome">'+str_137+'</option>');
+dw('<option value="Age of Empires II Expansion: The Conquerors">'+str_138+'</option>');
+dw('<option value="Age of Empires II: The Age of Kings">'+str_139+'</option>');
+dw('<option value="Age of Kings">'+str_140+'</option>');
+dw('<option value="Age of Wonders">'+str_141+'</option>');
+dw('<option value="Aliens vs. Predator">'+str_142+'</option>');
+dw('<option value="Anarchy Online (BETA)">'+str_143+'</option>');
+dw('<option value="AOL Instant Messenger">'+str_144+'</option>');
+dw('<option value="Audiogalaxy Satellite">'+str_145+'</option>');
+dw('<option value="Baldur\'s Gate">'+str_146+'</option>');
+dw('<option value="BattleCom">'+str_147+'</option>');
+dw('<option value="Battlefield Communicator">'+str_148+'</option>');
+dw('<option value="Black and White">'+str_149+'</option>');
+dw('<option value="Blizzard Battle.net">'+str_150+'</option>');
+dw('<option value="Buddy Phone">'+str_151+'</option>');
+dw('<option value="Bungie.net">'+str_152+'</option>');
+dw('<option value="Camerades">'+str_153+'</option>');
+dw('<option value="CART Precision Racing">'+str_154+'</option>');
+dw('<option value="Close Combat for Windows">'+str_155+'</option>');
+dw('<option value="Close Combat III: The Russian Front">'+str_156+'</option>');
+dw('<option value="Close Combat: A Bridge Too Far">'+str_157+'</option>');
+dw('<option value="Combat Flight Simulator 2: WWII Pacific Theater">'+str_158+'</option>');
+dw('<option value="Combat Flight Simulator: WWII Europe Series">'+str_159+'</option>');
+dw('<option value="Crimson Skies">'+str_160+'</option>');
+dw('<option value="CuSeeMe">'+str_274+'</option>');
+dw('<option value="Dark Reign">'+str_161+'</option>');
+dw('<option value="Dark Reign 2">'+str_162+'</option>');
+dw('<option value="Delta Force 2">'+str_163+'</option>');
+dw('<option value="Delta Three PC to Phone">'+str_164+'</option>');
+dw('<option value="Descent 3">'+str_165+'</option>');
+dw('<option value="Descent Freespace">'+str_166+'</option>');
+dw('<option value="Diablo (1.07+)">'+str_167+'</option>');
+dw('<option value="Diablo I">'+str_168+'</option>');
+dw('<option value="Diablo II">'+str_169+'</option>');
+dw('<option value="DialPad.Com">'+str_170+'</option>');
+dw('<option value="DirectX 7 Games">'+str_171+'</option>');
+dw('<option value="DirectX 8 Games">'+str_172+'</option>');
+dw('<option value="Domain Name Server (DNS)">'+str_173+'</option>');
+dw('<option value="Doom">'+str_174+'</option>');
+dw('<option value="Dune 2000">'+str_175+'</option>');
+dw('<option value="Dwyco Video Conferencing">'+str_176+'</option>');
+dw('<option value="Elite Force">'+str_177+'</option>');
+dw('<option value="Everquest">'+str_178+'</option>');
+dw('<option value="F-16">'+str_179+'</option>');
+dw('<option value="F-22 Lightning 3">'+str_180+'</option>');
+dw('<option value="F-22 Raptor">'+str_181+'</option>');
+dw('<option value="F22 Raptor (Novalogic)">'+str_182+'</option>');
+dw('<option value="Falcon 4.0">'+str_183+'</option>');
+dw('<option value="Fighter Ace II">'+str_184+'</option>');
+dw('<option value="Flight Simulator 2000">'+str_185+'</option>');
+dw('<option value="Flight Simulator 98">'+str_186+'</option>');
+dw('<option value="Freetel">'+str_187+'</option>');
+dw('<option value="FTP Server">'+str_188+'</option>');
+dw('<option value="GNUtella">'+str_189+'</option>');
+dw('<option value="Golf 1998 Edition">'+str_190+'</option>');
+dw('<option value="Golf 1999 Edition">'+str_191+'</option>');
+dw('<option value="Golf 2001 Edition">'+str_192+'</option>');
+dw('<option value="Go2Call">'+str_193+'</option>');
+dw('<option value="Half Life">'+str_194+'</option>');
+dw('<option value="Half Life Server">'+str_195+'</option>');
+dw('<option value="Heretic II Server">'+str_196+'</option>');
+dw('<option value="I76">'+str_197+'</option>');
+dw('<option value="ICUII Client">'+str_275+'</option>');
+dw('<option value="Ivisit">'+str_198+'</option>');
+dw('<option value="IRC">'+str_199+'</option>');
+dw('<option value="IStreamVideo2HP">'+str_200+'</option>');
+dw('<option value="KaZaA">'+str_201+'</option>');
+dw('<option value="Kohan Immortal Sovereigns">'+str_202+'</option>');
+dw('<option value="LapLink Gold">'+str_203+'</option>');
+dw('<option value="Links 2001">'+str_204+'</option>');
+dw('<option value="Lotus Notes Server">'+str_205+'</option>');
+dw('<option value="Mail (POP3)">'+str_206+'</option>');
+dw('<option value="Mail (SMTP)">'+str_207+'</option>');
+dw('<option value="MechCommander 2.0">'+str_208+'</option>');
+dw('<option value="MechWarrior 3">'+str_209+'</option>');
+dw('<option value="MechWarrior 4">'+str_210+'</option>');
+dw('<option value="Media Player 7">'+str_211+'</option>');
+dw('<option value="Midtown Madness">'+str_212+'</option>');
+dw('<option value="Midtown Madness 2">'+str_213+'</option>');
+dw('<option value="Mig 29">'+str_214+'</option>');
+dw('<option value="Monster Truck Madness">'+str_215+'</option>');
+dw('<option value="Monster Truck Madness 2">'+str_216+'</option>');
+dw('<option value="Motocross Madness">'+str_217+'</option>');
+dw('<option value="Motocross Madness 2">'+str_218+'</option>');
+dw('<option value="Motorhead Server">'+str_219+'</option>');
+dw('<option value="MSN Gaming Zone">'+str_220+'</option>');
+dw('<option value="MSN Messenger">'+str_221+'</option>');
+dw('<option value="Myth">'+str_222+'</option>');
+dw('<option value="Myth II Server">'+str_223+'</option>');
+dw('<option value="Myth: The Fallen Lords">'+str_224+'</option>');
+dw('<option value="Need for Speed">'+str_225+'</option>');
+dw('<option value="NetMech">'+str_226+'</option>');
+dw('<option value="Netmeeting 2.0, 3.0, Intel Video Phone">'+str_272+'</option>');
+dw('<option value="Network Time Protocol (NTP)">'+str_227+'</option>');
+dw('<option value="News Server (NNTP)">'+str_228+'</option>');
+dw('<option value="OKWeb">'+str_229+'</option>');
+dw('<option value="OKWin">'+str_230+'</option>');
+dw('<option value="Outlaws">'+str_231+'</option>');
+dw('<option value="Pal Talk">'+str_269+'</option>');
+dw('<option value="pcAnywhere v7.5">'+str_232+'</option>');
+dw('<option value="PhoneFree">'+str_233+'</option>');
+dw('<option value="Polycom ViaVideo H.323">'+str_234+'</option>');
+dw('<option value="Polycom ViaVideo H.324">'+str_235+'</option>');
+dw('<option value="Quake">'+str_236+'</option>');
+dw('<option value="Quake II (Client and Server)">'+str_237+'</option>');
+dw('<option value="Quake III">'+str_238+'</option>');
+dw('<option value="RealAudio">'+str_271+'</option>');
+dw('<option value="Real Player 8 Plus">'+str_270+'</option>');
+dw('<option value="Red Alert">'+str_239+'</option>');
+dw('<option value="Rise of Rome">'+str_240+'</option>');
+dw('<option value="Roger Wilco">'+str_241+'</option>');
+dw('<option value="Rogue Spear">'+str_242+'</option>');
+dw('<option value="Secure Shell Server (SSH)">'+str_243+'</option>');
+dw('<option value="Secure Web Server (HTTPS)">'+str_244+'</option>');
+dw('<option value="ShoutCast">'+str_245+'</option>');
+dw('<option value="SNMP">'+str_246+'</option>');
+dw('<option value="SNMP Trap">'+str_247+'</option>');
+dw('<option value="Speak Freely">'+str_248+'</option>');
+dw('<option value="StarCraft">'+str_249+'</option>');
+dw('<option value="Starfleet Command">'+str_250+'</option>');
+dw('<option value="StarLancer">'+str_251+'</option>');
+dw('<option value="SWAT3">'+str_252+'</option>');
+dw('<option value="Telnet Server">'+str_253+'</option>');
+dw('<option value="The 4th Coming">'+str_254+'</option>');
+dw('<option value="Tiberian Sun: C&C">'+str_255+'</option>');
+dw('<option value="Tiberian Sun: C&C III">'+str_256+'</option>');
+dw('<option value="Total Annihilation">'+str_257+'</option>');
+dw('<option value="Ultima">'+str_258+'</option>');
+dw('<option value="Unreal Tournament">'+str_259+'</option>');
+dw('<option value="Urban Assault">'+str_260+'</option>');
+dw('<option value="VoxPhone 3.0">'+str_261+'</option>');
+dw('<option value="Warbirds 2">'+str_262+'</option>');
+dw('<option value="Web Server (HTTP)">'+str_263+'</option>');
+dw('<option value="WebPhone 3.0">'+str_264+'</option>');
+dw('<option value="Westwood Online">'+str_273+'</option>');
+dw('<option value="Windows 2000 Terminal Server">'+str_265+'</option>');
+dw('<option value="X Windows">'+str_266+'</option>');
+dw('<option value="Yahoo Pager">'+str_267+'</option>');
+dw('<option value="Yahoo Messenger Chat">'+str_268+'</option>');
+</SCRIPT>
+                  </SELECT> </TD>
+                <TD clospan="2">&nbsp;</TD>
+                <TD>
+                  	<SCRIPT>
+				  		strHtml='<input id ="submitBtn_add" type="button" name="add_btn" value=" '+str_113+' " style="{width:60px;}"  class="submitBtn" onClick="AddVirtualServer(document.forms[0].virtual_server_list.value);">';
+						dw(strHtml);
+					</SCRIPT>
+                </TD>
+			</TR>
+            <TR>
+                <TD class=plaintext_bold><B>
+                  <SCRIPT>dw(str_276);</SCRIPT>
+                  &nbsp;</B>
+				  	<SELECT name="clear_entry_list"> 
+                    	<SCRIPT>
+						for(var i=1;i<=20;i++) 
+							if(i == 1)
+								dw('<option value='+i+' selected>'+i+'</option>');
+							else
+							  	dw('<option value='+i+'>'+i+'</option>');
+						dw('<option value=all>' + str_376 + '</option>');
+						</SCRIPT>
+                    	<!--OPTION value="all" selected><SCRIPT>dw(all)</SCRIPT></OPTION-->
+					</SELECT> 
+				</TD>
+                <TD>&nbsp;</TD>
+                <TD>
+                  	<SCRIPT>
+						strHtml='<input id="submitBtn_erase" type="button" name="clear_btn" value="'+str_127+' " style="{width:60px;}" class="submitBtn" onClick="ClearEntry(document.forms[0].clear_entry_list.value)">';
+						dw(strHtml);
+					</SCRIPT>
+                </TD>
+			</TR></TBODY></TABLE></TD></TR>
+        <TR bgColor=#666666>
+          <TD noWrap align=middle>&nbsp;</TD>
+          <TH class=formText noWrap><FONT color=#ffffff>
+            <SCRIPT>dw(str_71);</SCRIPT>
+            </FONT></TH>
+          <TH class=formText noWrap><FONT color=#ffffff>
+            <SCRIPT>dw(str_277);</SCRIPT>
+            </FONT></TH>
+          <TH class=formText noWrap><FONT color=#ffffff>
+            <SCRIPT>dw(str_278);</SCRIPT>
+            </FONT></TH>
+          <TH class=formText noWrap><FONT color=#ffffff>
+            <SCRIPT>dw(str_279);</SCRIPT>
+            </FONT></TH>
+          <TH class=formText noWrap><FONT color=#ffffff>
+            <SCRIPT>dw(str_280);</SCRIPT>
+            </FONT></TH>
+          <TH class=formText noWrap><FONT color=#ffffff>&nbsp;
+            <SCRIPT>dw(str_281);</SCRIPT>
+            &nbsp;</FONT>
+		</TH>
+		</TR>
+        <SCRIPT>
+var strHtml;
+count=1;
+
+var description= new Array(21);
+var enabled = new Array(21);
+var ip_addr = new Array(21);
+var priv_ip = new Array(21);
+var inbound_portStart = new Array(21);
+var inbourd_portEnd = new Array(21);
+var protocol_type = new Array(21);
+var private_portStart = new Array(21);
+var private_portEnd = new Array(21);
+
+enabled[1] = '<%nvram_get("vserver_enabled1");%>';
+enabled[2] = '<%nvram_get("vserver_enabled2");%>';
+enabled[3] = '<%nvram_get("vserver_enabled3");%>';
+enabled[4] = '<%nvram_get("vserver_enabled4");%>';
+enabled[5] = '<%nvram_get("vserver_enabled5");%>';
+enabled[6] = '<%nvram_get("vserver_enabled6");%>';
+enabled[7] = '<%nvram_get("vserver_enabled7");%>';
+enabled[8] = '<%nvram_get("vserver_enabled8");%>';
+enabled[9] = '<%nvram_get("vserver_enabled9");%>';
+enabled[10] = '<%nvram_get("vserver_enabled10");%>';
+enabled[11] = '<%nvram_get("vserver_enabled11");%>';
+enabled[12] = '<%nvram_get("vserver_enabled12");%>';
+enabled[13] = '<%nvram_get("vserver_enabled13");%>';
+enabled[14] = '<%nvram_get("vserver_enabled14");%>';
+enabled[15] = '<%nvram_get("vserver_enabled15");%>';
+enabled[16] = '<%nvram_get("vserver_enabled16");%>';
+enabled[17] = '<%nvram_get("vserver_enabled17");%>';
+enabled[18] = '<%nvram_get("vserver_enabled18");%>';
+enabled[19] = '<%nvram_get("vserver_enabled19");%>';
+enabled[20] = '<%nvram_get("vserver_enabled20");%>';
+
+description[1] = '<%nvram_get("vserver_desc1");%>'; 
+description[2] = '<%nvram_get("vserver_desc2");%>'; 
+description[3] = '<%nvram_get("vserver_desc3");%>'; 
+description[4] = '<%nvram_get("vserver_desc4");%>'; 
+description[5] = '<%nvram_get("vserver_desc5");%>'; 
+description[6] = '<%nvram_get("vserver_desc6");%>'; 
+description[7] = '<%nvram_get("vserver_desc7");%>'; 
+description[8] = '<%nvram_get("vserver_desc8");%>'; 
+description[9] = '<%nvram_get("vserver_desc9");%>'; 
+description[10] = '<%nvram_get("vserver_desc10");%>'; 
+description[11] = '<%nvram_get("vserver_desc11");%>'; 
+description[12] = '<%nvram_get("vserver_desc12");%>'; 
+description[13] = '<%nvram_get("vserver_desc13");%>'; 
+description[14] = '<%nvram_get("vserver_desc14");%>'; 
+description[15] = '<%nvram_get("vserver_desc15");%>'; 
+description[16] = '<%nvram_get("vserver_desc16");%>'; 
+description[17] = '<%nvram_get("vserver_desc17");%>'; 
+description[18] = '<%nvram_get("vserver_desc18");%>'; 
+description[19] = '<%nvram_get("vserver_desc19");%>'; 
+description[20] = '<%nvram_get("vserver_desc20");%>'; 
+
+ip_addr[1] = '<%nvram_get("vserver_ip1");%>';
+ip_addr[2] = '<%nvram_get("vserver_ip2");%>';
+ip_addr[3] = '<%nvram_get("vserver_ip3");%>';
+ip_addr[4] = '<%nvram_get("vserver_ip4");%>';
+ip_addr[5] = '<%nvram_get("vserver_ip5");%>';
+ip_addr[6] = '<%nvram_get("vserver_ip6");%>';
+ip_addr[7] = '<%nvram_get("vserver_ip7");%>';
+ip_addr[8] = '<%nvram_get("vserver_ip8");%>';
+ip_addr[9] = '<%nvram_get("vserver_ip9");%>';
+ip_addr[10] = '<%nvram_get("vserver_ip10");%>';
+ip_addr[11] = '<%nvram_get("vserver_ip11");%>';
+ip_addr[12] = '<%nvram_get("vserver_ip12");%>';
+ip_addr[13] = '<%nvram_get("vserver_ip13");%>';
+ip_addr[14] = '<%nvram_get("vserver_ip14");%>';
+ip_addr[15] = '<%nvram_get("vserver_ip15");%>';
+ip_addr[16] = '<%nvram_get("vserver_ip16");%>';
+ip_addr[17] = '<%nvram_get("vserver_ip17");%>';
+ip_addr[18] = '<%nvram_get("vserver_ip18");%>';
+ip_addr[19] = '<%nvram_get("vserver_ip19");%>';
+ip_addr[20] = '<%nvram_get("vserver_ip20");%>';
+
+priv_ip[1] = '<%nvram_get("priv_ip1");%>';
+priv_ip[2] = '<%nvram_get("priv_ip2");%>';
+priv_ip[3] = '<%nvram_get("priv_ip3");%>';
+priv_ip[4] = '<%nvram_get("priv_ip4");%>';
+priv_ip[5] = '<%nvram_get("priv_ip5");%>';
+priv_ip[6] = '<%nvram_get("priv_ip6");%>';
+priv_ip[7] = '<%nvram_get("priv_ip7");%>';
+priv_ip[8] = '<%nvram_get("priv_ip8");%>';
+priv_ip[9] = '<%nvram_get("priv_ip9");%>';
+priv_ip[10] = '<%nvram_get("priv_ip10");%>';
+priv_ip[11] = '<%nvram_get("priv_ip11");%>';
+priv_ip[12] = '<%nvram_get("priv_ip12");%>';
+priv_ip[13] = '<%nvram_get("priv_ip13");%>';
+priv_ip[14] = '<%nvram_get("priv_ip14");%>';
+priv_ip[15] = '<%nvram_get("priv_ip15");%>';
+priv_ip[16] = '<%nvram_get("priv_ip16");%>';
+priv_ip[17] = '<%nvram_get("priv_ip17");%>';
+priv_ip[18] = '<%nvram_get("priv_ip18");%>';
+priv_ip[19] = '<%nvram_get("priv_ip19");%>';
+priv_ip[20] = '<%nvram_get("priv_ip20");%>';
+
+private_portStart[1] = '<%nvram_get("vserver_private_port_start1");%>';
+private_portStart[2] = '<%nvram_get("vserver_private_port_start2");%>';
+private_portStart[3] = '<%nvram_get("vserver_private_port_start3");%>';
+private_portStart[4] = '<%nvram_get("vserver_private_port_start4");%>';
+private_portStart[5] = '<%nvram_get("vserver_private_port_start5");%>';
+private_portStart[6] = '<%nvram_get("vserver_private_port_start6");%>';
+private_portStart[7] = '<%nvram_get("vserver_private_port_start7");%>';
+private_portStart[8] = '<%nvram_get("vserver_private_port_start8");%>';
+private_portStart[9] = '<%nvram_get("vserver_private_port_start9");%>';
+private_portStart[10] = '<%nvram_get("vserver_private_port_start10");%>';
+private_portStart[11] = '<%nvram_get("vserver_private_port_start11");%>';
+private_portStart[12] = '<%nvram_get("vserver_private_port_start12");%>';
+private_portStart[13] = '<%nvram_get("vserver_private_port_start13");%>';
+private_portStart[14] = '<%nvram_get("vserver_private_port_start14");%>';
+private_portStart[15] = '<%nvram_get("vserver_private_port_start15");%>';
+private_portStart[16] = '<%nvram_get("vserver_private_port_start16");%>';
+private_portStart[17] = '<%nvram_get("vserver_private_port_start17");%>';
+private_portStart[18] = '<%nvram_get("vserver_private_port_start18");%>';
+private_portStart[19] = '<%nvram_get("vserver_private_port_start19");%>';
+private_portStart[20] = '<%nvram_get("vserver_private_port_start20");%>';
+
+private_portEnd[1] = '<%nvram_get("vserver_private_port_end1");%>';
+private_portEnd[2] = '<%nvram_get("vserver_private_port_end2");%>';
+private_portEnd[3] = '<%nvram_get("vserver_private_port_end3");%>';
+private_portEnd[4] = '<%nvram_get("vserver_private_port_end4");%>';
+private_portEnd[5] = '<%nvram_get("vserver_private_port_end5");%>';
+private_portEnd[6] = '<%nvram_get("vserver_private_port_end6");%>';
+private_portEnd[7] = '<%nvram_get("vserver_private_port_end7");%>';
+private_portEnd[8] = '<%nvram_get("vserver_private_port_end8");%>';
+private_portEnd[9] = '<%nvram_get("vserver_private_port_end9");%>';
+private_portEnd[10] = '<%nvram_get("vserver_private_port_end10");%>';
+private_portEnd[11] = '<%nvram_get("vserver_private_port_end11");%>';
+private_portEnd[12] = '<%nvram_get("vserver_private_port_end12");%>';
+private_portEnd[13] = '<%nvram_get("vserver_private_port_end13");%>';
+private_portEnd[14] = '<%nvram_get("vserver_private_port_end14");%>';
+private_portEnd[15] = '<%nvram_get("vserver_private_port_end15");%>';
+private_portEnd[16] = '<%nvram_get("vserver_private_port_end16");%>';
+private_portEnd[17] = '<%nvram_get("vserver_private_port_end17");%>';
+private_portEnd[18] = '<%nvram_get("vserver_private_port_end18");%>';
+private_portEnd[19] = '<%nvram_get("vserver_private_port_end19");%>';
+private_portEnd[20] = '<%nvram_get("vserver_private_port_end20");%>';
+
+protocol_type[1] = '<%nvram_get("vserver_protocol1");%>';
+protocol_type[2] = '<%nvram_get("vserver_protocol2");%>';
+protocol_type[3] = '<%nvram_get("vserver_protocol3");%>';
+protocol_type[4] = '<%nvram_get("vserver_protocol4");%>';
+protocol_type[5] = '<%nvram_get("vserver_protocol5");%>';
+protocol_type[6] = '<%nvram_get("vserver_protocol6");%>';
+protocol_type[7] = '<%nvram_get("vserver_protocol7");%>';
+protocol_type[8] = '<%nvram_get("vserver_protocol8");%>';
+protocol_type[9] = '<%nvram_get("vserver_protocol9");%>';
+protocol_type[10] = '<%nvram_get("vserver_protocol10");%>';
+protocol_type[11] = '<%nvram_get("vserver_protocol11");%>';
+protocol_type[12] = '<%nvram_get("vserver_protocol12");%>';
+protocol_type[13] = '<%nvram_get("vserver_protocol13");%>';
+protocol_type[14] = '<%nvram_get("vserver_protocol14");%>';
+protocol_type[15] = '<%nvram_get("vserver_protocol15");%>';
+protocol_type[16] = '<%nvram_get("vserver_protocol16");%>';
+protocol_type[17] = '<%nvram_get("vserver_protocol17");%>';
+protocol_type[18] = '<%nvram_get("vserver_protocol18");%>';
+protocol_type[19] = '<%nvram_get("vserver_protocol19");%>';
+protocol_type[20] = '<%nvram_get("vserver_protocol20");%>';
+
+inbound_portStart[1] = '<%nvram_get("vserver_inport_start1");%>';
+inbound_portStart[2] = '<%nvram_get("vserver_inport_start2");%>';
+inbound_portStart[3] = '<%nvram_get("vserver_inport_start3");%>';
+inbound_portStart[4] = '<%nvram_get("vserver_inport_start4");%>';
+inbound_portStart[5] = '<%nvram_get("vserver_inport_start5");%>';
+inbound_portStart[6] = '<%nvram_get("vserver_inport_start6");%>';
+inbound_portStart[7] = '<%nvram_get("vserver_inport_start7");%>';
+inbound_portStart[8] = '<%nvram_get("vserver_inport_start8");%>';
+inbound_portStart[9] = '<%nvram_get("vserver_inport_start9");%>';
+inbound_portStart[10] = '<%nvram_get("vserver_inport_start10");%>';
+inbound_portStart[11] = '<%nvram_get("vserver_inport_start11");%>';
+inbound_portStart[12] = '<%nvram_get("vserver_inport_start12");%>';
+inbound_portStart[13] = '<%nvram_get("vserver_inport_start13");%>';
+inbound_portStart[14] = '<%nvram_get("vserver_inport_start14");%>';
+inbound_portStart[15] = '<%nvram_get("vserver_inport_start15");%>';
+inbound_portStart[16] = '<%nvram_get("vserver_inport_start16");%>';
+inbound_portStart[17] = '<%nvram_get("vserver_inport_start17");%>';
+inbound_portStart[18] = '<%nvram_get("vserver_inport_start18");%>';
+inbound_portStart[19] = '<%nvram_get("vserver_inport_start19");%>';
+inbound_portStart[20] = '<%nvram_get("vserver_inport_start20");%>';
+
+inbourd_portEnd[1] = '<%nvram_get("vserver_inport_end1");%>';
+inbourd_portEnd[2] = '<%nvram_get("vserver_inport_end2");%>';
+inbourd_portEnd[3] = '<%nvram_get("vserver_inport_end3");%>';
+inbourd_portEnd[4] = '<%nvram_get("vserver_inport_end4");%>';
+inbourd_portEnd[5] = '<%nvram_get("vserver_inport_end5");%>';
+inbourd_portEnd[6] = '<%nvram_get("vserver_inport_end6");%>';
+inbourd_portEnd[7] = '<%nvram_get("vserver_inport_end7");%>';
+inbourd_portEnd[8] = '<%nvram_get("vserver_inport_end8");%>';
+inbourd_portEnd[9] = '<%nvram_get("vserver_inport_end9");%>';
+inbourd_portEnd[10] = '<%nvram_get("vserver_inport_end10");%>';
+inbourd_portEnd[11] = '<%nvram_get("vserver_inport_end11");%>';
+inbourd_portEnd[12] = '<%nvram_get("vserver_inport_end12");%>';
+inbourd_portEnd[13] = '<%nvram_get("vserver_inport_end13");%>';
+inbourd_portEnd[14] = '<%nvram_get("vserver_inport_end14");%>';
+inbourd_portEnd[15] = '<%nvram_get("vserver_inport_end15");%>';
+inbourd_portEnd[16] = '<%nvram_get("vserver_inport_end16");%>';
+inbourd_portEnd[17] = '<%nvram_get("vserver_inport_end17");%>';
+inbourd_portEnd[18] = '<%nvram_get("vserver_inport_end18");%>';
+inbourd_portEnd[19] = '<%nvram_get("vserver_inport_end19");%>';
+inbourd_portEnd[20] = '<%nvram_get("vserver_inport_end20");%>';
+
+while(count<=20)
+{
+	var enable_flag = enabled[count];
+//	var desc = description[count];
+	var vserver_port = private_portStart[count];
+	var protocol = protocol_type[count];
+	var inportStart = inbound_portStart[count];
+	var inportEnd = inbourd_portEnd[count];
+	var vserver_portEnd = private_portEnd[count];
+	
+	if (vserver_port==0)
+		vserver_port = '';
+	
+	if (vserver_portEnd==0)
+		vserver_portEnd = '';
+	
+	if (inportStart == 0)
+		inportStart = '';
+	
+	if (inportEnd==0)
+		inportEnd = '';	
+	
+	ip = priv_ip[count];
+
+	var lan_ipaddr='<%nvram_get("lan_ipaddr");%>';
+	t9=lan_ipaddr.indexOf('.');
+	t9=lan_ipaddr.indexOf('.',(t9+1));
+	t9=lan_ipaddr.indexOf('.',(t9+1));
+
+	strHtml='<tr align=left bgcolor="#CCCCCC" class="copy_1"><td nowrap class="plaintext">'
+			+count
+			+'.<input type="hidden" name="name_'
+			+count
+			+'"></td><td align="center" nowrap class="plaintext">'
+			+'<input type="checkbox" name="enable_'
+			+count
+			+'" id="enable_'
+			+count;
+	if (enable_flag=='1')	
+		strHtml= strHtml +'" value="0" checked';
+	else
+		strHtml= strHtml +'" value="0"';
+	dw(strHtml);
+		
+	strHtml=' ></td><td nowrap class="plaintext">'
+			+ '<input type="text" name="description_'
+			+ count
+			+'" id="description_'
+			+count
+			+'" size="10" maxlength="40">'
+			+'</td><td nowrap class="plaintext" >'
+			+'<input type="text" name="inbound_port_low_'
+			+  count
+			+'" id="inbound_port_low_'+count
+			+'" size="3" maxlength="5" value="'
+			+ inportStart
+			+'"> - '
+			+'<input type="text" name="inbound_port_high_'
+			+count
+			+'" id="inbound_port_high_'
+			+ count
+			+'" size="3" maxlength="5" value="'
+			+ inportEnd
+			+'"></td><td width="70">'
+			+'<select name="type_'
+			+count
+			+'" id="type_'
+			+count
+			+'"><OPTION VALUE=0 ';
+	dw(strHtml);
+// TCP / UDP /Both
+	if( protocol=='0') 
+		dw('selected');
+	dw(' >TCP<OPTION VALUE=1 ');
+	if( protocol=='1') 
+		dw('selected');
+	dw(' >UDP<OPTION VALUE=2 ');
+	if( protocol=='2') 
+		dw('selected');
+
+	strHtml=' >Both</select>'
+			+'</td><td width="110"><span class="plaintext">'
+			+lan_ipaddr.substring(0,t9)
+			+'.<input type="text" name="private_ip_'
+			+ count
+			+'" id="private_ip_'
+			+count
+			+'" size="2" maxlength="3" value="'
+			+ ip
+			+'"></span></td>'
+			+'<td nowarp class="plaintext"><span class="plaintext">'
+			+'<input type="text" name="private_port_low_'
+			+count
+			+'" id="private_port_low_'
+			+count
+			+'" size="3" maxlength="5" value="'
+			+ vserver_port
+			+'"> - '
+			+'<input type="text" name="private_port_high_'
+			+count
+			+'" id="private_port_high_'
+			+count
+			+'" size="3" maxlength="5" value="'
+			+vserver_portEnd
+			+'"></span></td></tr>';
+	
+	dw(strHtml);
+	
+	count++;
+}//while
+var f = document.forms[0];
+f.description_1.value = description[1];
+f.description_2.value = description[2];
+f.description_3.value = description[3];
+f.description_4.value = description[4];
+f.description_5.value = description[5];
+f.description_6.value = description[6];
+f.description_7.value = description[7];
+f.description_8.value = description[8];
+f.description_9.value = description[9];
+f.description_10.value = description[10];
+f.description_11.value = description[11];
+f.description_12.value = description[12];
+f.description_13.value = description[13];
+f.description_14.value = description[14];
+f.description_15.value = description[15];
+f.description_16.value = description[16];
+f.description_17.value = description[17];
+f.description_18.value = description[18];
+f.description_19.value = description[19];
+f.description_20.value = description[20];
+</SCRIPT>
+
+        <TR>
+          <TD></TD>
+          <TD></TD>
+          <TD></TD>
+          <TD></TD>
+          <TD colSpan=3>
+            <SCRIPT>
+				strHtml='<input id="submitBtn_clear" type="reset" value="'+str_48+'" style="{width:160px;}" class="submitBtn" onMouseOver="window.status=\'Clear\'; return true;" onclick="window.location.reload();" onMouseOut="window.status=\'\'; return true;">';
+				dw(strHtml);
+				strHtml='<input id="submitBtn_apply" type="button" value="'+str_49+'" style="{width:160px;}" class="submitBtn" onClick="return Try_Submit();">';
+				dw(strHtml);
+			</SCRIPT>
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</form></BODY></HTML>

@@ -1,0 +1,127 @@
+<HTML>
+<HEAD>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language="JavaScript" src="validate.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_4007+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Wi-Fi Protected Setup';
+var menuSection	='WLAN';
+var menuItem	='Wi-Fi Protected Setup';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function GURL(x){location=x}
+function logoutF()
+{
+document.tF.logout.value=1;
+document.tF.submit();
+return true;
+}
+
+function Init_Value()
+{
+}
+function Try_Submit()
+{
+
+	if(document.tf.wl_wps_enabled.value == 0)
+  {
+		document.tf.wl0_wps_enabled.value = 0;
+		document.tf.wps_status.value = 1;
+		document.tf.wps_status_temp.value = 1;
+		document.tf.wl0_wps_stop.value = 1;
+	}	
+	else
+	{
+		if('<%nvram_get("wl0_sec_mode");%>' == 'wep')
+		{
+			alert(str_3516);
+			return;
+		}	
+		document.tf.wl0_wps_enabled.value = 1;
+	}
+		
+	document.tf.submit();
+}
+
+function ChangeWPSMode(wl_wps_mode)
+{
+	if(wl_wps_mode.value == "0") 
+		window.location.href = 'wireless_wps_disbled.html';
+	else if(wl_wps_mode.value == "1")
+		window.location.href = 'wireless_wps_enabled.html';
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor="#ffffff" leftMargin="0" topMargin="0" onload="Init_Value();" marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem);
+	showMenu(menuSection,menuItem,isAPmode)
+</SCRIPT>
+<form name="tf" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wl_wps.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="restart" value="wireless">
+<input type="hidden" name="data1" value="wl0_wps_enabled wps_status wps_status_temp wl0_wps_stop">
+<input type="hidden" name="wl0_wps_enabled">
+<input type="hidden" name="wps_status">
+<input type="hidden" name="wps_status_temp">
+<input type="hidden" name="wl0_wps_stop">
+ <TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_3154);</SCRIPT><!-- Wireless > Wi-Fi Protected Setup (WPS) -->
+ <BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=0 cellPadding=0 width=650 align=left 
+      border=0>
+        <TBODY>
+        <TR>
+          <TD vAlign=top height=410>
+            <TABLE class=copy_1 cellSpacing=10 cellPadding=0 width=600 
+            align=center border=0>
+              <TBODY>
+              <TR>
+                <TD width=40%><B>
+                  <SCRIPT>dw(str_1319);</SCRIPT><!-- Wi-Fi Protected Setup (WPS) -->
+                  </B></TD>
+                <TD align=center width=30%>
+					<SELECT name="wl_wps_enabled" onchange="ChangeWPSMode(this)"> 
+                    <SCRIPT>
+						dw('<option value="0" selected >'+str_318+'</option>');
+						dw('<option value="1">'+str_317+'</option>');
+						
+					</SCRIPT>
+                  	</SELECT> 
+				</TD><TD width=30%>&nbsp;</TD></TR>
+              <TR>
+                <TD colSpan=3>
+                  <SCRIPT>dw(str_1320);</SCRIPT>
+                  </TD></TR>
+              <TR>
+                <TD>&nbsp;</TD>
+                <TD>&nbsp;</TD>
+                <TD>
+                  <SCRIPT>dw('<input id="submitBtn_apply" type="button" style="{width:160px;}" value="'+str_49+'" class="submitBtn" onclick="Try_Submit();">');</SCRIPT>
+                </TD></TR>
+                
+                </TBODY></TABLE></TD></TR></TBODY></TABLE></FORM></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT> 
+</BODY></HTML>

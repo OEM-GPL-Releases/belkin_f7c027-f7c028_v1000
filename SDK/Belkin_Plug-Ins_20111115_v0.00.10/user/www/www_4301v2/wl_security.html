@@ -1,0 +1,1972 @@
+<HTML><HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=Content-Type content=text/html; charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT language="JavaScript" src="validate.js"></SCRIPT>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT>
+
+strHtml='<title>'+str_800+'</title>';
+document.write(strHtml);
+
+var helpItem 	='Security';
+var menuSection	='WLAN';
+var menuItem	='Security';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function wpa_isHex(s) {
+  var j,x = 0;
+  
+  for(var i = 0; i < s.length; i++) {
+    var c = s.charAt(i);
+        j = parseInt(c,16);
+    if(isNaN(j))
+      return false;
+  }
+    return true;
+}
+
+function isHex(s) {
+var j,x = 0;
+for(var i = 0; i < s.length; i++) {
+var c = s.charAt(i);
+j = parseInt(c,16);
+if ((j == 0) || (j == 1)|| (j == 2)|| (j == 3)|| (j == 4)|| (j == 5)|| (j == 6)
+|| (j == 7)|| (j == 8)|| (j == 9)|| (j == 10)|| (j == 11)|| (j == 12)|| (j == 13)|| (j == 14)|| (j == 15)) 
+{
+	if(x==1) return false;
+	x=1;
+}
+}
+return true;
+}
+
+function isBlank(s) {
+     for(var i = 0; i < s.length; i++) {
+     
+        var c = s.charAt(i);
+        if((c !=' ') && (c!='\n') && (c !='\t')) return false;
+        
+     }
+ return true;
+}
+
+function checkVaildCharNum(value)
+{
+var localname=value.toLowerCase();
+for(i=0;i<localname.length;i++)
+{
+ var token=localname.charAt(i);
+ if(token=='`' || token=='~' || token=='!' || token=='#'|| token=='-'
+ 		|| token=='$' || token=='%' || token=='^' || token=='&' || token=='*'
+ 		|| token=='(' || token==')' || token=='=' || token=='+' || token=='['
+ 		|| token==']' || token=='{' || token=='}' || token=='\\' || token=='|'
+ 		|| token==';' || token==':' || token=='\'' || token=='\"' || token=='<'
+ 		|| token=='>' || token=='/' || token=='?' || token=='.' || token==',' || token=='@' )
+ {
+	alert(str_1268);
+	return false;
+ }
+}
+return true;
+}
+
+function Change2_4SecMode()
+{
+	   /*2.4G*/
+   var show2_4SecMode = $('#select2_4sec_mode').val();
+	 
+   $('#2_4_Explain').hide();
+   $('#2_4_WPA_PSK').hide();
+   $('#2_4_128WEP').hide();
+   $('#2_4_64WEP').hide();
+   
+   if (<%nvram_get("wl0_wps_enabled");%> == '1')
+      alert(str_1339);
+   
+   switch (show2_4SecMode)
+   {
+       case "0":
+           $('#2_4_Explain').show();
+        break;
+        
+       case "psk":
+           $('#2_4_WPA_PSK').show();
+           
+             if($('#wl0_psk_obscured').val()==1)
+               {
+                  $('#wl0_psk_obscured').attr("checked", true);
+                  $('#wl0_wpa_psk1').hide(); 
+            	    $('#wl0_wpa_psk2').show();              
+               }
+              else
+               {
+                 $('#wl0_psk_obscured').attr("checked", false);
+                 $('#wl0_wpa_psk1').show();
+                 $('#wl0_wpa_psk2').hide();
+               }              
+       break;
+       
+       case "128":
+            $('#2_4_128WEP').show();
+            
+             var keycheck='<%nvram_get("wl0_key_check");%>';	
+            	if (keycheck=='0')
+            	   var key1='<%nvram_get("wl0_key1");%>';
+                else
+                 var key1='<%nvram_get("wl0_key1_bak");%>';
+    	
+                 if (key1.length == 26) 
+                 {
+                    $('#wl0_e1').val(key1.substring(0,2));
+                    $('#wl0_e2').val(key1.substring(2,4));
+                    $('#wl0_e3').val(key1.substring(4,6));
+                    $('#wl0_e4').val(key1.substring(6,8));
+                    $('#wl0_e5').val(key1.substring(8,10));
+                    $('#wl0_e6').val(key1.substring(10,12));
+                    $('#wl0_e7').val(key1.substring(12,14));
+                    $('#wl0_e8').val(key1.substring(14,16));
+                    $('#wl0_e9').val(key1.substring(16,18));
+                    $('#wl0_e10').val(key1.substring(18,20));
+                    $('#wl0_e11').val(key1.substring(20,22));
+                    $('#wl0_e12').val(key1.substring(22,24));
+                    $('#wl0_e13').val(key1.substring(24,26));                            
+                }
+                	  $('#wl0_wep128pp').val('');
+       break;
+       
+       case "64":
+          $('#2_4_64WEP').show();
+          
+           var keycheck='<%nvram_get("wl0_key_check");%>';
+            	
+                	if (keycheck=='0'){
+                    	var key1='<%nvram_get("wl0_key1");%>';  
+                	    var key2='<%nvram_get("wl0_key2");%>';  
+                	    var key3='<%nvram_get("wl0_key3");%>';  
+                	    var key4='<%nvram_get("wl0_key4");%>';  
+                      var txkey='<%nvram_get("wl0_txkey");%>'; 
+                	    var keylen=10;	
+                	}
+                	else{
+                	    var key1='<%nvram_get("wl0_key1_bak");%>';
+                	    var key2='<%nvram_get("wl0_key2_bak");%>';
+                	    var key3='<%nvram_get("wl0_key3_bak");%>';
+                	    var key4='<%nvram_get("wl0_key4_bak");%>';
+                      var txkey='<%nvram_get("wl0_txkey_bak");%>';
+                	    var keylen=10;	               	    
+                	}
+                
+               if (key1.length <= 10) 
+                 {
+                  $('#wl0_ENC11').val(key1.substring(0,2));
+                  $('#wl0_ENC12').val(key1.substring(2,4));
+                  $('#wl0_ENC13').val(key1.substring(4,6));
+                  $('#wl0_ENC14').val(key1.substring(6,8));
+                  $('#wl0_ENC15').val(key1.substring(8,10));
+                 }
+                 
+                if (key2.length <= 10) 
+                 {
+                  $('#wl0_ENC21').val(key2.substring(0,2));
+                  $('#wl0_ENC22').val(key2.substring(2,4));
+                  $('#wl0_ENC23').val(key2.substring(4,6));
+                  $('#wl0_ENC24').val(key2.substring(6,8));
+                  $('#wl0_ENC25').val(key2.substring(8,10));
+                 }
+                 
+                  if (key3.length <= 10) 
+                 {               
+                  $('#wl0_ENC31').val(key3.substring(0,2));
+                  $('#wl0_ENC32').val(key3.substring(2,4));
+                  $('#wl0_ENC33').val(key3.substring(4,6));
+                  $('#wl0_ENC34').val(key3.substring(6,8));
+                  $('#wl0_ENC35').val(key3.substring(8,10));
+                }
+                  if (key4.length <= 10) 
+                 {                 
+                  $('#wl0_ENC41').val(key4.substring(0,2));
+                  $('#wl0_ENC42').val(key4.substring(2,4));
+                  $('#wl0_ENC43').val(key4.substring(4,6));
+                  $('#wl0_ENC44').val(key4.substring(6,8));
+                  $('#wl0_ENC45').val(key4.substring(8,10));                
+                  }
+              
+              
+              if (txkey=='1')   
+                $('#radio_wl0_key1').attr("checked", true);
+              else if (txkey=='2')
+                $('#radio_wl0_key2').attr("checked", true);
+              else if (txkey=='3')
+                $('#radio_wl0_key3').attr("checked", true);
+              else if (txkey=='4')
+                $('#radio_wl0_key4').attr("checked", true);
+              else
+                $('#radio_wl0_key1').attr("checked", true);           
+       break;
+       
+       default:
+          $('#2_4_Explain').show();
+         break;  
+   }
+   Change2_4EncMode();
+}
+
+function Change5_SecMode()
+{
+  	  /*5G*/
+	var show5_SecMode= $('#select5_sec_mode').val();
+
+   $('#5_Explain').hide();
+   $('#5_WPA_PSK').hide();
+   $('#5_128WEP').hide();
+   $('#5_64WEP').hide();
+   
+    if (<%nvram_get("wl1_wps_enabled");%> == '1')
+      alert(str_1339);
+   
+   switch (show5_SecMode)
+   {
+      case "0":
+        $('#5_Explain').show();
+        break;
+       
+      case "psk":
+        $('#5_WPA_PSK').show();
+         if($('#wl1_psk_obscured').val()==1)
+         {
+            $('#wl1_psk_obscured').attr("checked", true);
+            $('#wl1_wpa_psk1').hide(); 
+      	    $('#wl1_wpa_psk2').show();
+         }
+        else
+         {
+           $('#wl1_psk_obscured').attr("checked", false);
+           $('#wl1_wpa_psk1').show();
+           $('#wl1_wpa_psk2').hide();
+         }      
+        break;
+        
+      case "128":
+         $('#5_128WEP').show();
+
+              var keycheck='<%nvram_get("wl1_key_check");%>';	
+            	if (keycheck=='0')
+            	   var key1='<%nvram_get("wl1_key1");%>';
+                else
+                 var key1='<%nvram_get("wl1_key1_bak");%>';
+    	
+                 if (key1.length == 26) 
+                 {
+                    $('#wl1_e1').val(key1.substring(0,2));
+                    $('#wl1_e2').val(key1.substring(2,4));
+                    $('#wl1_e3').val(key1.substring(4,6));
+                    $('#wl1_e4').val(key1.substring(6,8));
+                    $('#wl1_e5').val(key1.substring(8,10));
+                    $('#wl1_e6').val(key1.substring(10,12));
+                    $('#wl1_e7').val(key1.substring(12,14));
+                    $('#wl1_e8').val(key1.substring(14,16));
+                    $('#wl1_e9').val(key1.substring(16,18));
+                    $('#wl1_e10').val(key1.substring(18,20));
+                    $('#wl1_e11').val(key1.substring(20,22));
+                    $('#wl1_e12').val(key1.substring(22,24));
+                    $('#wl1_e13').val(key1.substring(24,26));                            
+                }
+                	  $('#wl1_wep128pp').val('');
+        break;
+        
+      case "64":
+         $('#5_64WEP').show();
+
+          var keycheck='<%nvram_get("wl1_key_check");%>';
+            	
+                	if (keycheck=='0'){
+                    	var key1='<%nvram_get("wl1_key1");%>';  
+                	    var key2='<%nvram_get("wl1_key2");%>';  
+                	    var key3='<%nvram_get("wl1_key3");%>';  
+                	    var key4='<%nvram_get("wl1_key4");%>';  
+                      var txkey='<%nvram_get("wl1_txkey");%>'; 
+                	    var keylen=10;	
+                	}
+                	else{
+                	    var key1='<%nvram_get("wl1_key1_bak");%>';
+                	    var key2='<%nvram_get("wl1_key2_bak");%>';
+                	    var key3='<%nvram_get("wl1_key3_bak");%>';
+                	    var key4='<%nvram_get("wl1_key4_bak");%>';
+                      var txkey='<%nvram_get("wl1_txkey_bak");%>';
+                	    var keylen=10;	               	    
+                	}
+                
+                  if (key1.length <= 10) 
+                 {
+                  $('#wl1_ENC11').val(key1.substring(0,2));
+                  $('#wl1_ENC12').val(key1.substring(2,4));
+                  $('#wl1_ENC13').val(key1.substring(4,6));
+                  $('#wl1_ENC14').val(key1.substring(6,8));
+                  $('#wl1_ENC15').val(key1.substring(8,10));
+                 }
+                 
+                if (key2.length <= 10) 
+                 {
+                  $('#wl1_ENC21').val(key2.substring(0,2));
+                  $('#wl1_ENC22').val(key2.substring(2,4));
+                  $('#wl1_ENC23').val(key2.substring(4,6));
+                  $('#wl1_ENC24').val(key2.substring(6,8));
+                  $('#wl1_ENC25').val(key2.substring(8,10));
+                 }
+                 
+                  if (key3.length <= 10) 
+                 {               
+                  $('#wl1_ENC31').val(key3.substring(0,2));
+                  $('#wl1_ENC32').val(key3.substring(2,4));
+                  $('#wl1_ENC33').val(key3.substring(4,6));
+                  $('#wl1_ENC34').val(key3.substring(6,8));
+                  $('#wl1_ENC35').val(key3.substring(8,10));
+                }
+                  if (key4.length <= 10) 
+                 {                 
+                  $('#wl1_ENC41').val(key4.substring(0,2));
+                  $('#wl1_ENC42').val(key4.substring(2,4));
+                  $('#wl1_ENC43').val(key4.substring(4,6));
+                  $('#wl1_ENC44').val(key4.substring(6,8));
+                  $('#wl1_ENC45').val(key4.substring(8,10));                
+                  }
+              
+              
+              if (txkey=='1')   
+                $('#radio_wl1_key1').attr("checked", true);
+              else if (txkey=='2')
+                $('#radio_wl1_key2').attr("checked", true);
+              else if (txkey=='3')
+                $('#radio_wl1_key3').attr("checked", true);
+              else if (txkey=='4')
+                $('#radio_wl1_key4').attr("checked", true);
+              else
+                $('#radio_wl1_key1').attr("checked", true);           
+        break;
+        
+      default:
+         $('#5_Explain').show();
+        break;
+   }
+   Change5_EncMode();
+}
+
+function Change2_4EncMode()
+{
+   if($('#2_4sec_mode').val()=='WPA2')
+      {
+       $('#wl0_wpaenc').val('0');
+       $('#wl0_wep_id').html('AES');
+	    }
+   else if ($('#2_4sec_mode').val()=='psk')
+      {
+       $('#wl0_wpaenc').val('1');
+       $('#wl0_wep_id').html('TKIP');    
+      }
+   else if ($('#2_4sec_mode').val()=='WPA1WPA2')
+      {
+       $('#wl0_wpaenc').val('2');
+       $('#wl0_wep_id').html('TKIP+AES');    
+      }  
+}
+
+function Change5_EncMode()
+{
+	 if($('#5_sec_mode').val()=='WPA2')
+      {
+       $('#wl1_wpaenc').val('0');
+       $('#wl1_wep_id').html('AES');
+	    }
+   else if ($('#5_sec_mode').val()=='psk')
+      {
+       $('#wl1_wpaenc').val('1');
+       $('#wl1_wep_id').html('TKIP');    
+      }
+   else if ($('#5_sec_mode').val()=='WPA1WPA2')
+      {
+       $('#wl1_wpaenc').val('2');
+       $('#wl1_wep_id').html('TKIP+AES');    
+      }
+}
+
+function showpsk2_4()
+{        
+ 	if ($('#wl0_psk_obscured').attr("checked"))
+ 	 {
+     $('#wl0_wpa_psk1').hide(); 
+	   $('#wl0_wpa_psk2').show();
+     $('#wl0_psk_obscured').val('1');  
+   }
+ 	else
+    {
+	   $('#wl0_wpa_psk1').show();
+     $('#wl0_wpa_psk2').hide();
+	   $('#wl0_psk_obscured').val('0'); 
+	  }
+}
+
+function showpsk5()
+{        
+ 	if ($('#wl1_psk_obscured').attr("checked"))
+ 	 {
+     $('#wl1_wpa_psk1').hide(); 
+	   $('#wl1_wpa_psk2').show();
+     $('#wl1_psk_obscured').val('1');
+   }
+ 	else
+    {
+     $('#wl1_wpa_psk1').show();
+     $('#wl1_wpa_psk2').hide();
+	   $('#wl1_psk_obscured').val('0'); 
+	  }
+}
+
+
+function InitValue()
+{
+  /*2.4G*/
+   $('#2_4_Explain').hide();
+   $('#2_4_WPA_PSK').hide();
+   $('#2_4_128WEP').hide();
+   $('#2_4_64WEP').hide();
+
+   $('#wl0_psk_obscured').val('<%nvram_get("wl0_psk_obscured");%>');
+   $('#wl0_wpaenc').val('<%nvram_get("wl0_wpaenc");%>');
+   $('#wl0_sec_mode').val('<%nvram_get("wl0_sec_mode");%>');
+	 $('#wl0_wpa_psk1').val('<%nvram_get("wl0_pskkey");%>');
+   $('#wl0_wpa_psk2').val('<%nvram_get("wl0_pskkey");%>');
+   $('#wl0_keylength').val('<%nvram_get("wl0_keylength");%>');  
+   $('#wl0_txkey').val('<%nvram_get("wl0_txkey");%>'); 
+   $('#wl0_gen_passphrase').val('<%nvram_get("wl0_gen_passphrase");%>'); 
+   $('#wl0_passphrase_key').val('<%nvram_get("wl0_passphrase_key");%>');
+   $('#wl0_wep64128').val('<%nvram_get("wl0_wep64128");%>'); 
+   $('#wl0_key_check').val('<%nvram_get("wl0_key_check");%>');
+       
+      Initial_2_4G();
+       Change2_4EncMode();
+    /*5G*/
+   $('#5_Explain').hide();
+   $('#5_WPA_PSK').hide();
+   $('#5_128WEP').hide();
+   $('#5_64WEP').hide();
+
+   $('#wl1_psk_obscured').val('<%nvram_get("wl1_psk_obscured");%>');
+   $('#wl1_wpaenc').val('<%nvram_get("wl1_wpaenc");%>');
+   $('#wl1_sec_mode').val('<%nvram_get("wl1_sec_mode");%>');
+	 $('#wl1_wpa_psk1').val('<%nvram_get("wl1_pskkey");%>');
+   $('#wl1_wpa_psk2').val('<%nvram_get("wl1_pskkey");%>');
+   $('#wl1_keylength').val('<%nvram_get("wl1_keylength");%>');  
+   $('#wl1_txkey').val('<%nvram_get("wl1_txkey");%>'); 
+   $('#wl1_gen_passphrase').val('<%nvram_get("wl1_gen_passphrase");%>'); 
+   $('#wl1_passphrase_key').val('<%nvram_get("wl1_passphrase_key");%>');
+   $('#wl1_wep64128').val('<%nvram_get("wl1_wep64128");%>'); 
+   $('#wl1_key_check').val('<%nvram_get("wl1_key_check");%>');   
+   
+     Initial_5G();
+     Change5_EncMode();
+}
+
+function Initial_2_4G()
+{
+
+ 
+   switch ($('#wl0_sec_mode').val())
+   {
+      case "none":
+       $('#select2_4sec_mode').val('0');
+       $('#2_4_Explain').show();
+      break;
+      
+      case "WPA2":
+        $('#2_4sec_mode').val($('#wl0_sec_mode').val());
+        $('#select2_4sec_mode').val('psk');
+        $('#2_4_WPA_PSK').show();
+        
+        if($('#wl0_psk_obscured').val()==1)
+         {
+            $('#wl0_psk_obscured').attr("checked", true);
+            $('#wl0_wpa_psk1').hide(); 
+      	    $('#wl0_wpa_psk2').show(); 
+         }
+        else
+         {
+           $('#wl0_psk_obscured').attr("checked", false);
+      	   $('#wl0_wpa_psk1').show();
+           $('#wl0_wpa_psk2').hide();
+         }              
+       break; 
+      case "WPA1WPA2":
+        $('#2_4sec_mode').val($('#wl0_sec_mode').val());
+        $('#select2_4sec_mode').val('psk');
+        $('#2_4_WPA_PSK').show();
+        
+        if($('#wl0_psk_obscured').val()==1)
+         {
+            $('#wl0_psk_obscured').attr("checked", true);
+            $('#wl0_wpa_psk1').hide(); 
+      	    $('#wl0_wpa_psk2').show();
+         }
+        else
+         {
+           $('#wl0_psk_obscured').attr("checked", false);
+           $('#wl0_wpa_psk1').show();
+           $('#wl0_wpa_psk2').hide();
+      
+         }
+       break; 
+      case "psk":
+        $('#2_4sec_mode').val($('#wl0_sec_mode').val());
+        $('#select2_4sec_mode').val('psk');
+          $('#2_4_WPA_PSK').show();
+ 
+        if($('#wl0_psk_obscured').val()==1)
+         {
+            $('#wl0_psk_obscured').attr("checked", true);
+            $('#wl0_wpa_psk1').hide(); 
+      	    $('#wl0_wpa_psk2').show();
+         }
+        else
+         {
+           $('#wl0_psk_obscured').attr("checked", false);
+      	   $('#wl0_wpa_psk1').show();
+           $('#wl0_wpa_psk2').hide();
+         }
+
+        break;           
+        
+       case "wep":       
+        
+         if ($('#wl0_wep64128').val()=='128')
+          {
+             $('#select2_4sec_mode').val('128');
+                $('#2_4_128WEP').show();
+             var keycheck='<%nvram_get("wl0_key_check");%>';	
+            	if (keycheck=='0')
+            	   var key1='<%nvram_get("wl0_key1");%>';
+                else
+                 var key1='<%nvram_get("wl0_key1_bak");%>';
+    	        
+                 if (key1.length == 26) 
+                 {
+                    $('#wl0_e1').val(key1.substring(0,2));
+                    $('#wl0_e2').val(key1.substring(2,4));
+                    $('#wl0_e3').val(key1.substring(4,6));
+                    $('#wl0_e4').val(key1.substring(6,8));
+                    $('#wl0_e5').val(key1.substring(8,10));
+                    $('#wl0_e6').val(key1.substring(10,12));
+                    $('#wl0_e7').val(key1.substring(12,14));
+                    $('#wl0_e8').val(key1.substring(14,16));
+                    $('#wl0_e9').val(key1.substring(16,18));
+                    $('#wl0_e10').val(key1.substring(18,20));
+                    $('#wl0_e11').val(key1.substring(20,22));
+                    $('#wl0_e12').val(key1.substring(22,24));
+                    $('#wl0_e13').val(key1.substring(24,26));                            
+                }
+                	  $('#wl0_wep128pp').val('');
+              
+          }
+          else if($('#wl0_wep64128').val()=='64')
+          {   
+                $('#select2_4sec_mode').val('64');
+                $('#2_4_64WEP').show();
+            	   var keycheck='<%nvram_get("wl0_key_check");%>';
+            	
+                	if (keycheck=='0'){
+                    	var key1='<%nvram_get("wl0_key1");%>';  
+                	    var key2='<%nvram_get("wl0_key2");%>';  
+                	    var key3='<%nvram_get("wl0_key3");%>';  
+                	    var key4='<%nvram_get("wl0_key4");%>';  
+                      var txkey='<%nvram_get("wl0_txkey");%>'; 
+                	    var keylen=10;	
+                	}
+                	else{
+                	    var key1='<%nvram_get("wl0_key1_bak");%>';
+                	    var key2='<%nvram_get("wl0_key2_bak");%>';
+                	    var key3='<%nvram_get("wl0_key3_bak");%>';
+                	    var key4='<%nvram_get("wl0_key4_bak");%>';
+                      var txkey='<%nvram_get("wl0_txkey_bak");%>';
+                	    var keylen=10;	               	    
+                	}
+
+                if (key1.length <= 10) 
+                 {
+                  $('#wl0_ENC11').val(key1.substring(0,2));
+                  $('#wl0_ENC12').val(key1.substring(2,4));
+                  $('#wl0_ENC13').val(key1.substring(4,6));
+                  $('#wl0_ENC14').val(key1.substring(6,8));
+                  $('#wl0_ENC15').val(key1.substring(8,10));
+                 }
+                 
+                if (key2.length <= 10) 
+                 {
+                  $('#wl0_ENC21').val(key2.substring(0,2));
+                  $('#wl0_ENC22').val(key2.substring(2,4));
+                  $('#wl0_ENC23').val(key2.substring(4,6));
+                  $('#wl0_ENC24').val(key2.substring(6,8));
+                  $('#wl0_ENC25').val(key2.substring(8,10));
+                 }
+                 
+                  if (key3.length <= 10) 
+                 {               
+                  $('#wl0_ENC31').val(key3.substring(0,2));
+                  $('#wl0_ENC32').val(key3.substring(2,4));
+                  $('#wl0_ENC33').val(key3.substring(4,6));
+                  $('#wl0_ENC34').val(key3.substring(6,8));
+                  $('#wl0_ENC35').val(key3.substring(8,10));
+                }
+                  if (key4.length <= 10) 
+                 {                 
+                  $('#wl0_ENC41').val(key4.substring(0,2));
+                  $('#wl0_ENC42').val(key4.substring(2,4));
+                  $('#wl0_ENC43').val(key4.substring(4,6));
+                  $('#wl0_ENC44').val(key4.substring(6,8));
+                  $('#wl0_ENC45').val(key4.substring(8,10));                
+                  }
+              
+                  $('#wl0_wep64pp').val('');
+              if (txkey=='1')   
+                $('#radio_wl0_key1').attr("checked", true);
+              else if (txkey=='2')
+                $('#radio_wl0_key2').attr("checked", true);
+              else if (txkey=='3')
+                $('#radio_wl0_key3').attr("checked", true);
+              else if (txkey=='4')
+                $('#radio_wl0_key4').attr("checked", true);
+              else
+                $('#radio_wl0_key1').attr("checked", true);                                   
+          }
+
+       break;          
+      
+      default:
+       $('#select2_4sec_mode').val('0');
+       $('#2_4_Explain').show();
+       break;
+   }
+}
+
+function Initial_5G()
+{
+  
+  switch ($('#wl1_sec_mode').val())
+   {
+      case "none":
+       $('#select5_sec_mode').val('0');
+        $('#5_Explain').show();
+      break;
+      
+      case "WPA2":    
+       $('#5_sec_mode').val($('#wl1_sec_mode').val());
+      $('#select5_sec_mode').val('psk');
+       $('#5_WPA_PSK').show();
+        if($('#wl1_psk_obscured').val()==1)
+         {
+            $('#wl1_psk_obscured').attr("checked", true);
+            $('#wl1_wpa_psk1').hide(); 
+      	    $('#wl1_wpa_psk2').show();
+         }
+        else
+         {
+           $('#wl1_psk_obscured').attr("checked", false);
+           $('#wl1_wpa_psk1').show();
+           $('#wl1_wpa_psk2').hide();
+         }
+       break;
+       
+      case "WPA1WPA2":
+       $('#5_sec_mode').val($('#wl1_sec_mode').val());
+       $('#select5_sec_mode').val('psk');
+        $('#5_WPA_PSK').show();
+        if($('#wl1_psk_obscured').val()==1)
+         {
+            $('#wl1_psk_obscured').attr("checked", true);
+            $('#wl1_wpa_psk1').hide(); 
+      	    $('#wl1_wpa_psk2').show();
+         }
+        else
+         {
+           $('#wl1_psk_obscured').attr("checked", false);
+      	   $('#wl1_wpa_psk1').show();
+           $('#wl1_wpa_psk2').hide();
+         }
+       break;
+       
+      case "psk":
+        $('#5_sec_mode').val($('#wl1_sec_mode').val());
+        $('#select5_sec_mode').val('psk');
+        $('#5_WPA_PSK').show();
+    
+        if($('#wl1_psk_obscured').val()==1)
+         {
+            $('#wl1_psk_obscured').attr("checked", true);
+            $('#wl1_wpa_psk1').hide(); 
+      	    $('#wl1_wpa_psk2').show();
+         }
+        else
+         {
+           $('#wl1_psk_obscured').attr("checked", false);
+           $('#wl1_wpa_psk1').show();
+           $('#wl1_wpa_psk2').hide();
+         }   
+        break;           
+        
+       case "wep":      
+                  
+         if ($('#wl1_wep64128').val()=='128')
+          {
+             $('#select5_sec_mode').val('128');
+             $('#5_128WEP').show();
+             
+             var keycheck='<%nvram_get("wl1_key_check");%>';	
+            	if (keycheck=='0')
+            	   var key1='<%nvram_get("wl1_key1");%>';
+                else
+                 var key1='<%nvram_get("wl1_key1_bak");%>';
+    	
+                 if (key1.length == 26) 
+                 {
+                    $('#wl1_e1').val(key1.substring(0,2));
+                    $('#wl1_e2').val(key1.substring(2,4));
+                    $('#wl1_e3').val(key1.substring(4,6));
+                    $('#wl1_e4').val(key1.substring(6,8));
+                    $('#wl1_e5').val(key1.substring(8,10));
+                    $('#wl1_e6').val(key1.substring(10,12));
+                    $('#wl1_e7').val(key1.substring(12,14));
+                    $('#wl1_e8').val(key1.substring(14,16));
+                    $('#wl1_e9').val(key1.substring(16,18));
+                    $('#wl1_e10').val(key1.substring(18,20));
+                    $('#wl1_e11').val(key1.substring(20,22));
+                    $('#wl1_e12').val(key1.substring(22,24));
+                    $('#wl1_e13').val(key1.substring(24,26));                            
+                }
+                	  $('#wl1_wep128pp').val('');
+          }
+          else if($('#wl1_wep64128').val()=='64')
+          {
+            	  $('#select5_sec_mode').val('64');
+            	  $('#5_64WEP').show();
+            	           
+                 var keycheck='<%nvram_get("wl1_key_check");%>';
+            	
+                	if (keycheck=='0'){
+                    	var key1='<%nvram_get("wl1_key1");%>';  
+                	    var key2='<%nvram_get("wl1_key2");%>';  
+                	    var key3='<%nvram_get("wl1_key3");%>';  
+                	    var key4='<%nvram_get("wl1_key4");%>';  
+                      var txkey='<%nvram_get("wl1_txkey");%>'; 
+                	    var keylen=10;	
+                	}
+                	else{
+                	    var key1='<%nvram_get("wl1_key1_bak");%>';
+                	    var key2='<%nvram_get("wl1_key2_bak");%>';
+                	    var key3='<%nvram_get("wl1_key3_bak");%>';
+                	    var key4='<%nvram_get("wl1_key4_bak");%>';
+                      var txkey='<%nvram_get("wl1_txkey_bak");%>';
+                	    var keylen=10;	               	    
+                	}
+                
+                if (key1.length <= 10) 
+                 {
+                  $('#wl1_ENC11').val(key1.substring(0,2));
+                  $('#wl1_ENC12').val(key1.substring(2,4));
+                  $('#wl1_ENC13').val(key1.substring(4,6));
+                  $('#wl1_ENC14').val(key1.substring(6,8));
+                  $('#wl1_ENC15').val(key1.substring(8,10));
+                 }
+                 
+                if (key2.length <= 10) 
+                 {
+                  $('#wl1_ENC21').val(key2.substring(0,2));
+                  $('#wl1_ENC22').val(key2.substring(2,4));
+                  $('#wl1_ENC23').val(key2.substring(4,6));
+                  $('#wl1_ENC24').val(key2.substring(6,8));
+                  $('#wl1_ENC25').val(key2.substring(8,10));
+                 }
+                 
+                  if (key3.length <= 10) 
+                 {               
+                  $('#wl1_ENC31').val(key3.substring(0,2));
+                  $('#wl1_ENC32').val(key3.substring(2,4));
+                  $('#wl1_ENC33').val(key3.substring(4,6));
+                  $('#wl1_ENC34').val(key3.substring(6,8));
+                  $('#wl1_ENC35').val(key3.substring(8,10));
+                }
+                  if (key4.length <= 10) 
+                 {                 
+                  $('#wl1_ENC41').val(key4.substring(0,2));
+                  $('#wl1_ENC42').val(key4.substring(2,4));
+                  $('#wl1_ENC43').val(key4.substring(4,6));
+                  $('#wl1_ENC44').val(key4.substring(6,8));
+                  $('#wl1_ENC45').val(key4.substring(8,10));                
+                  }
+                   $('#wl1_wep64pp').val('');
+              
+              if (txkey=='1')   
+                $('#radio_wl1_key1').attr("checked", true);
+              else if (txkey=='2')
+                $('#radio_wl1_key2').attr("checked", true);
+              else if (txkey=='3')
+                $('#radio_wl1_key3').attr("checked", true);
+              else if (txkey=='4')
+                $('#radio_wl1_key4').attr("checked", true);
+              else
+                $('#radio_wl1_key1').attr("checked", true);                                  
+          }    
+       break;          
+      
+      default:
+           $('#select5_sec_mode').val('0');
+           $('#5_Explain').show();
+       break;
+   }
+}
+
+function Try_Submit()
+{
+   var f=document.tF;
+   var wl0_wireless_secMode = $('#select2_4sec_mode').val();
+   var wl1_wireless_secMode = $('#select5_sec_mode').val();
+//---------------------2.4G---------------//
+
+   switch (wl0_wireless_secMode)
+   {
+     case "0":
+           $('#wl0_sec_mode').val('none');
+           $('#wl0_data1').val('wl0_sec_mode');          
+        break;
+       
+      case "psk":
+           $('#wl0_sec_mode').val($('#2_4sec_mode').val());
+           
+        if($('#wl0_psk_obscured').val()==1) 
+           $('#wl0_pskkey').val($('#wl0_wpa_psk2').val());
+        else    
+           $('#wl0_pskkey').val($('#wl0_wpa_psk1').val());
+           
+           	if(isBlank($('#wl0_pskkey').val()))
+            	{
+            		alert(str_851);
+            		return false;
+            	}
+            	
+            if ($('#wl0_pskkey').val().length < 8 || $('#wl0_pskkey').val().length > 64)
+            	{
+            		alert(str_852);
+            		return false;
+            	}
+	
+	         if ($('#wl0_pskkey').val().length == 64)
+          	{
+          		if(!wpa_isHex($('#wl0_pskkey').val()))
+          		{
+          			alert(str_852);
+          			return false;
+          		}
+          	}
+            
+            if ($('#wl0_psk_obscured').attr("checked"))
+		          $('#wl0_psk_obscured').val('1');
+	         else 
+		          $('#wl0_psk_obscured').val('0');
+	
+	           $('#wl0_data1').val('wl0_sec_mode wl0_psk_obscured wl0_pskkey wl0_wpaenc'); 
+        break;
+        
+      case "128":
+           $('#wl0_sec_mode').val('wep');
+           $('#wl0_keylength').val('104');
+           $('#wl0_txkey').val('1');
+           $('#wl0_wep64128').val('128');
+          
+             if(!checkVaildCharNum($('#wl0_wep128pp').val()))
+            	{ 
+            		alert(str_3508); 
+            	  	return false; 
+            	}
+            	  
+            	if(isNValid($('#wl0_e1').val())||isNValid($('#wl0_e2').val())||isNValid($('#wl0_e3').val())
+ 		            ||isNValid($('#wl0_e4').val()) ||isNValid($('#wl0_e5').val()))
+              		{
+              			alert(str_84); 
+              			return false; 
+              		}
+	
+          		if (isNValid($('#wl0_e6').val())||isNValid($('#wl0_e7').val())||isNValid($('#wl0_e8').val())
+           		  ||isNValid($('#wl0_e9').val()) ||isNValid($('#wl0_e10').val()))
+          		{
+          			alert(str_84); 
+          			return false; 
+          		}
+
+          		if (isNValid($('#wl0_e11').val())||isNValid($('#wl0_e12').val())||isNValid($('#wl0_e13').val()))
+          		{
+          			alert(str_84); 
+          			return false; 
+          		}
+          	
+            	var totalkey="";
+          		for (var e =1; e<14; e++)
+          		 {
+                	totalkey += $('#wl0_e'+e).val();              
+               }
+          	    $('#wl0_key1').val(totalkey);	
+            
+          		if($('#wl0_key1').val().length!=0 && $('#wl0_key1').val().length!=26)
+          		{
+          			alert(str_813);
+          			return false;
+          		}
+    	     $('#wl0_gen_passphrase').val('0');
+    	     $('#wl0_key_check').val('0');          
+           $('#wl0_data1').val('wl0_sec_mode wl0_keylength wl0_key1 wl0_txkey wl0_gen_passphrase wl0_passphrase_key wl0_wep64128 wl0_key_check wl0_wpaenc');        
+        break;
+        
+      case "64":
+           $('#wl0_sec_mode').val('wep');
+           
+           $('#wl0_keylength').val('40');
+           
+           $('#wl0_wep64128').val('64');
+           
+            if ($('#radio_wl0_key1').attr("checked"))	
+                $('#wl0_txkey').val('1');
+/*            else if ($('#radio_wl0_key2').attr("checked"))
+                $('#wl0_txkey').val('2');
+            else if ($('#radio_wl0_key3').attr("checked"))
+                $('#wl0_txkey').val('3');
+            else if ($('#radio_wl0_key4').attr("checked"))
+                $('#wl0_txkey').val('4');
+*/            else        
+	              $('#wl0_txkey').val('1');
+        
+             if(!checkVaildCharNum($('#wl0_wep64pp').val()))
+            	{ 
+            		alert(str_3508); 
+            	  	return false; 
+            	}
+            		                               
+               
+                if ( $('#radio_wl0_key1').attr("checked") || !isBlank( $('#wl0_ENC11').val()) || !isBlank( $('#wl0_ENC12').val()) 
+									  || !isBlank( $('#wl0_ENC13').val()) || !isBlank( $('#wl0_ENC14').val()))
+                    	
+          			if ( isNValid($('#wl0_ENC11').val()) || isNValid($('#wl0_ENC12').val()) || isNValid($('#wl0_ENC13').val())
+          			   ||isNValid($('#wl0_ENC14').val()) || isNValid($('#wl0_ENC15').val()) )
+          			{
+          				alert(str_84); 
+          				alert(str_814+str_822);
+          				return false; 
+          			}
+              
+/*               if ( $('#wl0_key2').attr("checked") || !isBlank( $('#wl0_ENC21').val()) || !isBlank( $('#wl0_ENC22').val()) 
+									  || !isBlank( $('#wl0_ENC23').val()) || !isBlank( $('#wl0_ENC24').val()))
+                    	
+          		 if ( isNValid($('#wl0_ENC21').val()) || isNValid($('#wl0_ENC22').val()) || isNValid($('#wl0_ENC23').val())
+          			   ||isNValid($('#wl0_ENC24').val()) || isNValid($('#wl0_ENC25').val()) )
+          			{
+          				alert(str_84); 
+          				alert(str_815+str_822);
+          				return false; 
+          			}
+                
+                if ( $('#wl0_key3').attr("checked") || !isBlank( $('#wl0_ENC31').val()) || !isBlank( $('#wl0_ENC32').val()) 
+									  || !isBlank( $('#wl0_ENC33').val()) || !isBlank( $('#wl0_ENC34').val()))
+                    	
+          			if ( isNValid($('#wl0_ENC31').val()) || isNValid($('#wl0_ENC32').val()) || isNValid($('#wl0_ENC33').val())
+          			   ||isNValid($('#wl0_ENC34').val()) || isNValid($('#wl0_ENC35').val()) )
+          			{
+          				alert(str_84); 
+          				alert(str_816+str_822);
+          				return false; 
+          			}
+
+		            if ( $('#wl0_key4').attr("checked") || !isBlank( $('#wl0_ENC41').val()) || !isBlank( $('#wl0_ENC42').val()) 
+									  || !isBlank( $('#wl0_ENC43').val()) || !isBlank( $('#wl0_ENC44').val()))
+                    	
+          			if ( isNValid($('#wl0_ENC41').val()) || isNValid($('#wl0_ENC42').val()) || isNValid($('#wl0_ENC43').val())
+          			   ||isNValid($('#wl0_ENC44').val()) || isNValid($('#wl0_ENC45').val()) )
+          			{
+          				alert(str_84); 
+          				alert(str_817+str_822);
+          				return false; 
+          			}
+*/          	
+            	var totalkey1="";
+            	var totalkey2="";
+            	var totalkey3="";
+            	var totalkey4="";
+          	  for (var k=1; k<6; k++)
+          		     {
+                     	totalkey1 += $('#wl0_ENC1'+k).val();
+                      totalkey2 += $('#wl0_ENC2'+k).val();
+                      totalkey3 += $('#wl0_ENC3'+k).val();
+                      totalkey4 += $('#wl0_ENC4'+k).val();      
+                   }                           
+   
+          	    $('#wl0_key1').val(totalkey1);
+                $('#wl0_key2').val(totalkey2);	
+            		$('#wl0_key3').val(totalkey3);
+            		$('#wl0_key4').val(totalkey4);
+            
+            		
+          		if($('#wl0_key1').val().length!=0 && $('#wl0_key1').val().length!=10)
+          		{
+          				alert(str_814+str_821);
+			             return false;
+          		}
+          		
+/*          		if($('#wl0_key2').val().length!=0 && $('#wl0_key2').val().length!=10)
+          		{
+          				alert(str_815+str_821);
+			             return false;
+          		}
+          		
+          		if($('#wl0_key3').val().length!=0 && $('#wl0_key3').val().length!=10)
+          		{
+          				alert(str_816+str_821);
+			             return false;
+          		}
+          		
+          	 if($('#wl0_key4').val().length!=0 && $('#wl0_key4').val().length!=10)
+          		{
+          				alert(str_817+str_821);
+			             return false;
+          		}
+*/         
+    	    
+          
+          $('#wl0_key_check').val('0');
+         
+           $('#wl0_data1').val('wl0_sec_mode wl0_keylength wl0_key1 wl0_key2 wl0_key3 wl0_key4 wl0_txkey wl0_passphrase_key wl0_gen_passphrase wl0_wep64128 wl0_key_check wl0_wpaenc');            
+
+        break;
+        
+      default:      
+        break;
+   }
+  
+ //---------------------5G--------------------//
+
+  switch (wl1_wireless_secMode)
+   {
+     case "0":
+           $('#wl1_sec_mode').val('none');
+           $('#wl1_data1').val('wl1_sec_mode');          
+        break;
+       
+      case "psk":
+           $('#wl1_sec_mode').val($('#5_sec_mode').val());
+           
+            if($('#wl1_psk_obscured').val()==1) 
+              $('#wl1_pskkey').val($('#wl1_wpa_psk2').val());
+            else
+              $('#wl1_pskkey').val($('#wl1_wpa_psk1').val());
+           
+           	if(isBlank($('#wl1_pskkey').val()))
+            	{
+            		alert(str_851);
+            		return false;
+            	}
+            	
+            if ($('#wl1_pskkey').val().length < 8 || $('#wl1_pskkey').val().length > 64)
+            	{
+            		alert(str_852);
+            		return false;
+            	}
+	
+	         if ($('#wl1_pskkey').val().length == 64)
+          	{
+          		if(!wpa_isHex($('#wl1_pskkey').val()))
+          		{
+          			alert(str_852);
+          			return false;
+          		}
+          	}
+            
+            if ($('#wl1_psk_obscured').attr("checked"))
+		          $('#wl1_psk_obscured').val('1');
+	         else 
+		          $('#wl1_psk_obscured').val('0');
+	
+	           $('#wl1_data1').val('wl1_sec_mode wl1_psk_obscured wl1_pskkey wl1_wpaenc'); 
+        break;
+        
+      case "128":
+           $('#wl1_sec_mode').val('wep');
+           $('#wl1_keylength').val('104');
+           $('#wl1_txkey').val('1');
+           $('#wl1_wep64128').val('128');
+          
+             if(!checkVaildCharNum($('#wl1_wep128pp').val()))
+            	{ 
+            		alert(str_3508); 
+            	  	return false; 
+            	}
+            	  
+            	if(isNValid($('#wl1_e1').val())||isNValid($('#wl1_e2').val())||isNValid($('#wl1_e3').val())
+ 		            ||isNValid($('#wl1_e4').val()) ||isNValid($('#wl1_e5').val()))
+              		{
+              			alert(str_84); 
+              			return false; 
+              		}
+	
+          		if (isNValid($('#wl1_e6').val())||isNValid($('#wl1_e7').val())||isNValid($('#wl1_e8').val())
+           		  ||isNValid($('#wl1_e9').val()) ||isNValid($('#wl1_e10').val()))
+          		{
+          			alert(str_84); 
+          			return false; 
+          		}
+
+          		if (isNValid($('#wl1_e11').val())||isNValid($('#wl1_e12').val())||isNValid($('#wl1_e13').val()))
+          		{
+          			alert(str_84); 
+          			return false; 
+          		}
+          	
+            	var totalkey="";
+          		for (var e =1; e<14; e++)
+          		 {
+                	totalkey += $('#wl1_e'+e).val();              
+               }
+          	    $('#wl1_key1').val(totalkey);	
+            
+          		if($('#wl1_key1').val().length!=0 && $('#wl1_key1').val().length!=26)
+          		{         			
+                alert(str_813);
+          			return false;
+          		}
+    	     $('#wl1_gen_passphrase').val('0');
+    	     $('#wl1_key_check').val('0');          
+           $('#wl1_data1').val('wl1_sec_mode wl1_keylength wl1_key1 wl1_txkey wl1_gen_passphrase wl1_passphrase_key wl1_wep64128 wl1_key_check wl1_wpaenc');        
+        break;
+        
+      case "64":           
+           $('#wl1_sec_mode').val('wep');
+           $('#wl1_keylength').val('40');
+           $('#wl1_wep64128').val('64');
+           
+            if ($('#radio_wl1_key1').attr("checked"))	
+                $('#wl1_txkey').val('1');
+            else $('#wl1_txkey').val('1');
+/*            else if ($('#radio_wl1_key2').attr("checked"))
+                $('#wl1_txkey').val('2');
+            else if ($('#radio_wl1_key3').attr("checked"))
+                $('#wl1_txkey').val('3');
+            else if ($('#radio_wl1_key4').attr("checked"))
+                $('#wl1_txkey').val('4');        
+*/	           
+          
+             if(!checkVaildCharNum($('#wl1_wep64pp').val()))
+            	{ 
+            		alert(str_3508); 
+            	  	return false; 
+            	}
+            		                               
+               
+                if ( $('#radio_wl1_key1').attr("checked") || !isBlank( $('#wl1_ENC11').val()) || !isBlank( $('#wl1_ENC12').val()) 
+									  || !isBlank( $('#wl1_ENC13').val()) || !isBlank( $('#wl1_ENC14').val()))
+                    	
+          			if ( isNValid($('#wl1_ENC11').val()) || isNValid($('#wl1_ENC12').val()) || isNValid($('#wl1_ENC13').val())
+          			   ||isNValid($('#wl1_ENC14').val()) || isNValid($('#wl1_ENC15').val()) )
+          			{
+          				alert(str_84); 
+          				alert(str_814+str_822);
+          				return false; 
+          			}
+              
+/*               if ( $('#radio_wl1_key2').attr("checked") || !isBlank( $('#wl1_ENC21').val()) || !isBlank( $('#wl1_ENC22').val()) 
+									  || !isBlank( $('#wl1_ENC23').val()) || !isBlank( $('#wl1_ENC24').val()))
+                    	
+          		 if ( isNValid($('#wl1_ENC21').val()) || isNValid($('#wl1_ENC22').val()) || isNValid($('#wl1_ENC23').val())
+          			   ||isNValid($('#wl1_ENC24').val()) || isNValid($('#wl1_ENC25').val()) )
+          			{
+          				alert(str_84); 
+          				alert(str_815+str_822);
+          				return false; 
+          			}
+                
+                if ( $('#radio_wl1_key3').attr("checked") || !isBlank( $('#wl1_ENC31').val()) || !isBlank( $('#wl1_ENC32').val()) 
+									  || !isBlank( $('#wl1_ENC33').val()) || !isBlank( $('#wl1_ENC34').val()))
+                    	
+          			if ( isNValid($('#wl1_ENC31').val()) || isNValid($('#wl1_ENC32').val()) || isNValid($('#wl1_ENC33').val())
+          			   ||isNValid($('#wl1_ENC34').val()) || isNValid($('#wl1_ENC35').val()) )
+          			{
+          				alert(str_84); 
+          				alert(str_816+str_822);
+          				return false; 
+          			}
+
+		            if ( $('#radio_wl1_key4').attr("checked") || !isBlank( $('#wl1_ENC41').val()) || !isBlank( $('#wl1_ENC42').val()) 
+									  || !isBlank( $('#wl1_ENC43').val()) || !isBlank( $('#wl1_ENC44').val()))
+                    	
+          			if ( isNValid($('#wl1_ENC41').val()) || isNValid($('#wl1_ENC42').val()) || isNValid($('#wl1_ENC43').val())
+          			   ||isNValid($('#wl1_ENC44').val()) || isNValid($('#wl1_ENC45').val()) )
+          			{
+          				alert(str_84); 
+          				alert(str_817+str_822);
+          				return false; 
+          			}
+*/          	
+            	var totalkey1="";
+            	var totalkey2="";
+            	var totalkey3="";
+            	var totalkey4="";
+          	  for (var k=1; k<6; k++)
+          		     {
+                     	totalkey1 += $('#wl1_ENC1'+k).val();
+                      totalkey2 += $('#wl1_ENC2'+k).val();
+                      totalkey3 += $('#wl1_ENC3'+k).val();
+                      totalkey4 += $('#wl1_ENC4'+k).val();      
+                   }                           
+          
+          	    $('#wl1_key1').val(totalkey1);
+                $('#wl1_key2').val(totalkey2);	
+            		$('#wl1_key3').val(totalkey3);
+            		$('#wl1_key4').val(totalkey4);
+            		
+          		if($('#wl1_key1').val().length!=0 && $('#wl1_key1').val().length!=10)
+          		{
+          				alert(str_814+str_821);
+			             return false;
+          		}
+          		
+/*          		if($('#wl1_key2').val().length!=0 && $('#wl1_key2').val().length!=10)
+          		{
+          				alert(str_815+str_821);
+			             return false;
+          		}
+          		
+          		if($('#wl1_key3').val().length!=0 && $('#wl1_key3').val().length!=10)
+          		{
+          				alert(str_816+str_821);
+			             return false;
+          		}
+          		
+          	 if($('#wl1_key4').val().length!=0 && $('#wl1_key4').val().length!=10)
+          		{
+          				alert(str_817+str_821);
+			             return false;
+          		}
+*/          		
+    	     $('#wl1_key_check').val('0');          
+           $('#wl1_data1').val('wl1_sec_mode wl1_keylength wl1_key1 wl1_key2 wl1_key3 wl1_key4 wl1_txkey wl1_passphrase_key wl1_gen_passphrase wl1_wep64128 wl1_key_check wl1_wpaenc');            
+	        
+        break;
+        
+      default:      
+        break;
+   } 
+
+   $('#data1').val($('#wl0_data1').val()+' '+$('#wl1_data1').val());
+  
+   f.submit();
+}
+
+
+function wl0_128genwep()
+{
+	
+	if ($('#wl0_wep128pp').val()=="")
+	{
+		alert(str_812);
+		return false;
+	}
+	else if(!checkVaildCharNum($('#wl0_wep128pp').val()) || isBlank($('#wl0_wep128pp').val()) )
+	{ 
+		alert(str_3508); 
+	  	return false; 
+	}
+	else
+	{
+	     	$.ajax({
+    				type: "POST",
+    				dataType: "html",
+    				url: "wep_passphrase.cgi",
+    				data: {"Modewl":'2.4', "cur_ipaddr":'<%nvram_get("lan_ipaddr");%>', "next_page":'wl_security.html', "reboot":'0', "wl0_passphrase":'true', "wl0_keylength":'104' , "wl0_passphrase_key": $('#wl0_wep128pp').val(), "wl0_txkey": '1', "wl0_backup": '1' , "wl0_keycheck": '1' },
+    				success: function(allkey){ 				                         
+                    $('#wl0_e1').val(allkey.substring(0,2));
+                    $('#wl0_e2').val(allkey.substring(2,4));
+                    $('#wl0_e3').val(allkey.substring(4,6));
+                    $('#wl0_e4').val(allkey.substring(6,8));
+                    $('#wl0_e5').val(allkey.substring(8,10));
+                    $('#wl0_e6').val(allkey.substring(10,12));
+                    $('#wl0_e7').val(allkey.substring(12,14));
+                    $('#wl0_e8').val(allkey.substring(14,16));
+                    $('#wl0_e9').val(allkey.substring(16,18));
+                    $('#wl0_e10').val(allkey.substring(18,20));
+                    $('#wl0_e11').val(allkey.substring(20,22));
+                    $('#wl0_e12').val(allkey.substring(22,24));
+                    $('#wl0_e13').val(allkey.substring(24,26));                            
+          
+                	  $('#wl0_wep128pp').val('');	                               
+    			  	
+    				}			
+    	  	});
+	
+		return true;
+	}
+}
+
+function wl0_64genwep()
+{
+	        
+       if ( $('#wl0_wep64pp').val()=="")
+    	{
+    		alert(str_812);
+    		return false;
+    	}
+    else if(!checkVaildCharNum($('#wl0_wep64pp').val()) || isBlank($('#wl0_wep64pp').val()) )
+    	{ 
+    		alert(str_3508); 
+    	  	return false; 
+    	}
+    	else
+    	{     
+              var keynum="";
+    	         if ($('#radio_wl0_key1').attr("checked"))	
+                    	 fkeynum = 1;
+                else if ($('#radio_wl0_key2').attr("checked"))
+                    	 keynum = 2;
+                else if ($('#radio_wl0_key3').attr("checked"))
+                    	 keynum = 3;
+                else if ($('#radio_wl0_key4').attr("checked"))
+                    	 keynum = 4;       	
+    		$.ajax({
+    				type: "POST",
+    				dataType: "html",
+    				url: "wep_passphrase.cgi",
+    				data: {"Modewl":'2.4', "cur_ipaddr":'<%nvram_get("lan_ipaddr");%>', "next_page":'wl_security.html', "reboot":'0', "wl0_passphrase":'true', "wl0_keylength":'40' , "wl0_passphrase_key": $('#wl0_wep64pp').val(), "wl0_txkey": keynum, "wl0_backup": '1' , "wl0_keycheck": '1' },
+    				success: function(allkey){ 
+    			  				              
+                      $('#wl0_ENC11').val(allkey.substring(0,2));
+                      $('#wl0_ENC12').val(allkey.substring(2,4));
+                      $('#wl0_ENC13').val(allkey.substring(4,6));
+                      $('#wl0_ENC14').val(allkey.substring(6,8));
+                      $('#wl0_ENC15').val(allkey.substring(8,10));                            
+                 
+                      $('#wl0_ENC21').val(allkey.substring(10,12));
+                      $('#wl0_ENC22').val(allkey.substring(12,14));
+                      $('#wl0_ENC23').val(allkey.substring(14,16));
+                      $('#wl0_ENC24').val(allkey.substring(16,18));
+                      $('#wl0_ENC25').val(allkey.substring(18,20));
+                   
+                               
+                      $('#wl0_ENC31').val(allkey.substring(20,22));
+                      $('#wl0_ENC32').val(allkey.substring(22,24));
+                      $('#wl0_ENC33').val(allkey.substring(24,26));
+                      $('#wl0_ENC34').val(allkey.substring(26,28));
+                      $('#wl0_ENC35').val(allkey.substring(28,30));
+                    
+                      $('#wl0_ENC41').val(allkey.substring(30,32));
+                      $('#wl0_ENC42').val(allkey.substring(32,34));
+                      $('#wl0_ENC43').val(allkey.substring(34,36));
+                      $('#wl0_ENC44').val(allkey.substring(36,38));
+                      $('#wl0_ENC45').val(allkey.substring(38,40));
+                      $('#wl0_wep64pp').val('');                                               
+    			  	
+    				}			
+    	  	});
+    	  			return true;
+       } 	     
+}
+
+function wl1_128genwep()
+{
+    if ($('#wl1_wep128pp').val()=="")
+    	{
+    		alert(str_812);
+    		return false;
+    	}
+    	else if(!checkVaildCharNum($('#wl1_wep128pp').val()) || isBlank($('#wl1_wep128pp').val()) )
+    	{ 
+    		alert(str_3508); 
+    	  	return false; 
+    	}
+    	else
+    	{
+    	     	$.ajax({
+        				type: "POST",
+        				dataType: "html",
+        				url: "wep_passphrase.cgi",
+        				data: {"Modewl":'5', "cur_ipaddr":'<%nvram_get("lan_ipaddr");%>', "next_page":'wl_security.html', "reboot":'0', "wl1_passphrase":'true', "wl1_keylength":'104' , "wl1_passphrase_key": $('#wl1_wep128pp').val(), "wl1_txkey": '1', "wl1_backup": '1' , "wl1_keycheck": '1' },
+        				success: function(allkey){ 
+        			  				                         
+                        $('#wl1_e1').val(allkey.substring(0,2));
+                        $('#wl1_e2').val(allkey.substring(2,4));
+                        $('#wl1_e3').val(allkey.substring(4,6));
+                        $('#wl1_e4').val(allkey.substring(6,8));
+                        $('#wl1_e5').val(allkey.substring(8,10));
+                        $('#wl1_e6').val(allkey.substring(10,12));
+                        $('#wl1_e7').val(allkey.substring(12,14));
+                        $('#wl1_e8').val(allkey.substring(14,16));
+                        $('#wl1_e9').val(allkey.substring(16,18));
+                        $('#wl1_e10').val(allkey.substring(18,20));
+                        $('#wl1_e11').val(allkey.substring(20,22));
+                        $('#wl1_e12').val(allkey.substring(22,24));
+                        $('#wl1_e13').val(allkey.substring(24,26));                            
+              
+                    	  $('#wl1_wep128pp').val('');	                               
+        			  	
+        				}			
+        	  	});
+    	
+    		return true;
+    	}
+	
+}
+
+function wl1_64genwep()
+{
+
+	 
+     if ( $('#wl1_wep64pp').val()=="")
+    	{
+    		alert(str_812);
+    		return false;
+    	}
+    else if(!checkVaildCharNum($('#wl1_wep64pp').val()) || isBlank($('#wl1_wep64pp').val()) )
+    	{ 
+    		alert(str_3508); 
+    	  	return false; 
+    	}
+    	else
+    	{
+          var keynum="";
+      	         if ($('#radio_wl1_key1').attr("checked"))	
+                      	 fkeynum = 1;
+                 else fkeynum = 1;
+
+/*                  else if ($('#radio_wl1_key2').attr("checked"))
+                      	 keynum = 2;
+                  else if ($('#radio_wl1_key3').attr("checked"))
+                      	 keynum = 3;
+                  else if ($('#radio_wl1_key4').attr("checked"))
+                      	 keynum = 4;       	
+*/      		$.ajax({
+      				type: "POST",
+      				dataType: "html",
+      				url: "wep_passphrase.cgi",
+      				data: {"Modewl":'5', "cur_ipaddr":'<%nvram_get("lan_ipaddr");%>', "next_page":'wl_security.html', "reboot":'0', "wl1_passphrase":'true', "wl1_keylength":'40' , "wl1_passphrase_key": $('#wl1_wep64pp').val(), "wl1_txkey": keynum, "wl1_backup": '1' , "wl1_keycheck": '1' },
+      				success: function(allkey){ 
+      			  				              
+                        $('#wl1_ENC11').val(allkey.substring(0,2));
+                        $('#wl1_ENC12').val(allkey.substring(2,4));
+                        $('#wl1_ENC13').val(allkey.substring(4,6));
+                        $('#wl1_ENC14').val(allkey.substring(6,8));
+                        $('#wl1_ENC15').val(allkey.substring(8,10));                            
+                   
+                        $('#wl1_ENC21').val(allkey.substring(10,12));
+                        $('#wl1_ENC22').val(allkey.substring(12,14));
+                        $('#wl1_ENC23').val(allkey.substring(14,16));
+                        $('#wl1_ENC24').val(allkey.substring(16,18));
+                        $('#wl1_ENC25').val(allkey.substring(18,20));
+                     
+                                 
+                        $('#wl1_ENC31').val(allkey.substring(20,22));
+                        $('#wl1_ENC32').val(allkey.substring(22,24));
+                        $('#wl1_ENC33').val(allkey.substring(24,26));
+                        $('#wl1_ENC34').val(allkey.substring(26,28));
+                        $('#wl1_ENC35').val(allkey.substring(28,30));
+                      
+                        $('#wl1_ENC41').val(allkey.substring(30,32));
+                        $('#wl1_ENC42').val(allkey.substring(32,34));
+                        $('#wl1_ENC43').val(allkey.substring(34,36));
+                        $('#wl1_ENC44').val(allkey.substring(36,38));
+                        $('#wl1_ENC45').val(allkey.substring(38,40)); 
+                        $('#wl1_wep64pp').val('');                                               
+      			  	
+      				}			
+      	  	}); 
+      	  			return true;
+          } 	     
+}
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+//});
+</SCRIPT>
+</HEAD >
+<body  onLoad="InitValue();">
+
+<SCRIPT language="JavaScript">
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem,isAPmode);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name);
+</SCRIPT>
+<td  height="100%" width="99%" valign="top">
+<form  name="tF" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wl_security.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="restart" value="wireless">
+<input type="hidden" id="data1" name="data1" value="">
+<input type="hidden" id="wl0_data1" name="wl0_data1">
+<input type="hidden" id="wl0_pskkey" name="wl0_pskkey">
+<input type="hidden" id="wl0_keylength" name="wl0_keylength">
+<input type="hidden" id="wl0_txkey" name="wl0_txkey">
+<input type="hidden" id="wl0_gen_passphrase" name="wl0_gen_passphrase">
+<input type="hidden" id="wl0_passphrase_key" name="wl0_passphrase_key">
+<input type="hidden" id="wl0_wep64128" name="wl0_wep64128">
+<input type="hidden" id="wl0_key_check" name="wl0_key_check">
+<input type="hidden" id="wl0_sec_mode" name="wl0_sec_mode">
+<input type="hidden" id="wl0_key1" name="wl0_key1">
+<input type="hidden" id="wl0_key2" name="wl0_key2">
+<input type="hidden" id="wl0_key3" name="wl0_key3">
+<input type="hidden" id="wl0_key4" name="wl0_key4">
+<input type="hidden" id="wl0_wpaenc" name="wl0_wpaenc">
+<input type="hidden" id="wl1_data1" name="wl1_data1">
+<input type="hidden" id="wl1_pskkey" name="wl1_pskkey">
+<input type="hidden" id="wl1_keylength" name="wl1_keylength">
+<input type="hidden" id="wl1_txkey" name="wl1_txkey">
+<input type="hidden" id="wl1_gen_passphrase" name="wl1_gen_passphrase">
+<input type="hidden" id="wl1_passphrase_key" name="wl1_passphrase_key">
+<input type="hidden" id="wl1_wep64128" name="wl1_wep64128">
+<input type="hidden" id="wl1_key_check" name="wl1_key_check">  
+<input type="hidden" id="wl1_sec_mode" name="wl1_sec_mode">
+<input type="hidden" id="wl1_key1" name="wl1_key1">
+<input type="hidden" id="wl1_key2" name="wl1_key2">
+<input type="hidden" id="wl1_key3" name="wl1_key3">
+<input type="hidden" id="wl1_key4" name="wl1_key4">
+<input type="hidden" id="wl1_wpaenc" name="wl1_wpaenc">	
+
+  
+
+	     <table width="600" cellSpacing="0" cellPadding="0" border="0">
+	      <tr height="10"><td colspan="2"></td></tr>
+				   	 <tr height="30"><td width="10" ></td>
+					     <td class="head_bold" ><SCRIPT>dw(str_800);</SCRIPT></td>
+					 </tr>					  
+	    </table> 
+  
+    <table width="1100" cellSpacing="0" cellPadding="0" border="0" align="left">
+    <tr height="30"><td colspan="3"></td></tr>
+    <tr>
+      <td width="30">&nbsp;</td>
+      <td width="460" valign="top">
+       
+            	<table  class="copy_1"  width="100%" border="0" cellpadding="0" cellspacing="0">
+      			     <tr height="40">
+                      <td width="100%" colspan="3" class="bold_copy_1" align="center"><script>document.write(str_4202);</script></td>                   
+                  </tr> 
+              </table> 
+<!-- Start 2.4G Wirless Security Select-->              
+              	<table  id="2_4_Initial" class="copy_1"  width="100%" border="0"   cellpadding="0" cellspacing="0">     
+                  <tr  height="40">
+                    	<td  width="160" class="bold_copy_1"><SCRIPT>dw(str_801);</SCRIPT>:</td>
+                      <td  width="300">  
+                          <SELECT onchange="Change2_4SecMode();" name="select2_4sec_mode" id="select2_4sec_mode"> 
+                              <SCRIPT>
+                  						dw('<option value="0">'+str_318+'</option>');
+                  						dw('<option value="64">'+str_804+'</option>');
+                  						dw('<option value="128">'+str_803+'</option>');
+                  						dw('<option value="psk">'+str_1296+'</option>');
+                  					</SCRIPT>                                           	        
+              	        </SELECT>
+                      </td>
+                </tr>
+              </table> 
+<!-- End 2.4G Wirless Security Select-->              
+                           
+<!-- Start 2.4G Wirless None Security Select-->                   
+               	<table  id="2_4_Explain" class="copy_1"  width="100%"  border="0" cellpadding="0" cellspacing="0"> 
+                    <tr height="20"><td width="100%">&nbsp;</td></tr> 
+                    <tr height="80">               
+        					      <td class="copy_1" ><SCRIPT>dw(str_806);</SCRIPT> 
+                          <A class=plaintext_bold  onclick="window.open('glossary.html#wireless_security','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" href="javascript:void(0);">
+                          <B><FONT color=#0066FF><SCRIPT>dw(str_47);</SCRIPT></FONT></B></A>
+                        </td>
+      					   </tr> 
+               </table>
+<!-- End 2.4G Wirless None Security Select--> 
+            
+<!-- Start 2.4G Wirless WPA-PSK Security Select-->              
+              	<table  id="2_4_WPA_PSK" class="copy_1" width="100%" border="0" cellpadding="0" cellspacing="0">     
+                 <tr  height="40">
+                    	<td  width="35%" class="bold_copy_1"><SCRIPT>dw(str_842);</SCRIPT>:</td>
+                      <td  width="65%">  
+                         	<SELECT name="2_4sec_mode" id="2_4sec_mode" onchange="Change2_4EncMode();"> 
+                						<OPTION value="WPA1WPA2"><SCRIPT>dw(str_4207);</SCRIPT></OPTION> 
+                						<OPTION value="WPA2"><SCRIPT>dw(str_4208);</SCRIPT></OPTION>
+                						<SCRIPT>
+                							var wl0_mode = '<%nvram_get("wl0_mode");%>';
+                							if(wl0_mode == '3' || wl0_mode == '0')
+                								dw('<OPTION value="psk">'+str_4209+'</OPTION>');
+                						</SCRIPT> 
+                						<!--OPTION value="psk"><SCRIPT>dw(str_4209);</SCRIPT></OPTION-->
+                					</SELECT>
+                      </td>
+                </tr> 
+                
+                 <tr  height="40">
+                    	<td class="bold_copy_1"><SCRIPT>dw(str_845);</SCRIPT>:</td>
+                      <td id="wl0_wep_id">&nbsp;</td>
+                </tr>
+                
+                  <tr  height="40">
+                    	<td  class="bold_copy_1"><SCRIPT>dw(str_854);</SCRIPT>:</td>
+                      <td >
+                        <INPUT maxLength="64" type="text" size="40" name="wl0_wpa_psk1" id="wl0_wpa_psk1">
+                        <INPUT maxLength="64" type="password" size="40" name="wl0_wpa_psk2" id="wl0_wpa_psk2">
+                      </td>
+                </tr> 
+                
+                <tr  height="40">
+                    	<td class="bold_copy_1"></td>
+                      <td>
+                        <INPUT onclick="showpsk2_4();" type="checkbox" value="" name="wl0_psk_obscured" id="wl0_psk_obscured">
+                          <SCRIPT>dw(str_857);</SCRIPT>
+                      </td>
+                </tr> 
+                
+                <tr  height="30">
+                    	<td class="bold_copy_1"></td>
+                      <td class="bold_copy_1"><SCRIPT>dw(str_802);</SCRIPT></td>
+                </tr> 
+                 <tr  height="40">
+                    	<td class="bold_copy_1"></td>
+                      <td><SCRIPT>dw(str_856);</SCRIPT>
+                        <A class=plaintext_bold  onclick="window.open('glossary.html#wireless_security','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');"  href="javascript:void(0);">
+                        <B><FONT color=#0066FF><SCRIPT>dw(str_47);</SCRIPT></FONT></B></A>                      
+                      </td>
+                </tr>                                   
+               </table>
+<!-- End 2.4G Wirless WPA-PSK Security Select-->                       
+ 
+<!-- Start 2.4G Wirless 128WEP Security Select-->              
+              	<table  id="2_4_128WEP" class="copy_1" width="100%" border="0" cellpadding="0" cellspacing="0">     
+                 <tr height="10"><td colspan="2">&nbsp;</td</tr>
+                 <tr  height="40">
+                    	<td  width="35%" class="bold_copy_1">&nbsp;</td>
+                      <td  width="65%">  
+                         		  <INPUT class="Key_col_width" maxLength="2"  name="wl0_e1" id="wl0_e1"> 
+                              <INPUT class="Key_col_width" maxLength="2"  name="wl0_e2" id="wl0_e2"> 
+                    				  <INPUT class="Key_col_width" maxLength="2"  name="wl0_e3" id="wl0_e3"> 
+                    				  <INPUT class="Key_col_width" maxLength="2"  name="wl0_e4" id="wl0_e4"> 
+                    				  <INPUT class="Key_col_width" maxLength="2"  name="wl0_e5" id="wl0_e5"> 
+                    				  <BR>
+                    				  <INPUT class="Key_col_width" maxLength="2"  name="wl0_e6" id="wl0_e6"> 
+                    				  <INPUT class="Key_col_width" maxLength="2"  name="wl0_e7" id="wl0_e7"> 
+                    				  <INPUT class="Key_col_width" maxLength="2"  name="wl0_e8" id="wl0_e8"> 
+                    				  <INPUT class="Key_col_width" maxLength="2"  name="wl0_e9" id="wl0_e9"> 
+                    				  <INPUT class="Key_col_width" maxLength="2"  name="wl0_e10" id="wl0_e10"> 
+                    				  <BR>
+                    				  <INPUT class="Key_col_width" maxLength="2"  name="wl0_e11" id="wl0_e11"> 
+                    				  <INPUT class="Key_col_width" maxLength="2"  name="wl0_e12" id="wl0_e12"> 
+                    				  <INPUT class="Key_col_width" maxLength="2"  name="wl0_e13" id="wl0_e13">
+                               <B><SCRIPT>dw(str_807);</SCRIPT></B> 
+                      </td>
+                </tr> 
+                 <tr height="10"><td colspan="2">&nbsp;</td</tr>
+                 <tr  height="40">
+                    	<td colspan="2" valign="top"><script>dw(str_808);dw(str_809);</script></td>
+                      <!--td align="left"><SCRIPT>dw(str_809);</SCRIPT></td-->
+                </tr>
+                
+                  <tr  height="40">
+                    	<td  class="bold_copy_1"> <SCRIPT>dw(str_810);</SCRIPT>:</td>
+                      <td >
+                        <INPUT maxLength="30" size="30"  name="wl0_wep128pp" id="wl0_wep128pp"> 
+				<script>dw('<input id=\"wl0_128submitBtn_generate\" type=\"button\" style=\"{width:80px;}\" class=\"submitBtn\" name=\"wl0_wep128a_btn\" id=\"wl0_wep128a_btn\" size=\"15\" value=\"'+str_811+'\" onClick=\"wl0_128genwep()\" >');</script>
+                      </td>
+                </tr>                               
+               </table>
+<!-- End 2.4G Wirless 128WEP Security Select--> 
+
+<!-- Start 2.4G Wirless 64WEP Security Select-->              
+              	<table  id="2_4_64WEP" class="copy_1" width="100%" border="0" cellpadding="0" cellspacing="0">     
+                 <tr height="10"><td colspan="2">&nbsp;</td</tr>
+                 <tr  height="30">
+                    	<td  width="35%" class="bold_copy_1"><INPUT type="radio" name="wl0_key" id="radio_wl0_key1" value="1"> <SCRIPT>dw(str_814);</SCRIPT></td>
+                      <td  width="65%">  
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC11" id="wl0_ENC11"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC12" id="wl0_ENC12"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC13" id="wl0_ENC13"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC14" id="wl0_ENC14"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC15" id="wl0_ENC15"> <BR>
+                      </td>
+                </tr>
+                  <!--tr  height="30">
+                    	<td class="bold_copy_1"><INPUT type="radio" name="wl0_key" id="radio_wl0_key2" value="2"> <SCRIPT>dw(str_815);</SCRIPT></td>
+                      <td>  
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC21" id="wl0_ENC21"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC22" id="wl0_ENC22"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC23" id="wl0_ENC23"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC24" id="wl0_ENC24"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC25" id="wl0_ENC25"> <BR>
+                      </td>
+                </tr>
+                 <tr  height="30">
+                    	<td class="bold_copy_1"><INPUT type="radio" name="wl0_key" id="radio_wl0_key3" value="3"> <SCRIPT>dw(str_816);</SCRIPT></td>
+                      <td>  
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC31" id="wl0_ENC31"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC32" id="wl0_ENC32"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC33" id="wl0_ENC33"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC34" id="wl0_ENC34"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC35" id="wl0_ENC35"> <BR>
+                      </td>
+                </tr>
+                 <tr  height="30">
+                    	<td class="bold_copy_1"><INPUT type="radio" name="wl0_key" id="radio_wl0_key4" value="4"> <SCRIPT>dw(str_817);</SCRIPT></td>
+                      <td>  
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC41" id="wl0_ENC41"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC42" id="wl0_ENC42"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC43" id="wl0_ENC43"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC44" id="wl0_ENC44"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl0_ENC45" id="wl0_ENC45"> <BR>
+                      </td>
+                </tr-->
+                 <tr  height="30">
+                    	<td></td>
+                      <td class="bold_copy_1">  
+                           <SCRIPT>dw(str_818);</SCRIPT>
+                      </td>
+                </tr>
+                    <tr height="10"><td colspan="2">&nbsp;</td</tr>
+                   <tr  height="40">
+                    	<td  valign="top" colspan="2"><script>dw(str_808);dw(str_809);</script></td>
+                      <!--td><SCRIPT>dw(str_809);</SCRIPT></td-->
+                </tr>
+                
+                 <tr  height="30">
+                    	<td  align="left" class="bold_copy_1"> <SCRIPT>dw(str_810);</SCRIPT>:</td>
+                      <td><INPUT maxLength="30" size="30"  name="wl0_wep64pp" id="wl0_wep64pp"> 
+				                <script>
+                          dw('<input id=\"wl0_64submitBtn_generate\" type=\"button\" style=\"{width:80px;}\" class=\"submitBtn\" name=\"wl0_wep64a_btn\" id=\"wl0_wep64a_btn\" size=\"15\" value=\"'+str_811+'\" onClick=\"wl0_64genwep()\" >');</script></td>
+                </tr>
+               </table>
+<!-- End 2.4G Wirless 64WEP Security Select-->             
+                  
+      </td>
+      
+          <td width="50">&nbsp;</td> 
+          <td width="460" valign="top">
+          
+             <table  class="copy_1" width="100%" border="0" cellpadding="0" cellspacing="0">
+      			     <tr height="40">
+                      <td width="100%" colspan="3" class="bold_copy_1" align="center"><script>document.write(str_4203);</script></td>                   
+                  </tr> 
+             </table>
+<!-- Start 5G Wirless Security Select-->               
+             <table id="5_Initial"  class="copy_1"  width="100%" border="0" cellpadding="0" cellspacing="0">       
+                  <tr  height="40">
+                    	<td  width="160" class="bold_copy_1"><SCRIPT>dw(str_801);</SCRIPT>:</td>
+                      <td  width="300">  
+                          <SELECT onchange="Change5_SecMode();" name="select5_sec_mode" id="select5_sec_mode"> 
+                              <SCRIPT>
+                  						dw('<option value="0" selected >'+str_318+'</option>');
+                  						dw('<option value="64">'+str_804+'</option>');
+                  						dw('<option value="128">'+str_803+'</option>');
+                  						dw('<option value="psk">'+str_1296+'</option>');
+                  					</SCRIPT>                                           	        
+              	        </SELECT>
+                      </td>
+                </tr>
+              </table>
+<!-- Start 5G Wirless Security Select-->
+
+<!-- Start 5G Wirless None Security Select-->                   
+               	<table  id="5_Explain" class="copy_1"  width="100%"  border="0" cellpadding="0" cellspacing="0"> 
+                    <tr height="20"><td width="100%">&nbsp;</td></tr> 
+                    <tr height="80">               
+        					      <td class="copy_1" ><SCRIPT>dw(str_806);</SCRIPT> 
+                          <A class=plaintext_bold  onclick="window.open('glossary.html#wireless_security','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" href="javascript:void(0);">
+                          <B><FONT color=#0066FF><SCRIPT>dw(str_47);</SCRIPT></FONT></B></A>
+                        </td>
+      					   </tr> 
+               </table>
+<!-- End 5G Wirless None Security Select-->  
+
+<!-- Start 5G Wirless WPA-PSK Security Select-->              
+              	<table  id="5_WPA_PSK" class="copy_1"  width="100%" border="0"   cellpadding="0" cellspacing="0">     
+                 <tr  height="40">
+                    	<td  width="35%" class="bold_copy_1"><SCRIPT>dw(str_842);</SCRIPT>:</td>
+                      <td  width="65%">  
+                         	<SELECT name="5_sec_mode" id="5_sec_mode" onchange="Change5_EncMode();"> 
+                						<OPTION value="WPA1WPA2"><SCRIPT>dw(str_4207);</SCRIPT></OPTION> 
+                						<OPTION value="WPA2"><SCRIPT>dw(str_4208);</SCRIPT></OPTION> 
+                						<SCRIPT>
+                							var wl1_mode = '<%nvram_get("wl1_mode");%>';
+                							if(wl1_mode == '3' || wl1_mode == '2')
+                								dw('<OPTION value="psk">'+str_4209+'</OPTION>');
+                						</SCRIPT>
+                					</SELECT>
+                      </td>
+                </tr>
+                  <tr  height="40">
+                    	<td class="bold_copy_1"><SCRIPT>dw(str_845);</SCRIPT>:</td>
+                      <td id="wl1_wep_id">&nbsp;</td>
+                </tr> 
+                 <tr  height="40">
+                    	<td  class="bold_copy_1"><SCRIPT>dw(str_854);</SCRIPT>:</td>
+                      <td >
+                        <INPUT maxLength="64" type="text"  size="40" name="wl1_wpa_psk1" id="wl1_wpa_psk1">
+                        <INPUT maxLength="64" type="password"  size="40" name="wl1_wpa_psk2" id="wl1_wpa_psk2">
+                      </td>
+                </tr> 
+                
+                <tr  height="40">
+                    	<td class="bold_copy_1"></td>
+                      <td>
+                        <INPUT onclick="showpsk5();" type="checkbox" value="" name="wl1_psk_obscured" id="wl1_psk_obscured">
+                          <SCRIPT>dw(str_857);</SCRIPT>
+                      </td>
+                </tr> 
+                
+                <tr  height="30">
+                    	<td class="bold_copy_1"></td>
+                      <td class="bold_copy_1"><SCRIPT>dw(str_802);</SCRIPT></td>
+                </tr> 
+                 <tr  height="40">
+                    	<td class="bold_copy_1"></td>
+                      <td><SCRIPT>dw(str_856);</SCRIPT>
+                        <A class=plaintext_bold  onclick="window.open('glossary.html#wireless_security','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');"  href="javascript:void(0);">
+                        <B><FONT color=#0066FF><SCRIPT>dw(str_47);</SCRIPT></FONT></B></A>                      
+                      </td>
+                </tr>                              
+               </table>
+<!-- End 5G Wirless WPA-PSK Security Select--> 
+
+<!-- Start 5G Wirless 128WEP Security Select-->              
+              	<table  id="5_128WEP" class="copy_1" width="100%" border="0" cellpadding="0" cellspacing="0">     
+                 <tr height="10"><td colspan="2">&nbsp;</td</tr>
+                 <tr  height="40">
+                    	<td  width="35%" class="bold_copy_1">&nbsp;</td>
+                      <td  width="65%">  
+                         		  <INPUT class="Key_col_width" maxLength=2  name="wl1_e1" id="wl1_e1"> 
+                              <INPUT class="Key_col_width" maxLength=2  name="wl1_e2" id="wl1_e2"> 
+                    				  <INPUT class="Key_col_width" maxLength=2  name="wl1_e3" id="wl1_e3"> 
+                    				  <INPUT class="Key_col_width" maxLength=2  name="wl1_e4" id="wl1_e4"> 
+                    				  <INPUT class="Key_col_width" maxLength=2  name="wl1_e5" id="wl1_e5"> 
+                    				  <BR>
+                    				  <INPUT class="Key_col_width" maxLength=2  name="wl1_e6" id="wl1_e6"> 
+                    				  <INPUT class="Key_col_width" maxLength=2  name="wl1_e7" id="wl1_e7"> 
+                    				  <INPUT class="Key_col_width" maxLength=2  name="wl1_e8" id="wl1_e8"> 
+                    				  <INPUT class="Key_col_width" maxLength=2  name="wl1_e9" id="wl1_e9"> 
+                    				  <INPUT class="Key_col_width" maxLength=2  name="wl1_e10" id="wl1_e10"> 
+                    				  <BR>
+                    				  <INPUT class="Key_col_width" maxLength=2  name="wl1_e11" id="wl1_e11"> 
+                    				  <INPUT class="Key_col_width" maxLength=2  name="wl1_e12" id="wl1_e12"> 
+                    				  <INPUT class="Key_col_width" maxLength=2  name="wl1_e13" id="wl1_e13">
+                               <B><SCRIPT>dw(str_807);</SCRIPT></B> 
+                      </td>
+                </tr> 
+                 <tr height="10"><td colspan="2">&nbsp;</td</tr>
+                 <tr  height="40">
+                    	<td colspan="2" valign="top"><script>dw(str_808);dw(str_809);</script></td>
+                      <!--td align="left"><SCRIPT>dw(str_809);</SCRIPT></td-->
+                </tr>
+                
+                  <tr  height="40">
+                    	<td  class="bold_copy_1"> <SCRIPT>dw(str_810);</SCRIPT>:</td>
+                      <td >
+                        <INPUT maxLength="30" size="30"  name="wl1_wep128pp" id="wl1_wep128pp"> 
+				<script>dw('<input id=\"wl1_submitBtn_generate\" type=\"button\" style=\"{width:80px;}\" class=\"submitBtn\" name=\"wl1_wep128a_btn\" id=\"wl1_wep128a_btn\" size=\"15\" value=\"'+str_811+'\" onClick=\"wl1_128genwep()\" >');</script>
+                      </td>
+                </tr>                               
+               </table>
+<!-- End 5G Wirless 128WEP Security Select-->       
+
+<!-- Start 5G Wirless 64WEP Security Select-->              
+              	<table  id="5_64WEP" class="copy_1" width="100%" border="0" cellpadding="0" cellspacing="0">     
+                 <tr height="10"><td colspan="2">&nbsp;</td</tr>
+                 <tr  height="30">
+                    	<td  width="35%" class="bold_copy_1"><INPUT type="radio" name="wl1_key" id="radio_wl1_key1" value="1"> <SCRIPT>dw(str_814);</SCRIPT></td>
+                      <td  width="65%">  
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC11" id="wl1_ENC11"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC12" id="wl1_ENC12"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC13" id="wl1_ENC13"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC14" id="wl1_ENC14"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC15" id="wl1_ENC15"> <BR>
+                      </td>
+                </tr>
+                  <!--tr  height="30">
+                    	<td class="bold_copy_1"><INPUT type="radio" name="wl1_key" id="radio_wl1_key2" value="2"> <SCRIPT>dw(str_815);</SCRIPT></td>
+                      <td>  
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC21" id="wl1_ENC21"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC22" id="wl1_ENC22"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC23" id="wl1_ENC23"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC24" id="wl1_ENC24"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC25" id="wl1_ENC25"> <BR>
+                      </td>
+                </tr>
+                 <tr  height="30">
+                    	<td class="bold_copy_1"><INPUT type="radio" name="wl1_key" id="radio_wl1_key3" value="3"> <SCRIPT>dw(str_816);</SCRIPT></td>
+                      <td>  
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC31" id="wl1_ENC31"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC32" id="wl1_ENC32"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC33" id="wl1_ENC33"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC34" id="wl1_ENC34"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC35" id="wl1_ENC35"> <BR>
+                      </td>
+                </tr>
+                 <tr  height="30">
+                    	<td class="bold_copy_1"><INPUT type="radio" name="wl1_key" id="radio_wl1_key4" value="4"> <SCRIPT>dw(str_817);</SCRIPT></td>
+                      <td>  
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC41" id="wl1_ENC41"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC42" id="wl1_ENC42"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC43" id="wl1_ENC43"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC44" id="wl1_ENC44"> 
+                        <INPUT class="Key_col_width" maxLength="2"  name="wl1_ENC45" id="wl1_ENC45"> <BR>
+                      </td>
+                </tr-->
+                 <tr  height="30">
+                    	<td></td>
+                      <td class="bold_copy_1">  
+                           <SCRIPT>dw(str_818);</SCRIPT>
+                      </td>
+                </tr>
+                    <tr height="10"><td colspan="2">&nbsp;</td</tr>
+                   <tr  height="40">
+                    	<td  valign="top" colspan="2"><script>dw(str_808);dw(str_809);</script></td>
+                      <!--td><SCRIPT>dw(str_809);</SCRIPT></td-->
+                </tr>
+                
+                 <tr  height="30">
+                    	<td  align="left" class="bold_copy_1"> <SCRIPT>dw(str_810);</SCRIPT>:</td>
+                      <td><INPUT maxLength="30" size="30" id="wl1_wep64pp"  name="wl1_wep64pp"> 
+				                <script>
+                          dw('<input id=\"wl1_64submitBtn_generate\" type=\"button\" style=\"{width:80px;}\" class=\"submitBtn\" name=\"wl1_wep64a_btn\" id=\"wl1_wep64a_btn\" size=\"15\" value=\"'+str_811+'\" onClick=\"wl1_64genwep()\" >');</script></td>
+                </tr>
+               </table>
+<!-- End 5G Wirless 64WEP Security Select-->  
+                            
+          </td>
+        </tr>
+          <tr>
+             <td colspan="4">    
+               <table width="100%" cellSpacing="0" cellPadding="0" border="0">
+                  <tr height="40"><td>&nbsp;</td></tr>
+                  <tr>
+                    <td width="100%" align="center">  
+                      <SCRIPT>
+                        dw('<input id="submitBtn_clear" type="button" value="');
+                        dw(str_48);dw('" style="{width:160px;}" class="submitBtn" onClick="InitValue();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">');
+			                  dw('<input id="submitBtn_apply" type="button" style="{width:160px;}" value="');
+                        dw(str_49);dw('"onClick="return Try_Submit();" class="submitBtn">');
+                      </SCRIPT>
+                   </td>
+                </tr>
+            </table>
+            </td>
+       </tr>
+       </table> 
+  
+     
+</form>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+
+
+ 

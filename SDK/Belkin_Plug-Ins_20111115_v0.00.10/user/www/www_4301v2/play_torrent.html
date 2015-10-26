@@ -1,0 +1,94 @@
+<HTML>
+<HEAD>
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">   
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_1880+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='';
+var menuSection	='Play';
+var menuItem	='Torrent';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function Try_Submit()
+{
+	var f = document.forms[0];
+
+	if (confirm(str_1923))
+  {
+  	f.torrent_clear.value='1';
+  	f.submit();  
+  	return true; 
+  }
+  else
+    {
+    return false;
+    }
+}
+
+function logoutF()
+{
+	var f = document.forms[0];
+	f.logout.value=1;
+	f.submit();
+	return true;
+}
+
+function Init_Value()
+{  
+   var f = document.forms[0];
+   f.torrent.value=str_1922;
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 marginheight="0" marginwidth="0" onLoad="Init_Value();">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name);
+</SCRIPT>
+<FORM name="form_torrent"action="post.cgi"method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="play_torrent.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" id="data1" name="data1" value="torrent_clear">
+<input type="hidden" name="torrent_clear" value="<%nvram_get("torrent_clear");%>">
+
+ <TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_1880);</SCRIPT>&nbsp;&nbsp;&gt;&nbsp;&nbsp;<SCRIPT>dw(str_1920);</SCRIPT>
+ <BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=0 cellPadding=0 width=600 align=left border=0>
+        <TBODY>
+         <TR height="100">
+          <TD width="20">&nbsp;</TD>
+          <TD width="600" align="left">
+           <B><SCRIPT>dw(str_1921);</SCRIPT></B>
+            </TD>
+        </TR>
+        <TR height="50">
+          <TD width="20">&nbsp;</TD>
+          <TD width="600" align="center">
+		        <INPUT type="button" id="torrent" name="torrent" style="width:180px;" class="submitBtn" onClick="return Try_Submit();">
+            </TD>
+        </TR>
+      </TBODY></TABLE></TD></TR></TBODY></TABLE></FORM></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>

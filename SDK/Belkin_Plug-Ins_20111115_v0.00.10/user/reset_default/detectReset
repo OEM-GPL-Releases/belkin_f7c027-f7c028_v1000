@@ -1,0 +1,6 @@
+#!/bin/sh
+resetC &
+#setPhy
+#insmod /etc/resetDefault.o
+insmod reset_btn.o
+

@@ -1,0 +1,54 @@
+<html>
+<head>
+<title>Conf</title>
+<META http-equiv="Content-Type" content="text/html; charset=<%nvram_get("charset");%>">
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<script>assign_var();</script>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<script language="javascript">
+<!--
+function bodyLoad()
+{
+	var f = document.forms[0] ;
+	f.ApplyBtn.value=ApplyBtn;
+	/* firmware header */
+	var fw = '<%nvram_get("chk_fw_hdr");%>';
+
+	f.chk_fw_hdr.selectedIndex = fw;
+}
+
+function validate()
+{
+	var f = document.forms[0] ;
+	
+	f.submit();
+}
+//-->
+</script>
+</head>
+<body ONDRAGSTART="window.event.returnValue=false" ONCONTEXTMENU="window.event.returnValue=false" onLoad="bodyLoad()" ONDRAGSTART="window.event.returnValue=false" ONCONTEXTMENU="window.event.returnValue=false">
+<form name="tF" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value='<%nvram_get("lan_ipaddr");%>'>
+<input type="hidden" name="next_page" value="fw-conf.html">
+<input type="hidden" name="redirect_timer" value="45000">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="restart" value="firewall">
+<input type="hidden" name="data1" value="chk_fw_hdr">
+
+
+&nbsp;&nbsp; <br>
+<script>dw(fw_conf1);</script> :
+<select name="chk_fw_hdr">
+      <option value="0"><script>dw(Disable);</script></option>
+      <option value="1"><script>dw(Enable);</script></option>
+</select>
+<br>
+<input style="FONT-SIZE: 10pt" type="button" name="ApplyBtn" onClick="return validate();" value="" >
+&nbsp;&nbsp;<a href="http://<%nvram_get("lan_ipaddr");%>"><script>dw(Go_Home);</script></a>
+</form>
+</body>
+</html>

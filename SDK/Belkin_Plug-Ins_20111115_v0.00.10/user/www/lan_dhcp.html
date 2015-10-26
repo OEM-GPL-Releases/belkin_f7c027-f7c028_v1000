@@ -1,0 +1,500 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<LINK href="styles.css" type=text/css rel=stylesheet>    
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>              
+<SCRIPT>assign_var();</SCRIPT>
+<script language="javascript" type="text/JavaScript" src="dl.js"></script>
+<script language="javascript" type="text/JavaScript" src="validate.js"></script>
+<!--script language="javascript" type="text/JavaScript" src="dhcp_list.js"></script-->
+<SCRIPT language="JavaScript" src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_353+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='DHCP Client List';
+var menuSection	='LAN';
+var menuItem	='DHCP Client List';
+var login_timeout	=(<%nvram_get("login_timeout");%>*60*1000);
+
+
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+<%autofw_check();%>
+
+var TBLHeader_ClientTBL = "<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse: collapse;\"  bordercolor=\"#FFFFFF\" id=\"AutoNumber4\" width=\"561\">" ;			
+
+var TBLFooter = "</table>" ;
+var TRHeader =  "<tr>" ;
+var TRFooter = "</tr>" ;
+var TDHeader = "<td height=\"25\" width=\"187\" align=\"center\" style=\"border-left-style: solid; border-left-width: 1; border-right-style: solid; border-right-width: 1; \
+			    border-top-style: solid; border-top-width: 1; border-bottom-style: none; border-bottom-width: medium; color:#CCCCCC\" bordercolor=\"#ffffff\">\
+				<font face=\"Arial\" style=\"font-size: 8pt\">" ;
+var TDHeader_ClientTBL = "<td width=\"187\" height=\"25\" align=\"left\" style=\"border-color:#FFFFFF;border-left-style: solid; border-left-width: 1; border-right-style: solid; border-right-width: 1; \
+			    border-top-style: solid; border-top-width: 1; border-bottom-style: none; border-bottom-width: medium\" bgcolor=\"#CCCCCC\">\
+									<font face=\"Arial\" style=\"font-size: 8pt\" color=\"#000000\">";
+var TDFooter = "</font></td>" ;
+var TBLHeader_Left = "<table><tr><td class=\"LeftText2\" height=\"25\" bgcolor=\"#E7E7E7\">Select Clients from&nbsp;&nbsp;<br>DHCP Table&nbsp;&nbsp;</tr>" ;
+var Left_Space = "<tr><td height=\"25\" bgcolor=\"#E7E7E7\">&nbsp;&nbsp;</td></tr>" ;
+var TBLFooter_Left = "</table>" ;
+var t;
+function resetTimer()
+{
+	clearTimeout(t);  
+	login_timeout = (<%nvram_get("login_timeout");%>*60*1000);
+	t = setTimeout("set_timeout()", login_timeout);
+}
+
+function DataShow(type) {
+	var list = "" ;
+	var w = "";
+	var remove = "" ;
+	var ip_tmp,ip_value,ip_field,name_value;
+	w += TBLHeader_ClientTBL ;
+	var passForm = document.forms[0];
+
+	for (var j=0;j<10;j++)	{
+			if (eval("passForm.manual_mac_"+j).value !="")	{		 
+				remove = "<input id= \"submitBtn_remove\" type=\"button\" value=\""+Remove+"\" style=\"margin-left:5px\" onClick=\"DelClientTable(document.forms[0],"+ j +");\">" ;
+				
+				
+				w += TRHeader + TDHeader_ClientTBL +"&nbsp;&nbsp;&nbsp;&nbsp;" + eval("passForm.manual_ip_"+j).value + TDFooter +
+								TDHeader_ClientTBL +"&nbsp;&nbsp;&nbsp;&nbsp;" + eval("passForm.manual_mac_"+j).value + TDFooter +
+								TDHeader_ClientTBL +"&nbsp;&nbsp;&nbsp;&nbsp;" + remove + TDFooter + TRFooter ;
+							
+			}
+	}
+	w += TBLFooter ;
+	
+//	layerWrite('myDiv2', null, w);  
+}
+function DataShow_LeftText(n)
+{
+	var v = "";
+	v += TBLHeader_Left + Left_Space ;
+	for (var i=0; i<=n ;i++)
+		v += Left_Space;
+	v += TBLFooter_Left;
+	
+	layerWrite('left_text', null, v);  
+	
+}
+function MAC_Check(I)
+{
+	d = parseInt ( I , 16 );
+
+	if ( !(d<256 && d>=0) ) {
+		alert(str_904);
+		return false;
+	} 
+	else {
+		return true;
+	}
+}
+
+
+function DelClientTable(passForm, n)
+{	
+  var i;
+	resetTimer();
+	self.DhcpClientTable.DelSel(n);
+
+	eval("passForm.manual_ip_"+n).value = "";
+	eval("passForm.manual_mac_"+n).value = "";
+	eval("passForm.static_ip_"+n).value = "";
+	eval("passForm.static_mac_"+n).value = "";
+	DataShow(2);
+}
+function Add1(passForm)
+{
+	resetTimer();
+	var DhcpStart = parseInt(passForm.dhcp_start.value,10);
+	var DhcpEnd =  parseInt(passForm.dhcp_end.value,10);
+
+	auto_ip_range();
+	var ar_manual_ip = passForm.manual_ip.value.split(".");
+	
+	if (parseInt(ar_manual_ip[3],10)<DhcpStart) {
+		alert(str_3618);
+		alert(str_3619 + " " + DhcpStart);
+		passForm.manual_ip.value = "";
+		passForm.manual_ip.focus();
+		return false;
+	}
+	if (parseInt(ar_manual_ip[3],10)>DhcpEnd) {
+		alert(str_3618);
+		alert(str_3620 + " " + DhcpEnd);
+		passForm.manual_ip.value = "";
+		passForm.manual_ip.focus();
+		return false;
+	}
+	if (!IPCheck(ar_manual_ip[3])) {
+		passForm.manual_ip.focus();
+		return false;
+	}
+	
+	if (!MACheck(passForm.manual_mac)) {
+		passForm.manual_mac.focus();
+		return false;
+	}
+	if(passForm.manual_mac.value!="") {
+		var mac_list=passForm.manual_mac.value.split(":");
+		for (j=0;j<6;j++)	{
+			if (!MAC_Check(mac_list[j])) {
+				passForm.manual_mac.focus();
+				return false;
+			}
+		}
+	}
+	if (passForm.manual_mac.value=="00:00:00:00:00:00" || passForm.manual_mac.value=="FF:FF:FF:FF:FF:FF") 
+	{
+		alert(str_904);
+		passForm.manual_mac.focus();
+		return false;
+	}
+	
+	for(i=0;i<10;i++)
+	{
+		var ip=eval("passForm.manual_ip_"+i).value;
+		var mac=eval("passForm.static_mac_"+i).value;
+		var mac1=eval("passForm.manual_mac_"+i).value;
+		if (ip !="")	{
+			if ((ip == passForm.manual_ip.value))	{
+				alert(str_3622)
+				passForm.manual_ip.focus();
+				return;
+			}
+			if ((mac == passForm.manual_mac.value))	{
+				alert(str_3622)
+				passForm.manual_mac.focus();
+				return false;
+			}
+			if ((mac1 == passForm.manual_mac.value))	{
+				alert(str_3622)
+				passForm.manual_mac.focus();
+				return false;
+			}
+		}
+	}
+	var str = '<%nvram_get("lan_ipaddr");%>';
+	var tmp = "";
+
+	for(var arr = str.split("."), i = 0; i < arr.length - 1; i ++) {
+		tmp += arr[i] + ".";
+	}
+	
+	
+	var manual_ip_add = passForm.manual_ip.value;
+	sr_manual_ip = manual_ip_add.split(".");
+ 	 var sr_manual_ip_add = sr_manual_ip[0]+"."+sr_manual_ip[1]+"."+sr_manual_ip[2]+".";
+
+	  if(!(tmp == sr_manual_ip_add))
+	  {
+		alert(str_3612);
+		return;
+	  }
+	
+	if (passForm.manual_ip.value == "0.0.0.0") {
+
+	} 
+	else {
+		if(!AddEntry(passForm))
+			return;
+			
+	}
+	
+	for (var i=0;i<10;i++)	{
+		if (eval("passForm.manual_mac_"+i).value =="")	{
+			eval("passForm.manual_ip_"+i).value = passForm.manual_ip.value;
+			eval("passForm.manual_mac_"+i).value = passForm.manual_mac.value;
+			break;
+		}
+	}	
+
+	passForm.manual_ip.value = "0.0.0.0";
+	passForm.manual_mac.value = "00:00:00:00:00:00";
+	DataShow(2);
+}
+
+function CanclSettings(passForm)
+{
+	resetTimer();
+	passForm.manual_ip.value = "0";
+	passForm.manual_mac.value = "00:00:00:00:00:00";
+	
+}
+function set_timeout()
+{
+	login_timeout=0;
+}
+function InitValue(passForm) 
+{
+	document.getElementById("submitBtn_refresh").disabled = true ;
+
+//	passForm.add.value = Add;
+	parent.DhcpClientTable.location.href="lan_dhcp_table.html";
+
+	for (var i=0;i<10;i++)	{
+			eval("passForm.manual_ip_"+i).value = eval("passForm.static_ip_"+i).value;
+			eval("passForm.manual_mac_"+i).value = eval("passForm.static_mac_"+i).value;
+	}	
+	resetTimer();
+	DataShow(2);
+	
+	
+	document.getElementById("submitBtn_refresh").disabled = false ;
+}
+
+function ValidateForm()
+{
+	var passForm = document.forms[0]; 
+	resetTimer();
+	
+	
+	for (var i=0;i<10;i++)	{
+		eval("passForm.static_ip_"+i).value = eval("passForm.manual_ip_"+i).value;
+		eval("passForm.static_mac_"+i).value = eval("passForm.manual_mac_"+i).value;
+		if (eval("passForm.manual_ip_"+i).value !="" && eval("passForm.manual_mac_"+i).value !="")
+			eval("passForm.static_enabled_"+i).value = 1;
+		else
+			eval("passForm.static_enabled_"+i).value = 0;
+	}	
+	passForm.submit();
+
+}
+function RefreshForm(passForm)
+{
+
+	document.getElementById("submitBtn_refresh").disabled = true ;
+
+	clearTimeout(); 
+	if(login_timeout==0)
+		window.location.reload();
+	else
+	{
+		resetTimer();
+		self.DhcpClientTable.document.forms[0].submit();
+	}
+}
+
+function auto_ip_range()
+{
+	with(document.forms[0])
+	{
+		var lanIP = '<%nvram_get("lan_ipaddr");%>';
+		var lanMask = '<%nvram_get("lan_netmask");%>';
+		var LanMask_tmp = lanMask.split('.');
+		var LanMask0 = LanMask_tmp[0];
+		var LanMask1 = LanMask_tmp[1];
+		var LanMask2 = LanMask_tmp[2];
+		var LanMask3 = LanMask_tmp[3];
+		var msk1 = parseInt(LanMask0,10);
+		var msk2 = parseInt(LanMask1,10);
+		var msk3 = parseInt(LanMask2,10);
+		var msk4 = parseInt(LanMask3,10);
+		var LanIP_tmp = lanIP.split('.');
+		var LanIP0 = LanIP_tmp[0];
+		var LanIP1 = LanIP_tmp[1];
+		var LanIP2 = LanIP_tmp[2];
+		var LanIP3 = LanIP_tmp[3];
+		var ip1 = parseInt(LanIP0,10);
+		var ip2 = parseInt(LanIP1,10);
+		var ip3 = parseInt(LanIP2,10);
+		var ip4 = parseInt(LanIP3,10);
+
+		var ip, mask, ip_start, ip_end, subnet_start, subnet_end;
+		var ips1, ips2, ips3, ips4, ipe1, ipe2, ipe3, ipe4;
+		
+		ip = ip1*256*256*256 + ip2*256*256 + ip3*256 + ip4;
+		mask = msk1*256*256*256 + msk2*256*256 + msk3*256 + msk4;
+		subnet_start = (ip1&msk1)*256*256*256 + (ip2&msk2)*256*256 + (ip3&msk3)*256 + (ip4&msk4) + 1;
+		subnet_end = (ip1&msk1)*256*256*256 + (ip2&msk2)*256*256 + (ip3&msk3)*256 + (ip4&msk4) + ~mask - 1;
+		
+		if ((ip-subnet_start) >= (subnet_end - ip))
+		{
+			ip_end = ip - 1;
+			if ((ip-subnet_start) >= 253)
+				ip_start = ip - 253;
+			else
+				ip_start = subnet_start;
+		}
+		else
+		{
+			ip_start = ip + 1;
+			if ((subnet_end-ip) >= 253)
+				ip_end = ip + 253;
+			else
+				ip_end = subnet_end;
+		}
+	
+		ips1 = ip_start >>> 24;
+		ips2 = (ip_start & 0xff0000) >> 16;
+		ips3 = (ip_start & 0xff00) >> 8;
+		ips4 = ip_start & 0xff;
+		
+		var StartIP0 = ip_start >>> 24 ;
+		var StartIP1 = (ip_start & 0xff0000) >> 16 ;
+		var StartIP2 = (ip_start & 0xff00) >> 8 ;
+		var StartIP3 = ip_start & 0xff ;
+		
+		
+		var EndIP0 = ip_end >>> 24 ;            
+		var EndIP1 = (ip_end & 0xff0000) >> 16 ;
+		var EndIP2 = (ip_end & 0xff00) >> 8 ;   
+		var EndIP3 = ip_end & 0xff ;        
+	}
+}
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+//-->
+</SCRIPT>
+</HEAD>
+<META content="Microsoft FrontPage 5.0" name=GENERATOR>
+<body bgColor="#ffffff" leftMargin="0" topMargin="0" marginheight="0" marginwidth="0" onLoad="InitValue(document.forms[0]);">
+
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	var havepc = '<%nvram_get("havepc");%>';
+	var cty_lang_code='<%nvram_get("lang_code");%>';
+	showHead(wanStatus,helpItem);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name)
+</SCRIPT>
+<form name="SetupDHCP" method="post" action="post.cgi">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="lan_dhcp.html">
+<input type="hidden" name="redirect_timer" value="45000">
+<input type="hidden" name="reboot" value="1">
+<input type="hidden" name="restart" value="lan">
+<input type="hidden" name="data1" value=" 
+ static_ip_0 static_ip_1 static_ip_2 static_ip_3 static_ip_4 static_ip_5 static_ip_6 static_ip_7 static_ip_8 static_ip_9 
+ static_mac_0 static_mac_1 static_mac_2 static_mac_3 static_mac_4 static_mac_5 static_mac_6 static_mac_7 static_mac_8 static_mac_9 
+ static_enabled_0 static_enabled_1 static_enabled_2 static_enabled_3 static_enabled_4 static_enabled_5 static_enabled_6 static_enabled_7 static_enabled_8 static_enabled_9">
+<input type="hidden" id="dhcp_start" name="dhcp_start" value="<%nvram_get("dhcp_start");%>">
+<input type="hidden" id="dhcp_end" name="dhcp_end" value="<%nvram_get("dhcp_end");%>">
+
+<input type="hidden" id="static_name_0" name="static_name_0" value="<%nvram_get("static_name_0");%>">
+<input type="hidden" id="static_name_1" name="static_name_1" value="<%nvram_get("static_name_1");%>">
+<input type="hidden" id="static_name_2" name="static_name_2" value="<%nvram_get("static_name_2");%>">
+<input type="hidden" id="static_name_3" name="static_name_3" value="<%nvram_get("static_name_3");%>">
+<input type="hidden" id="static_name_4" name="static_name_4" value="<%nvram_get("static_name_4");%>">
+<input type="hidden" id="static_name_5" name="static_name_5" value="<%nvram_get("static_name_5");%>">
+<input type="hidden" id="static_name_6" name="static_name_6" value="<%nvram_get("static_name_6");%>">
+<input type="hidden" id="static_name_7" name="static_name_7" value="<%nvram_get("static_name_7");%>">
+<input type="hidden" id="static_name_8" name="static_name_8" value="<%nvram_get("static_name_8");%>">
+<input type="hidden" id="static_name_9" name="static_name_9" value="<%nvram_get("static_name_9");%>">
+
+<input type="hidden" id="static_ip_0" name="static_ip_0" value="<%nvram_get("static_ip_0");%>">
+<input type="hidden" id="static_ip_1" name="static_ip_1" value="<%nvram_get("static_ip_1");%>">
+<input type="hidden" id="static_ip_2" name="static_ip_2" value="<%nvram_get("static_ip_2");%>">
+<input type="hidden" id="static_ip_3" name="static_ip_3" value="<%nvram_get("static_ip_3");%>">
+<input type="hidden" id="static_ip_4" name="static_ip_4" value="<%nvram_get("static_ip_4");%>">
+<input type="hidden" id="static_ip_5" name="static_ip_5" value="<%nvram_get("static_ip_5");%>">
+<input type="hidden" id="static_ip_6" name="static_ip_6" value="<%nvram_get("static_ip_6");%>">
+<input type="hidden" id="static_ip_7" name="static_ip_7" value="<%nvram_get("static_ip_7");%>">
+<input type="hidden" id="static_ip_8" name="static_ip_8" value="<%nvram_get("static_ip_8");%>">
+<input type="hidden" id="static_ip_9" name="static_ip_9" value="<%nvram_get("static_ip_9");%>">
+<input type="hidden" id="static_mac_0" name="static_mac_0" value="<%nvram_get("static_mac_0");%>">
+<input type="hidden" id="static_mac_1" name="static_mac_1" value="<%nvram_get("static_mac_1");%>">
+<input type="hidden" id="static_mac_2" name="static_mac_2" value="<%nvram_get("static_mac_2");%>">
+<input type="hidden" id="static_mac_3" name="static_mac_3" value="<%nvram_get("static_mac_3");%>">
+<input type="hidden" id="static_mac_4" name="static_mac_4" value="<%nvram_get("static_mac_4");%>">
+<input type="hidden" id="static_mac_5" name="static_mac_5" value="<%nvram_get("static_mac_5");%>">
+<input type="hidden" id="static_mac_6" name="static_mac_6" value="<%nvram_get("static_mac_6");%>">
+<input type="hidden" id="static_mac_7" name="static_mac_7" value="<%nvram_get("static_mac_7");%>">
+<input type="hidden" id="static_mac_8" name="static_mac_8" value="<%nvram_get("static_mac_8");%>">
+<input type="hidden" id="static_mac_9" name="static_mac_9" value="<%nvram_get("static_mac_9");%>">
+<input type="hidden" id="static_enabled_0" name="static_enabled_0" value="<%nvram_get("static_enabled_0");%>">
+<input type="hidden" id="static_enabled_1" name="static_enabled_1" value="<%nvram_get("static_enabled_1");%>">
+<input type="hidden" id="static_enabled_2" name="static_enabled_2" value="<%nvram_get("static_enabled_2");%>">
+<input type="hidden" id="static_enabled_3" name="static_enabled_3" value="<%nvram_get("static_enabled_3");%>">
+<input type="hidden" id="static_enabled_4" name="static_enabled_4" value="<%nvram_get("static_enabled_4");%>">
+<input type="hidden" id="static_enabled_5" name="static_enabled_5" value="<%nvram_get("static_enabled_5");%>">
+<input type="hidden" id="static_enabled_6" name="static_enabled_6" value="<%nvram_get("static_enabled_6");%>">
+<input type="hidden" id="static_enabled_7" name="static_enabled_7" value="<%nvram_get("static_enabled_7");%>">
+<input type="hidden" id="static_enabled_8" name="static_enabled_8" value="<%nvram_get("static_enabled_8");%>">
+<input type="hidden" id="static_enabled_9" name="static_enabled_9" value="<%nvram_get("static_enabled_9");%>">
+<input type="hidden" id="manual_name_0" name="manual_name_0" value="">
+<input type="hidden" id="manual_name_1" name="manual_name_1" value="">
+<input type="hidden" id="manual_name_2" name="manual_name_2" value="">
+<input type="hidden" id="manual_name_3" name="manual_name_3" value="">
+<input type="hidden" id="manual_name_4" name="manual_name_4" value="">
+<input type="hidden" id="manual_name_5" name="manual_name_5" value="">
+<input type="hidden" id="manual_name_6" name="manual_name_6" value="">
+<input type="hidden" id="manual_name_7" name="manual_name_7" value="">
+<input type="hidden" id="manual_name_8" name="manual_name_8" value="">
+<input type="hidden" id="manual_name_9" name="manual_name_9" value="">
+
+<input type="hidden" id="manual_ip_0" name="manual_ip_0" value="">
+<input type="hidden" id="manual_ip_1" name="manual_ip_1" value="">
+<input type="hidden" id="manual_ip_2" name="manual_ip_2" value="">
+<input type="hidden" id="manual_ip_3" name="manual_ip_3" value="">
+<input type="hidden" id="manual_ip_4" name="manual_ip_4" value="">
+<input type="hidden" id="manual_ip_5" name="manual_ip_5" value="">
+<input type="hidden" id="manual_ip_6" name="manual_ip_6" value="">
+<input type="hidden" id="manual_ip_7" name="manual_ip_7" value="">
+<input type="hidden" id="manual_ip_8" name="manual_ip_8" value="">
+<input type="hidden" id="manual_ip_9" name="manual_ip_9" value="">
+<input type="hidden" id="manual_mac_0" name="manual_mac_0" value="">
+<input type="hidden" id="manual_mac_1" name="manual_mac_1" value="">
+<input type="hidden" id="manual_mac_2" name="manual_mac_2" value="">
+<input type="hidden" id="manual_mac_3" name="manual_mac_3" value="">
+<input type="hidden" id="manual_mac_4" name="manual_mac_4" value="">
+<input type="hidden" id="manual_mac_5" name="manual_mac_5" value="">
+<input type="hidden" id="manual_mac_6" name="manual_mac_6" value="">
+<input type="hidden" id="manual_mac_7" name="manual_mac_7" value="">
+<input type="hidden" id="manual_mac_8" name="manual_mac_8" value="">
+<input type="hidden" id="manual_mac_9" name="manual_mac_9" value="">
+<input type="hidden" id="checkbox_0" name="checkbox_0" value="">
+<input type="hidden" id="checkbox_1" name="checkbox_1" value="">
+<input type="hidden" id="checkbox_2" name="checkbox_2" value="">
+<input type="hidden" id="checkbox_3" name="checkbox_3" value="">
+<input type="hidden" id="checkbox_4" name="checkbox_4" value="">
+<input type="hidden" id="checkbox_5" name="checkbox_5" value="">
+<input type="hidden" id="checkbox_6" name="checkbox_6" value="">
+<input type="hidden" id="checkbox_7" name="checkbox_7" value="">
+<input type="hidden" id="checkbox_8" name="checkbox_8" value="">
+<input type="hidden" id="checkbox_9" name="checkbox_9" value="">
+	<TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+	<script language="javascript">dw(str_353);</script><BR><BR>
+	<table class="copy_1" border="0"><TBODY>
+ 	<TR>
+    	<TD width=5>&nbsp;</TD>
+    	<TD><TABLE class="copy_1" cellSpacing="0" cellPadding="0" width="600" align="center" border="0"><TBODY>
+        	<TR>
+          		<TD><TABLE class="copy_1" height="90%" cellSpacing="0" cellPadding="10" width="100%" border="0"><TBODY>
+              		<TR>
+                		<TD vAlign="top" colspan="7">
+<!--This page shows ...-->	<DIV align="left"><SPAN><SCRIPT>dw(str_354);</SCRIPT></SPAN></DIV>
+							<p align="left"><b><script language="javascript">dw(str_1432);</script></b></p>
+                  			<iframe width="560" id="DhcpClientTable" name="DhcpClientTable" frameborder="0" marginheight="0" scrolling="no"><br>
+                          </iframe>
+
+							<table cellpadding="0" cellspacing="0" style="border-collapse: collapse" border="1" bordercolor="#FFFFFF" id="AutoNumber4" width="560">
+								<tr>
+									<td colspan="3">&nbsp;</td>
+								</tr>
+								<TR>
+								<TD width=19>&nbsp;</TD>
+								<TD colSpan=2>
+								  <DIV align=right>
+									<SCRIPT>
+										strHtml='<input name="submitBtn_refresh" id="submitBtn_refresh" type="button" value="'+str_128+'" style="{width:160px;}" onClick="if(!RefreshForm(document.forms[1]));" class="submitBtn" onMouseOver="window.status=\'Refresh\'; return true;" onMouseOut="window.status=\'\'; return true;" disabled>&nbsp;&nbsp;';
+										dw(strHtml);
+									</SCRIPT>
+								  </DIV></TD></TR>
+							</table>
+						  </TD></TR>
+						  </TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</form>
+
+</BODY></HTML>

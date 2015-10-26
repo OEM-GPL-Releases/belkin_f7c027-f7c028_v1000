@@ -1,0 +1,179 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<META HTTP-EQUIV="expires" CONTENT="0">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+show50+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Guest Access';
+var menuSection	='WLAN';
+var menuItem	='Guest Access';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function GURL(x){location=x}
+function isBlank(s) {
+ for(var i = 0; i < s.length; i++) {
+ var c = s.charAt(i);
+ if((c !=' ') && (c!='\n') && (c !='\t')) return false;
+ }
+ return true;
+}
+function ChangeSecMode(wl_mssid_mode)
+{
+	if(wl_mssid_mode.value == "1") GURL('wireless_mssid_hotel.html');
+	else if(wl_mssid_mode.value == "2") GURL('wireless_mssid_wpa.html');
+
+}
+
+function Init_Value()
+{
+	var f=document.wireless_mssid;
+	f.Clear_Changes.value=btn1;
+	f.Apply_Changes.value=btn2;
+	f.Radio.selectedIndex='<%nvram_get("wl0_mssid_enabled");%>';
+	f.wl_ssid.value='<%nvram_get("wl0_ssid_2nd");%>';
+	f.pskkey.value='<%nvram_get("wl0_hotel_key");%>';
+	
+}
+function Try_Submit() 
+{
+	var f=document.forms[0];
+	f.wl0_mssid_enabled.value=f.Radio.value;
+	
+	if(isBlank(f.wl_ssid.value)) 
+ 	{
+		alert(wireless_mssid_hotel8);
+		return false;
+ 	}
+ 	for(i=0;i<f.wl_ssid.value.length;i++)
+	{
+ 		var token=f.wl_ssid.value.charAt(i);
+ 		if(token=='`' || token=='~' || token=='!' || token=='@' || token=='#'
+ 		|| token=='$' || token=='%' || token=='^' || token=='&' || token=='*'
+ 		|| token=='(' || token==')' || token=='=' || token=='[' || token==','
+ 		|| token==']' || token=='{' || token=='}' || token=='\\' || token=='|'
+ 		|| token==';' || token==':' || token=='\'' || token=='\"' || token=='<'
+ 		|| token=='>' || token=='/' || token=='?' )
+ 		{
+			alert(wireless_chan5a);
+			return false;
+ 		}	 
+	}
+		f.wl0_ssid_2nd.value=f.wl_ssid.value;
+	
+	f.wl0_authtype_2nd.value=f.wl_security.value;
+	if (isBlank(f.pskkey.value))
+	{ 
+		alert(errm); 
+		return false; 
+	}
+	else
+		f.wl0_hotel_key.value=f.pskkey.value;
+	
+	return true;
+	
+}
+function genkey()
+{
+	var f=document.forms[0];
+	f.pskkey.value='<%nvram_get("wl0_hotel_key");%>';
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 onload="Init_Value();" marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem,isAPmode);
+	showMenu(menuSection,menuItem,isAPmode)
+</SCRIPT>
+<form name="wireless_mssid" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="wireless_mssid.html">
+<input type="hidden" name="redirect_timer" value="5000">
+<input type="hidden" name="reboot" value="0">
+<input type="hidden" name="restart" value="wireless">
+<input type="hidden" name="data1" value="wl0_mssid_enabled wl0_ssid_2nd wl0_authtype_2nd wl0_sec_mode_2nd wl0_hotel_key wl0_mssid_mode">
+<input type="hidden" name="wl0_mssid_enabled">
+<input type="hidden" name="wl0_mssid_mode" value="hotel">
+<input type="hidden" name="wl0_ssid_2nd">
+<input type="hidden" name="wl0_authtype_2nd">
+<input type="hidden" name="wl0_sec_mode_2nd" value="open">
+<input type="hidden" name="wl0_hotel_key">
+
+
+
+
+<TD class=head_bold height="100%" width="99%" valign="top"><BR>
+&nbsp;&nbsp;
+<span class="head_bold"><SCRIPT>dw(wireless_mssid_hotel1);</SCRIPT></span><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <table class="copy_1" border="0">
+<tbody>
+<tr>
+<td width="5">&nbsp;</td>
+<td>
+<input value="nothing" name="nothing" type="hidden"> 
+<table class="copy_1" align="left" border="0" cellpadding="0" cellspacing="5" width="585">
+<tbody>
+<tr>
+<td width="71">&nbsp;</td>
+<td colspan="2">
+<SCRIPT>dw(wireless_mssid_hotel2);</SCRIPT>
+<a onclick="window.open('glossary.html#guess_access','help','toolbar=0,status=0,menubar=0,scrollbars=1,resizable=1,width=530,height=400,left=150,top=150');" href="javascript:void(0);"><b><font color="#6464c3">
+<SCRIPT>dw(sm1);</SCRIPT>
+</font></b></a></td>
+</tr>
+<tr>
+<td width="71">&nbsp;</td>
+<td width="174"><b>
+<SCRIPT>dw(wireless_mssid_hotel3);</SCRIPT>&gt;</b></td>
+<td width="340">
+<select name="Radio"><option value="0"><SCRIPT>dw(Disabled);</SCRIPT></option> <option value="1"><SCRIPT>dw(Enabled);</SCRIPT></option> 
+</select></td>
+</tr>
+<tr>
+<td width="71">&nbsp;</td>
+<td width="174"><b>
+<SCRIPT>dw(wireless_mssid_hotel4);</SCRIPT>&gt;</b> </td>
+<td class="plaintext_bold" width="340">
+<input maxlength="32" size="32" name="wl_ssid"> 
+</td>
+</tr>
+<tr>
+<td width="71">&nbsp;</td>
+<td width="174"><b><SCRIPT>dw(wireless_mssid_hotel5);</SCRIPT>&gt;</b></td>
+<td width="340">
+<select name="wl_security" onchange=ChangeSecMode(this)>
+<option value="1" selected><SCRIPT>dw(wireless_mssid_hotel6);</SCRIPT></option>
+<option value="2"><SCRIPT>dw(wireless_mssid_hotel7);</SCRIPT></option>
+</select>&nbsp;</td>
+</tr>
+<tr><td width="71">&nbsp;</td><td width="174"><b>
+  <script>dw(PP);</script>
+</b></td>
+<td width="340"><input maxlength="30" size="30" name="pskkey">
+  <!--script>dw('<input id="submitBtn_generate" type="button" style="{width:80px;}" class="submitBtn" name="wep128a_btn" size="15" value="'+generate+'" onClick="genkey()" >');</script--></td></tr>
+<tr>
+<td width="71">&nbsp;</td>
+<td width="174">&nbsp;</td>
+<td width="340">&nbsp;</td>
+</tr>
+<tr>
+<td width="71">&nbsp;</td>
+<td colspan="2" align="center">
+<input value="" name="Clear_Changes" id="submitBtn_clear" style="width: 160px;" class="submitBtn" onclick="Init_Value();" onmouseover="window.status='Clear'; return true;" onmouseout="window.status=''; return true;" type="button"><input style="width: 160px;" value="" name="Apply_Changes"onclick="return Try_Submit();" id="submitBtn_apply" class="submitBtn" type="submit"></td></tr></tbody></table></td></tr></tbody></table></BODY></HTML>

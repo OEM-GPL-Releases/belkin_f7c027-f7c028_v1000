@@ -1,0 +1,61 @@
+<HTML>
+<HEAD>
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<% wl_get_wps_status(); %>
+
+<SCRIPT>
+<!--
+assign_var();
+strHtml='<title>'+str_1600+'</title>';
+dw(strHtml);
+function wpsUrl()
+{
+	window.location.href ="wl1_iframe_wps.html";
+}
+-->
+</SCRIPT>
+</HEAD>
+<BODY>
+<center>
+<script>
+<!--
+if ('<%nvram_get(wl1_wps_enabled);%>' == '1')
+{
+    if('<%nvram_get(wl1_wps_status);%>' == '34')
+    {
+    	top.location.href="wl1_wps_info_ok.html"; 
+    }
+    else if(('<%nvram_get(wl1_wps_status);%>' > '3') && ('<%nvram_get(wl1_wps_status);%>' < '34'))
+    {
+    	top.location.href="wl1_wps_info_ok.html"; 
+    }
+    else if('<%nvram_get(wl1_wps_status);%>'== '38')
+    {
+    	top.location.href="wl1_wps_info_ok.html"; 
+    }
+    else if(('<%nvram_get(wl1_wps_status);%>' == '1') || ('<%nvram_get(wl1_wps_status);%>' == '2'))
+    {
+    		top.location.href="wl1_wps_info_ok.html"; 
+    }
+    else
+    {
+    		setTimeout("wpsUrl()", 1000)
+    
+    }
+}   
+else if(('<%nvram_get(wl1_wps_status);%>' == '1') ||('<%nvram_get(wl1_wps_enabled);%>' == '0'))
+{
+   	top.location.href="wl1_wps_info_ok.html";
+}
+
+-->
+</script>
+
+
+</center>
+</BODY></HTML>

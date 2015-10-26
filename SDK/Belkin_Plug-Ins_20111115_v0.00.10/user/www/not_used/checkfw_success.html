@@ -1,0 +1,105 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=<%nvram_get("charset");%>">
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<script>assign_var();</script>
+<script>
+strHtml='<title>'+str_54+'</title>';
+dw(strHtml);
+</script>
+<meta HTTP-EQUIV="Pragma" CONTENT="no-cache">
+</head>
+<body text="#000000" bgColor="#eeeeee" leftMargin="0" topMargin="0" marginheight="0" marginwidth="0">
+<form name="checkfw" action="post.cgi" method="post">
+  <table cellSpacing="0" cellPadding="0" width="100%" border="0" valign="top">
+    <tr>
+      <td vAlign="top">
+      <div align="left"><span class="pageTitle"></span><br><br></div>
+      <table cellSpacing="1" cellPadding="0" width="320" align="left" border="0" valign="top">
+        <tr><td width="9">&nbsp;</td><td class="verdana12" colSpan="2" width="320"></td></tr>
+        <tr>
+          <td width="9">&nbsp;</td>
+          <td class="verdana12" colSpan="2" width="320">
+          <font color="#0033ff" size="+1"><u><b>
+		  <script>dw(str_4250);</script></b></u></font><br>&nbsp;<b>
+		  <script>dw(str_58);</script></b><br><br><b>
+		  <script>dw(str_4251);</script>:</b><br>
+		  <script language="javascript">
+<!--ModelName-->		
+				var model=' <%nvram_get("remote_dev_model");%>';
+				document.write(model);
+		  </script>
+		  <br><br><b>
+		  
+		  <script>dw(str_55);</script>:</b><br>&nbsp;
+		  <script>dw(str_4252);</script> : 
+  		  <script language="javascript">
+<!--Firmware Version-->		
+				var tmp= '<%nvram_get("remote_fw_version");%>';
+				document.write(tmp);
+		  </script>
+		  <br>&nbsp;
+		  <script>dw(str_4253);</script> : 
+		  <script language="javascript">
+<!--Released Date-->		
+				var tmp = '<%nvram_get("remote_fw_date");%>';
+				document.write(tmp);
+		  </script>
+		  <br>&nbsp;
+		  <script>dw(str_4254);</script> :
+		  <script language="javascript">
+<!--Image URL-->		  	
+				var tmp='<%nvram_get("remote_fw_url");%>';
+				document.write(tmp);
+		  </script>
+		  <br><br><br>&nbsp;
+		  <script>dw(str_4255);</script><br><br>&nbsp;
+		  <script language="javascript">
+<!--Instruction Doc-->		  
+		  </script>
+		  <a href="<%nvram_get("remote_insdos_url");%>" target='_blank'>
+		  <script>dw(str_4256);</script></a><br>
+		  <i><script>dw(str_4257);</script></i>
+		  <script>dw(str_4258);</script> <a href='http://www.adobe.com' target='_blank'><script>dw(str_4259);</script></a>
+		</td>
+		<tr><td width="9" height="41">&nbsp;</td></tr>
+			<td width="9" height="41">&nbsp;</td>
+          	<td class="verdana12" colSpan="2" height="41" width="320">&nbsp;<b>
+			<script language="javascript">
+<!--Image URL-->		 	
+			</script>
+			<a href="<%nvram_get("remote_fw_url");%>"><script>dw(str_4260);</script></a></b>
+			</td>
+        </tr>
+			<td width="9" height="41">&nbsp;</td>
+          	<td class="verdana12" colSpan="2" height="41" width="320">&nbsp;<b>
+			<script language="javascript">
+<!--Manual URL-->			
+			</script>
+			<a href="<%nvram_get("remote_manual_url");%>" target='_blank'><script>dw(str_4261);</script></a></b>
+			</td>
+        </tr>
+      </table>
+      </td>
+    </tr>
+  </table>
+  </td>
+  </tr>
+  </tbody>
+  </table>
+  </td>
+  </tr>
+  </tbody>
+  </table>
+  </td>
+  </tr>
+  </tbody>
+  </table>
+  </td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+</form>
+</body>
+</html>

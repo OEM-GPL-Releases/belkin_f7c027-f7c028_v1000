@@ -1,0 +1,6 @@
+ifconfig eth2 up
+#insmod fvmac.ko debug_mii=0 share_mii=1 mac0_phyaddr=32 mac1_phyaddr=4 mac0_devname=eth1 mac1_devname=eth0
+#insmod fv_led.ko
+#insmod fv_fastnat_core.ko
+#insmod fv_watch_dog.ko
+sysinit&

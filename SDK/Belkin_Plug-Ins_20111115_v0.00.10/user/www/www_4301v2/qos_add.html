@@ -1,0 +1,1235 @@
+<HTML><HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=Content-Type content=text/html; charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<!--
+<SCRIPT language=JavaScript src="jquery.colorbox-min.js"></SCRIPT>
+-->
+<SCRIPT>
+strHtml='<title>'+str_1880+'</title>';
+strHtml+=' <base target="_self">';
+dw(strHtml);
+                     
+function isBlank(s) {
+     for(var i = 0; i < s.length; i++) {
+     
+        var c = s.charAt(i);
+        if((c !=' ') && (c!='\n') && (c !='\t')) return false;
+        
+     }
+ return true;
+}
+
+function Init_Value()
+{
+   
+  $('#Addqos_Rule_Category').attr("selectedIndex",0);
+ // $("#Appqos_select").attr("selectedIndex", 0);     
+   ShowAPP_Div( $('#Addqos_Rule_Category').val());             	
+}
+
+
+var current_profile_file=parent.$('#qos_profile').val();
+var current_profile="";
+
+  if (current_profile_file=="Auto")
+      current_profile="1";
+  else if (current_profile_file=="User_Defined_1") 
+     current_profile="2";
+  else if (current_profile_file=="User_Defined_2") 
+      current_profile="3";     
+          
+var table_index=0;
+var EditIndex=0;
+var EditCategory="";
+
+function EditOneRule(Category, array_Index, tr_index)
+{
+   table_index= tr_index;
+   EditIndex=array_Index;
+   EditCategory=Category;
+
+   //console.log("category =%s, array_index=%s, tr_index=%s",EditCategory,EditIndex,table_index);
+
+    switch(EditCategory)
+   {                                
+     case "Voice_Device":
+            $('#Addqos_Rule_Category').val(EditCategory);             
+            $('#Voice_Game_Video_Priority').val(parent.$("input[name='Voice_Device_Priority[]']")[EditIndex].value);
+            parent.$('#Edit_type').val('1');                            
+     break;
+                                        
+      case "Online_Games":
+            $('#Addqos_Rule_Category').val(EditCategory);  
+            $('#Voice_Game_Video_Priority').val(parent.$("input[name='Online_Games_Priority[]']")[EditIndex].value);
+              parent.$('#Edit_type').val('1');            
+     break;
+     
+      case "Video":
+            $('#Addqos_Rule_Category').val(EditCategory);           
+            $('#Voice_Game_Video_Priority').val(parent.$("input[name='Video_Priority[]']")[EditIndex].value);
+              parent.$('#Edit_type').val('1');  
+     break; 
+         
+      case "NewApp":
+        
+            $('#Addqos_Rule_Category').val('Applications');              
+            $("#Appqos_select").val(EditCategory);       
+            $("#Appqos_Name").val(parent.$("input[name='qos_App_name[]']")[EditIndex].value);
+            //alert(parent.$("input[name='Appqos_StartPortRange1[]']")[EditIndex].value);
+            $("#Appqos_StartPortRange1").val(parent.$("input[name='Appqos_StartPortRange1[]']")[EditIndex].value);
+            $("#Appqos_EndPortRange1").val(parent.$("input[name='Appqos_EndPortRange1[]']")[EditIndex].value);
+            $("#Appqos_Range1Protocol").val(parent.$("input[name='Appqos_Range1Protocol[]']")[EditIndex].value);           
+            $("#Appqos_StartPortRange2").val(parent.$("input[name='Appqos_StartPortRange2[]']")[EditIndex].value);
+            $("#Appqos_EndPortRange2").val(parent.$("input[name='Appqos_EndPortRange2[]']")[EditIndex].value);
+            $("#Appqos_Range2Protocol").val(parent.$("input[name='Appqos_Range2Protocol[]']")[EditIndex].value);           
+            $("#Appqos_StartPortRange3").val(parent.$("input[name='Appqos_StartPortRange3[]']")[EditIndex].value);
+            $("#Appqos_EndPortRange3").val(parent.$("input[name='Appqos_EndPortRange3[]']")[EditIndex].value);
+            $("#Appqos_Range3Protocol").val(parent.$("input[name='Appqos_Range3Protocol[]']")[EditIndex].value);            
+            $("#New_Appqos_Priority").val(parent.$("input[name='Appqos_Priority[]']")[EditIndex].value);
+            $("#Appqos_TOS").val(parent.$("input[name='Appqos_TOS[]']")[EditIndex].value); 
+              parent.$('#Edit_type').val('1'); 
+       break;              
+                                                                                                                                                                                                  
+       case "MAC_Address":
+           $('#Addqos_Rule_Category').val(EditCategory);        
+           var MACaddr= parent.$("input[name='MACqos_Addr[]']")[EditIndex].value; 
+           $("#MAC_Name").val(parent.$("input[name='MACqos_Name[]']")[EditIndex].value); 
+                     
+           $("#MAC_addr1").val(MACaddr.substring(0,2));
+           $("#MAC_addr2").val(MACaddr.substring(3,5));
+           $("#MAC_addr3").val(MACaddr.substring(6,8));
+           $("#MAC_addr4").val(MACaddr.substring(9,11));
+           $("#MAC_addr5").val(MACaddr.substring(12,14));
+           $("#MAC_addr6").val(MACaddr.substring(15,17));         
+           $("#MAC_Priority").val(parent.$("input[name='MACqos_Priority[]']")[EditIndex].value); 
+            parent.$('#Edit_type').val('1');                 
+       break;
+       
+        case "IP_Address":                     
+           $('#Addqos_Rule_Category').val(EditCategory);    
+           $("#IP_Name").val(parent.$("input[name='IPqos_Name[]']")[EditIndex].value);
+           $("#IP_Priority").val(parent.$("input[name='IPqos_Priority[]']")[EditIndex].value); 
+                     
+           var Local_Range = parent.$("input[name='qos_Local_IP_Addr2[]']")[EditIndex].value;
+           var Local_IP = parent.$("input[name='qos_LocalAddr[]']")[EditIndex].value.split(".");
+           
+           var Remote_Range = parent.$("input[name='qos_Remote_IP_Addr2[]']")[EditIndex].value;
+           var Remote_IP = parent.$("input[name='qos_RemoteAddr[]']")[EditIndex].value.split(".");
+           //IP_RangeSelect($("#LocalAddr").val(), 'LocalAddr');   
+           //IP_RangeSelect($("#RemoteAddr").val(), 'RemoteAddr');
+
+           //console.log("Local_Range %s, Remote_Range %s, Local_IP %s, Remote_IP %s", Local_Range, Remote_Range, Local_IP, Remote_IP);                       
+            
+          $('#td_Set_LocalIPaddr').hide();
+		     	$('#td_Set_LocalIPrange').hide();
+
+		    	$('#td_Set_RemoteIPaddr').hide();
+		    	$('#td_Set_RemoteIPrange').hide(); 		  	            
+            if (Local_Range!="")
+             {
+                //console.log("1");
+                $('#td_Set_LocalIPrange').show();
+                $("#LocalAddr").val('LocalIP_range');
+                $("#IP_Localrange1").val(Local_IP[0]);
+                $("#IP_Localrange2").val(Local_IP[1]);
+                $("#IP_Localrange3").val(Local_IP[2]);
+                $("#IP_Localrange4").val(Local_IP[3]);
+                $("#IP_Localrange5").val(Local_Range);
+             }
+            else if (Local_IP !="" && Local_IP != "All_Local_IPaddr")
+             {
+              //console.log("2");
+              	$('#td_Set_LocalIPaddr').show();
+                $("#LocalAddr").val('LocalIP_addr');
+                $("#IP_LocalAddr1").val(Local_IP[0]);
+                $("#IP_LocalAddr2").val(Local_IP[1]);
+                $("#IP_LocalAddr3").val(Local_IP[2]);
+                $("#IP_LocalAddr4").val(Local_IP[3]);
+             }
+            else
+            {
+              //console.log("3");
+              $("#LocalAddr").val('LocalAny');
+            }
+                    
+                        
+              if (Remote_Range!="")
+             {
+                    $("#RemoteAddr").val('RemoteIP_range');
+                    $('#td_Set_RemoteIPrange').show();
+                    $("#IP_Remoterange1").val(Remote_IP[0]);
+                    $("#IP_Remoterange2").val(Remote_IP[1]);
+                    $("#IP_Remoterange3").val(Remote_IP[2]);
+                    $("#IP_Remoterange4").val(Remote_IP[3]);
+                    $("#IP_Remoterange5").val(Remote_Range);
+             }
+            else if (Remote_IP !="" && Remote_IP != "All_Remote_IPaddr")
+             {
+                    $("#RemoteAddr").val('RemoteIP_addr');
+                    $('#td_Set_RemoteIPaddr').show();
+                    $('#select_QosCategory').width('150');	                                         
+                    $("#IP_Remoteaddr1").val(Remote_IP[0]);
+                    $("#IP_Remoteaddr2").val(Remote_IP[1]);
+                    $("#IP_Remoteaddr3").val(Remote_IP[2]);
+                    $("#IP_Remoteaddr4").val(Remote_IP[3]);
+             }
+            else
+                    $("#RemoteAddr").val('RemoteAny');
+                     
+            parent.$('#Edit_type').val('1');                           
+       break;
+       
+        case "TCP_UDP":
+            $('#Addqos_Rule_Category').val(EditCategory);   
+            $("#TCP_UDP_Name").val(parent.$("input[name='TCPUDPqos_name[]']")[EditIndex].value);                       
+            $("#TCP_UDP_StartPortRange1").val(parent.$("input[name='TCPUDPqos_StartPortRange1[]']")[EditIndex].value);
+            $("#TCP_UDP_EndPortRange1").val(parent.$("input[name='TCPUDPqos_EndPortRange1[]']")[EditIndex].value);
+            $("#TCP_UDP_Range1Protocol").val(parent.$("input[name='TCPUDPqos_Range1Protocol[]']")[EditIndex].value);            
+            $("#TCP_UDP_StartPortRange2").val(parent.$("input[name='TCPUDPqos_StartPortRange2[]']")[EditIndex].value);
+            $("#TCP_UDP_EndPortRange2").val(parent.$("input[name='TCPUDPqos_EndPortRange2[]']")[EditIndex].value);
+            $("#TCP_UDP_Range2Protocol").val(parent.$("input[name='TCPUDPqos_Range2Protocol[]']")[EditIndex].value);
+            $("#TCP_UDP_StartPortRange3").val(parent.$("input[name='TCPUDPqos_StartPortRange3[]']")[EditIndex].value);
+            $("#TCP_UDP_EndPortRange3").val(parent.$("input[name='TCPUDPqos_EndPortRange3[]']")[EditIndex].value);
+            $("#TCP_UDP_Range3Protocol").val(parent.$("input[name='TCPUDPqos_Range3Protocol[]']")[EditIndex].value);
+            $("#New_TCP_UDP_Priority").val(parent.$("input[name='TCPUDPqos_Priority[]']")[EditIndex].value);
+             parent.$('#Edit_type').val('1');                                                         
+       break;
+       
+    default:  
+            $('#Addqos_Rule_Category').val('Applications');              
+            $("#Appqos_select").val(EditCategory);          
+            $("#Appqos_Priority").val(parent.$("input[name='Appqos_Priority[]']")[EditIndex].value);
+            parent.$('#Edit_type').val('1');  
+       break;        
+  }   // end switch (qos_category)
+  //alert(EditCategory);
+  ShowAPP_Div($('#Addqos_Rule_Category').val(),EditCategory);
+}
+
+
+function ShowAPP_Div(oRad, SubSelect) 
+{
+      //console.log("window: %s, document: %s, block :%s, getH: %s", parent.$(window).height(), parent.$(document).height(), parent.$('#block_background').height(), parent.getH());
+      $('#div_Voice_Online_Video_Set').hide();   
+      $('#div_applications_choice').hide(); 
+      $('#div_applications_Add').hide();  				
+			$('#div_MAC_Address').hide(); 	
+      $('#div_IP_Address').hide(); 
+      $('#div_tcp_udp').hide();   
+      $('#div_applications_Set').hide(); 
+      $('#App_button').hide(); 
+      
+			 switch(oRad)
+					{
+						case "Voice_Device":
+						case "Online_Games":
+						case "Video":
+						    $('#div_Voice_Online_Video_Set').show();
+                 parent.$('#frame_qos_add').height($("#div_Voice_Online_Video_Set").height()+100);
+                 //parent.$('#block_background').css("height", parent.qos_html_height + parent.$(document).height());
+
+             break;
+             
+            case "Applications":
+							  $('#div_applications_choice').show(); 
+							  $('#div_applications_Add').show();
+                $('#App_button').show();  
+                parent.$('#frame_qos_add').height($("#div_applications_Add").height()+160);
+                //parent.$('#block_background').css("height", parent.qos_html_height + parent.$(document).height());
+                if (parent.$('#Edit_type').val() == '1')
+                        ShowAppSelect_Div(EditCategory);
+					  	break;	
+						
+						case "MAC_Address":	
+						    	$('#div_MAC_Address').show();
+						    	 parent.$('#frame_qos_add').height($("#div_MAC_Address").height()+80);
+                   //parent.$('#block_background').css("height", parent.qos_html_height + parent.$(document).height());
+                   					     
+               break;
+						 
+						 case "IP_Address":	
+						     $('#div_IP_Address').show();
+                 parent.$('#frame_qos_add').height($("#div_IP_Address").height()+80);
+                 //parent.$('#block_background').css("height", parent.qos_html_height + parent.$(document).height());  
+					
+					     break;
+						 
+						  case "TCP_UDP":	
+						     $('#div_tcp_udp').show();
+                 parent.$('#frame_qos_add').height($("#div_tcp_udp").height()+80);
+                      					
+					     break;
+							  
+					    default:
+							break;
+					}
+          parent.$('#block_background').css("height", parent.qos_html_height + parent.$('#frame_qos_add').height());  
+}
+	 
+function ShowAppSelect_Div(AppSelect) 
+	{ 
+      var check_array = ["MSN", "Yahoo", "Skype", "FTP", "Email", "SNMP", "Telnet", "WWW", "VPN", "IGMP"]; 
+      var check = 0;
+      $.each(check_array, function(index, value){
+        //console.log("select Appset is %s ", value);
+        if(value == AppSelect)
+          check = 1;
+      });
+
+    	$('#div_applications_Add').hide();
+			$('#div_applications_Set').hide();
+			
+	         if(AppSelect=="NewApp" || check==0) 
+	         { 
+              	$('#div_applications_Add').show();
+				      	$('#div_applications_Set').hide();
+				        parent.$('#frame_qos_add').height($("#div_applications_Add").height()+160);
+				
+	          }
+            else 
+	         { 
+	            $('#div_applications_Set').show();
+              parent.$('#frame_qos_add').height($("#div_applications_Set").height()+160);                                 
+	         } 	 
+  } 
+	 
+
+function IP_RangeSelect(AppqosSelect, local_remote) 
+{   
+  var LocalAddr = document.getElementById('LocalAddr');
+	var RemoteAddr = document.getElementById('RemoteAddr');
+	
+	 if (local_remote == "LocalAddr")
+	   {
+		     	$('#td_Set_LocalIPaddr').hide();
+		     	$('#td_Set_LocalIPrange').hide();
+	   }
+	   else
+	   {
+		    	$('#td_Set_RemoteIPaddr').hide();
+		    	$('#td_Set_RemoteIPrange').hide();
+	   }
+					
+				switch(AppqosSelect)
+				{				
+			   <!------Start----for Local Address----------->	
+					case "LocalAny":
+						break;	
+									
+					case "LocalIP_addr":	
+						$('#td_Set_LocalIPaddr').show();
+		
+						break;
+									 
+				    case "LocalIP_range":
+							$('#td_Set_LocalIPrange').show();
+						 
+						break;
+				<!-------End------for Local Address----------->
+		    <!------Start----for Remote Address----------->															
+					case "RemoteAny":
+						break;	
+									
+					case "RemoteIP_addr":	
+						$('#td_Set_RemoteIPaddr').show();
+            $('#select_QosCategory').width('150');	 					
+						break;
+									 
+					case "RemoteIP_range":
+							$('#td_Set_RemoteIPrange').show();
+										 		   
+						break;
+				 <!------End----for Remote Address----------->
+					default:
+					    break;
+				}			  	
+}
+
+function Try_Submit(PassForm)
+{
+                                                         
+   switch (PassForm.name)
+   {                                                                                                                    
+      case "VoiceQos_form":
+        var VoiceQos_form_category=$('#Addqos_Rule_Category').val();
+        
+      
+        switch (VoiceQos_form_category)
+          {                                  
+            case "Voice_Device":           
+            
+              for (var g=0; g < parent.$('input[name=Voice_Device_name[]]').length; g++)
+              {
+                if(parent.$("input[name='Voice_Device_name[]']")[g].value == 'Voice_Device' && ((parent.$('#Edit_type').val() == '1' && g!= EditIndex) || parent.$('#Edit_type').val() == '0') ) 
+                  {
+                     alert(str_3259);
+                     return false;
+                  }  
+               }         
+            break;
+            
+            case "Online_Games":
+            
+               for (var g=0; g < parent.$('input[name=Online_Games_name[]]').length; g++)
+              {
+                if(parent.$("input[name='Online_Games_name[]']")[g].value == 'Online_Games' && ((parent.$('#Edit_type').val() == '1' && g!= EditIndex) || parent.$('#Edit_type').val() == '0') ) 
+                  {
+                     alert(str_3259);
+                     return false;
+                  }  
+               }             
+            break;
+            
+            case "Video":
+                for (var g=0; g < parent.$('input[name=Video_name[]]').length; g++)
+              {
+                if(parent.$("input[name='Video_name[]']")[g].value == 'Video' && ((parent.$('#Edit_type').val() == '1' && g!= EditIndex) || parent.$('#Edit_type').val() == '0') ) 
+                  {
+                     alert(str_3259);
+                     return false;
+                  }  
+               }       
+                  
+            break;
+            default:
+            break;
+          }
+      break;
+      
+      case "AppQos_form":
+      
+        var app_qos_name="";                                   
+        if ($('#Appqos_select').val()=='NewApp')
+          { 
+              app_qos_name=$('#Appqos_Name').val();  
+             	if(isBlank(app_qos_name))
+                	{
+                		alert(str_3260);
+                		return false;
+                	}        
+           }
+          else
+             app_qos_name= $('#Appqos_select').val(); 
+             
+                    
+            for (var g=0; g < parent.$('input[name=qos_App_name[]]').length; g++)
+              {
+                if(parent.$("input[name='qos_App_name[]']")[g].value == app_qos_name && ((parent.$('#Edit_type').val() == '1' && g!= EditIndex) || parent.$('#Edit_type').val() == '0') ) 
+                  {
+                     alert(str_3261);
+                     return false;
+                  }  
+               }
+                          
+        for (var i=1; i<4; i++)
+         {
+            if($("#Appqos_StartPortRange"+i).val() != "")
+            if (!PortCheck($("#Appqos_StartPortRange"+i).val()))
+              {
+                $("#Appqos_StartPortRange"+i).val("");
+                $("#Appqos_StartPortRange"+i).focus();
+				        return false;
+				      }
+         }
+         
+          for (var i=1; i<4; i++)
+         {
+            if($("#Appqos_EndPortRange"+i).val() != "")
+            if (!PortCheck($("#Appqos_EndPortRange"+i).val()))
+              {
+                $("#Appqos_EndPortRange"+i).val("");
+                $("#Appqos_EndPortRange"+i).focus();
+				        return false;
+				      }
+         }                  
+         
+         for (var i=1; i<4; i++)
+         {
+            if($("#Appqos_StartPortRange"+i).val() != "" && $("#Appqos_EndPortRange"+i).val() =="")
+              {
+                $("#Appqos_EndPortRange"+i).focus();
+                alert(str_85);
+				        return false;
+				      }
+				    else if ($("#Appqos_StartPortRange"+i).val() == "" && $("#Appqos_EndPortRange"+i).val()!="")
+				     {
+               $("#Appqos_StartPortRange"+i).focus();
+               alert(str_85);
+               return false;
+             }
+            else if (Number($("#Appqos_StartPortRange"+i).val()) > Number($("#Appqos_EndPortRange"+i).val()))
+            {
+               alert(str_3263);
+               return false;
+            }
+         }                                     
+     break;
+	   
+	   case "MacQos_form":
+        var MAC_Name = $('#MAC_Name').val();
+        var MAC_addr1 = $('#MAC_addr1').val();
+        var MAC_addr2 = $('#MAC_addr2').val();
+        var MAC_addr3 = $('#MAC_addr3').val();
+        var MAC_addr4 = $('#MAC_addr4').val();
+        var MAC_addr5 = $('#MAC_addr5').val();
+        var MAC_addr6 = $('#MAC_addr6').val();
+
+        var re = new RegExp("^[a-fA-F0-9]*$");
+        if(MAC_Name == "")
+        {
+          alert(str_4000);
+          $('#MAC_Name').focus();
+          return false;        
+        }
+        if(MAC_addr1 == "" || MAC_addr2 == "" || MAC_addr3 == "" || MAC_addr4 == "" || MAC_addr5 == "" || MAC_addr6 == "")
+        {
+          alert(str_4001);
+          return false;
+        }
+        if (!MAC_addr1.match(re) || !MAC_addr2.match(re) || !MAC_addr3.match(re) || !MAC_addr4.match(re) || !MAC_addr5.match(re) || !MAC_addr6.match(re)) {
+          alert(str_902);
+          return false;
+        }	    
+     break;
+	   
+	   case "IpQos_form":
+        var IP_Name = $('#IP_Name').val();
+
+        if(IP_Name == "")
+        {
+          alert(str_4002);
+          $('#IP_Name').focus();
+          return false;        
+        }
+        
+        var LocalAddr = $('#LocalAddr').val();
+        var IP_LocalAddr1 = $('#IP_LocalAddr1').val();
+        var IP_LocalAddr2 = $('#IP_LocalAddr2').val();
+        var IP_LocalAddr3 = $('#IP_LocalAddr3').val();
+        var IP_LocalAddr4 = $('#IP_LocalAddr4').val();
+        
+        var IP_Localrange1 = $('#IP_Localrange1').val();
+        var IP_Localrange2 = $('#IP_Localrange2').val();
+        var IP_Localrange3 = $('#IP_Localrange3').val();
+        var IP_Localrange4 = $('#IP_Localrange4').val();
+        var IP_Localrange5 = $('#IP_Localrange5').val(); 
+        
+        var RemoteAddr = $('#RemoteAddr').val();
+        var IP_Remoteaddr1 = $('#IP_Remoteaddr1').val();
+        var IP_Remoteaddr2 = $('#IP_Remoteaddr2').val();
+        var IP_Remoteaddr3 = $('#IP_Remoteaddr3').val();
+        var IP_Remoteaddr4 = $('#IP_Remoteaddr4').val();
+        
+        var IP_Remoterange1 = $('#IP_Remoterange1').val();
+        var IP_Remoterange2 = $('#IP_Remoterange2').val();
+        var IP_Remoterange3 = $('#IP_Remoterange3').val();
+        var IP_Remoterange4 = $('#IP_Remoterange4').val();
+        var IP_Remoterange5 = $('#IP_Remoterange5').val();         
+      
+        switch(LocalAddr)
+        {
+          case "LocalAny":
+          break;
+          case "LocalIP_addr":
+                if(IP_LocalAddr1 == "" || IP_LocalAddr2 == "" || IP_LocalAddr3 == "" || IP_LocalAddr4 == "")
+                {
+                  alert(str_4003);
+                  return false;
+                }
+                var IP = IP_LocalAddr1+"."+ IP_LocalAddr2+"."+IP_LocalAddr3+"."+IP_LocalAddr4;
+                var re = new RegExp("^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))*$");  
+                if (!IP.match(re)) {
+                  alert(str_4004);
+                  return false;
+                }	
+          break;
+          case "LocalIP_range":
+                if(IP_Localrange1 == "" || IP_Localrange2 == "" || IP_Localrange3 == "" || IP_Localrange4 == "" || IP_Localrange5 == "")
+                {
+                  alert(str_641);
+                  return false;
+                }
+                var IP = IP_Localrange1+"."+ IP_Localrange2+"."+IP_Localrange3+"."+IP_Localrange4;
+                var re = new RegExp("^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))*$");  
+                if (!IP.match(re)) {
+                  alert(str_641);
+                  return false;
+                }
+	       				if( Number(IP_Localrange5) > 255)
+                {
+                  alert(str_4005);
+                  return false;        
+                }										
+								if( Number(IP_Localrange5) <=  Number(IP_Localrange4))
+                {
+                  alert(str_4005);
+                  return false;        
+                }	  
+          break;
+        }
+          
+        switch(RemoteAddr)
+        {
+          case "RemoteAny":
+          break;
+          case "RemoteIP_addr":
+            if(IP_Remoteaddr1 == "" || IP_Remoteaddr2 == "" || IP_Remoteaddr3 == "" || IP_Remoteaddr4 == "")
+            {
+              alert(str_641);
+              return false;
+            }
+            var IP = IP_Remoteaddr1+"."+ IP_Remoteaddr2+"."+IP_Remoteaddr3+"."+IP_Remoteaddr4;
+            var re = new RegExp("^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))*$");  
+            if (!IP.match(re)) {
+              alert(str_3274);
+              return false;
+            }	
+          break;
+          case "RemoteIP_range":
+            if(IP_Remoterange1 == "" || IP_Remoterange2 == "" || IP_Remoterange3 == "" || IP_Remoterange4 == "" || IP_Remoterange5 == "")
+            {
+              alert(str_641);
+              return false;
+            }
+            var IP = IP_Remoterange1+"."+ IP_Remoterange2+"."+IP_Remoterange3+"."+IP_Remoterange4;
+            var re = new RegExp("^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))*$");  
+            if (!IP.match(re)) {
+              alert(str_641);
+              return false;
+            }
+						if( Number(IP_Remoterange5) > 255)
+            {
+	            alert(str_4006);
+	            return false;        
+	          }										
+						if( Number(IP_Remoterange5) <=  Number(IP_Remoterange4))
+            {
+              alert(str_4006);
+              return false;        
+            }	  
+ 
+          break;
+        }	     
+     break;
+	   
+	   case "Tcp_Udp_Qos_form":
+        var TCP_UDP_Name = $('#TCP_UDP_Name').val();
+
+        if(TCP_UDP_Name == "")
+        {
+          alert(str_3260);
+          $('#TCP_UDP_Name').focus();
+          return false;        
+        }
+        
+        var TCP_UDP_StartPortRange1 = $('#TCP_UDP_StartPortRange1').val();
+        var TCP_UDP_EndPortRange1 = $('#TCP_UDP_EndPortRange1').val();
+        var TCP_UDP_StartPortRange2 = $('#TCP_UDP_StartPortRange2').val();
+        var TCP_UDP_EndPortRange2 = $('#TCP_UDP_EndPortRange2').val();        
+        var TCP_UDP_StartPortRange3 = $('#TCP_UDP_StartPortRange3').val();
+        var TCP_UDP_EndPortRange3 = $('#TCP_UDP_EndPortRange3').val();
+ 	       
+	      var re = new RegExp("^[0-9]*$");
+        if(TCP_UDP_StartPortRange1 != "" || TCP_UDP_EndPortRange1 != "")
+        {
+          if (!TCP_UDP_StartPortRange1.match(re) || !TCP_UDP_EndPortRange1.match(re) || (TCP_UDP_StartPortRange1 > TCP_UDP_EndPortRange1)) {
+            alert(str_3263);
+            return false;
+          } 
+          PortCheck(TCP_UDP_StartPortRange1);
+          PortCheck(TCP_UDP_EndPortRange1);                  
+        } 
+        if(TCP_UDP_StartPortRange2 != "" || TCP_UDP_EndPortRange2 != "")
+        {
+          if (!TCP_UDP_StartPortRange2.match(re) || !TCP_UDP_EndPortRange2.match(re) || (TCP_UDP_StartPortRange2 > TCP_UDP_EndPortRange2)) {
+            alert(str_3263);
+            return false;
+          } 
+          PortCheck(TCP_UDP_StartPortRange2);
+          PortCheck(TCP_UDP_EndPortRange2);                  
+        }
+        if(TCP_UDP_StartPortRange3 != "" || TCP_UDP_EndPortRange3 != "")
+        {
+          if (!TCP_UDP_StartPortRange3.match(re) || !TCP_UDP_EndPortRange3.match(re) || (TCP_UDP_StartPortRange3 > TCP_UDP_EndPortRange3)) {
+            alert(str_3263);
+            return false;
+          }
+          PortCheck(TCP_UDP_StartPortRange3);
+          PortCheck(TCP_UDP_EndPortRange3);        
+        }                 
+       break;
+	   
+	   default:
+	     break;
+   }
+    parent.Add_input_name(table_index);
+    return true;
+}
+
+$(":input[value=Cancel]").live("click" ,function(){
+  parent.$('#block_background').css("display", "none");
+  parent.$('#add_qos_tr').hide();
+  parent.$('#Edit_type').val('0');
+  /* reduce parent.$(document).height() to fixe block_background height by Emily */
+  parent.$('#block_background').css("height", parent.qos_html_height - parent.$(document).height());   
+});
+
+function PortCheck(I)
+{
+	var RegExp = /^\d*$/;
+	if ( !( I<65536 && I>0)|| isNaN(I) || !RegExp.test(I))		
+	{
+		alert(str_1250);
+		return false;
+	}
+	return true;
+}	
+
+//-->
+</SCRIPT>
+</HEAD >
+<body onLoad="Init_Value();" bgcolor="#FFFFFF" link="#FFFFFF" vlink="#FFFFFF" alink="#FFFFFF">
+
+ <table border="0" cellspacing="0" cellpadding="0" align="left" width="550">
+ <tr>    
+	 <td  height="100%" width="100%" valign="top">
+	    
+	         
+	<form  style="margin:0px;" id="QosCategory_form" name="QosCategory_form" method="post" action="">				            
+	      <table  width="100%"  border="0" cellSpacing="0" cellPadding="0" >
+        		  
+					  <tr height="50">
+                <td width="5">&nbsp;</td>
+					      <td width="545" colspan="2" class="TitleTextCol"><SCRIPT>dw(str_1585);</SCRIPT></td>
+					   
+					  </tr>
+					  
+					  <tr height="30">
+                <td width="5">&nbsp;</td>
+					      <td id="select_QosCategory" width="150" class="TextCol"><SCRIPT>dw(str_1586);</SCRIPT>&nbsp;&nbsp;&gt;</td>
+					      <td width="300" class="TextCol" align="left"> 
+				            <select id="Addqos_Rule_Category" class="select_TextCol" name="Addqos_Rule_Category" onChange="ShowAPP_Div(this.options[this.options.selectedIndex].value);">
+												<SCRIPT>
+                            dw('<option value="Voice_Device">'+ str_1487 +'</option>');
+                            dw('<option value="Online_Games">'+ str_1486 +'</option>');
+                            dw('<option value="Video">'+ str_1485 +'</option>');
+                            dw('<option value="Applications">'+ str_1587 +'</option>');
+														dw('<option value="MAC_Address">'+ str_14 +'</option>');
+														dw('<option value="IP_Address">'+ str_760 +'</option>');
+														dw('<option value="TCP_UDP">'+ str_4100 +'</option>');
+												</SCRIPT>
+							   </select>
+						  </td>
+					  </tr>
+	    </table>
+ </form>
+ 
+ <form style="margin:0px;" id="VoiceQos_form" name="VoiceQos_form" method="post" action="">    	       
+	<table id="div_Voice_Online_Video_Set" style="display:none; width:100%; height:30px;" border="0" cellspacing="0" cellpadding="0">
+     <tr height="30">
+           <td  width="5">&nbsp;</td>
+            <td class="TextCol" width="150"><script>dw(str_1555);</script>&nbsp;&nbsp;&gt;</td>
+            <td class="TextCol" width="300" align="left">
+                <select class="select_priorityTextCol" id="Voice_Game_Video_Priority" name="Voice_Game_Video_Priority">
+                    <script>
+												dw('<option value="Highest">'+ str_1562 +'</option>');
+                        dw('<option value="High">'+ str_1561 +'</option>');        								
+        								dw('<option value="Medium">'+ str_1568 +'</option>');
+        								dw('<option value="Normal">'+ str_1629 +'</option>');									
+    								</script>
+                 </select>
+             </td>           
+       </tr>
+       <tr height="15"><td colspan="2"></td></tr>
+       <tr>                               
+          <td  width="5">&nbsp;</td>
+          <td  colspan="2" align="left">
+									<script>
+										dw('</nput id="VoiceQosBtn_apply" type="button" style="{width:80px;}" value="');
+										dw(str_1398);
+										dw('"onClick=" return Try_Submit(VoiceQos_form, \'0\');" class="submitBtn">');
+										dw('    <input id="VoiceQosBtn_clear" type="button" value="');
+										dw(str_1399);
+										dw('" style="{width:80px;}" class="submitBtn" onclick="VoiceQos_form.reset();Init_Value();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">');
+									</script>
+					  </td>
+        </tr>
+     </table>
+ </form>
+ 
+<!--app***app***app***app***app***app***-------------For All Application -----start applications_choice_div-----***app***app****app***app***app*-->
+<form style="margin:0px;" id="AppQos_form" name="AppQos_form" method="post" action="">    	       
+			  <table id="div_applications_choice"  style="display:none; width:100%; height:30px;" cellspacing="0" cellpadding="0" border="0" >
+                    <tr height="30">
+					            <td width="5">&nbsp;</td>
+                      <td width="150"  class="TextCol"><script>dw(str_1587);</script>&nbsp;&nbsp;&gt;</td>
+                      <td width="300"  class="TextCol">
+                       <select id="Appqos_select" class="select_AppTextCol" name="Appqos_select" onChange="ShowAppSelect_Div(this.options[this.options.selectedIndex].value);">
+                            <script>
+                            dw('<option value="NewApp">'+ str_1588 +'</option>');
+														dw('<option value="MSN">'+ str_221 +'</option>');
+														dw('<option value="Yahoo">'+ str_4101 +'</option>');
+														dw('<option value="Skype">'+ str_4102 +'</option>');
+														dw('<option value="FTP">'+ str_1493 +'</option>');
+														dw('<option value="Email">'+ str_1495 +'</option>');
+														dw('<option value="SNMP">'+ str_246 +'</option>');
+														dw('<option value="Telnet">'+ str_4103 +'</option>');
+														dw('<option value="WWW">'+ str_4104 +'</option>');
+														dw('<option value="VPN">'+ str_1497 +'</option>');
+														dw('<option value="IGMP">'+ str_4105 +'</option>');
+												</script>
+                        </select>
+                      </td>
+                    </tr>
+           </table>
+           
+<!-- ------------------------------------------For Add a New Application -----start applications_Add_div-------------------------------------->              
+          <table id="div_applications_Add" style="display:none; width:100%; height:200px;" cellspacing="0" cellpadding="0"  border="0">     
+                <tr height="30" >
+                    <td width="5">&nbsp;</td>
+							      <td width="150" class="TextCol"><script>dw(str_1590);</script>&nbsp;&nbsp;&gt;</td>
+                    <td width="300" class="TextCol"><input id="Appqos_Name" class="name_col_width" name="Appqos_Name" type="text" maxlength="20" value=""></td>
+                 </tr>
+                          
+                <tr height="30">
+                    <td>&nbsp;</td>
+                    <td class="TextCol"><script>dw(str_1591);</script>&nbsp;&nbsp;&gt;</td>
+                    <td class="TextCol"> 
+							         1.<script>dw(str_1592);</script>&nbsp;
+							           <input class="port_col_width" id="Appqos_StartPortRange1" name="Appqos_StartPortRange1" type="text"  value="">
+              					 <script>dw(str_1593);</script>&nbsp;
+              				  <input class="port_col_width" id="Appqos_EndPortRange1" name="Appqos_EndPortRange1" type="text"  value="">
+              				  
+							          <select class="mtu_select_col_width" id="Appqos_Range1Protocol" name="Appqos_Range1Protocol">
+               						<script>dw('<option value="BOTH">'+ str_72 +'</option>');
+      														dw('<option value="TCP">'+ str_4106 +'</option>');
+      														dw('<option value="UDP">'+ str_4107 +'</option>');
+												  </script>
+              					</select>&nbsp;
+                    </td>
+                 </tr>
+                
+                <tr height="30">
+                    <td>&nbsp;</td>
+						      	<td class="TextCol">&nbsp;</td>
+                    <td class="TextCol"> 
+							         2.<script>dw(str_1592);</script>&nbsp;
+								        <input class="port_col_width" id="Appqos_StartPortRange2" name="Appqos_StartPortRange2" type="text"  value="">
+								        <script>dw(str_1593);</script>&nbsp;
+								        <input class="port_col_width" id="Appqos_EndPortRange2" name="Appqos_EndPortRange2" type="text"  value="">
+								  
+                        <select class="mtu_select_col_width" id="Appqos_Range2Protocol" name="Appqos_Range2Protocol">
+      												<script>dw('<option value="BOTH">'+ str_72 +'</option>');
+      														dw('<option value="TCP">'+ str_4106 +'</option>');
+      														dw('<option value="UDP">'+ str_4107 +'</option>');
+      												</script>
+                    		</select>&nbsp;
+                      </td>
+                </tr>
+                
+               <tr height="30"> 
+                    <td>&nbsp;</td>                         
+                    <td class="TextCol">&nbsp;</td>
+                    <td class="TextCol"> 
+							         3.<script>dw(str_1592);</script>&nbsp;
+        								  <input class="port_col_width" id="Appqos_StartPortRange3" name="Appqos_StartPortRange3" type="text"  value="">
+        								  <script>dw(str_1593);</script>&nbsp;
+        								  <input class="port_col_width" id="Appqos_EndPortRange3" name="Appqos_EndPortRange3" type="text"  value="">
+        								  <select class="mtu_select_col_width" id="Appqos_Range3Protocol" name="Appqos_Range3Protocol">
+        												<script>dw('<option value="BOTH">'+ str_72 +'</option>');
+        														dw('<option value="TCP">'+ str_4106 +'</option>');
+        														dw('<option value="UDP">'+ str_4107 +'</option>');
+        												</script>
+                      		</select>&nbsp;
+                    </td>
+                </tr>
+							
+                <tr height="40">
+                    <td>&nbsp;</td>    
+							      <td class="TextCol"><script>dw(str_1555);</script>&nbsp;&nbsp;&gt;</td>
+                    <td class="TextCol">
+      							  <select class="mtu_select_col_width" id="New_Appqos_Priority" name="New_Appqos_Priority">
+                                  <script>dw('<option value="Highest">'+ str_1562 +'</option>');
+																	dw('<option value="High">'+ str_1561 +'</option>');
+      														dw('<option value="Medium">'+ str_1568 +'</option>');
+      														dw('<option value="Normal">'+ str_1629 +'</option>');									
+      												</script>
+                        </select>
+                    </td>                
+               </tr>
+                            
+              <tr height="30">
+                   <td>&nbsp;</td>  
+							     <td class="TextCol"><script>dw(str_1533);</script>&nbsp;&nbsp;&gt;</td>
+                   <td class="TextCol" >
+                      <select class="select_AppTextCol" id="Appqos_TOS"  name="Appqos_TOS">
+                            <script>
+                                  dw('<option value="none_remark">'+ str_1534 +'</option>');
+      														dw('<option value="BE">'+ str_4108 +'</option>');
+      														dw('<option value="AF1x">'+ str_4109 +'</option>');
+      														dw('<option value="AF2x">'+ str_4110 +'</option>');
+      														dw('<option value="AF3x">'+ str_4111 +'</option>');
+      														dw('<option value="AF4x">'+ str_4112 +'</option>');
+      														dw('<option value="EF">'+ str_4113 +'</option>');
+      												</script>
+                      </select>
+                   </td>
+              </tr>
+         </table>
+                 
+<!-- ------------------------------------------For Add a New Application -----End applications_Add_div-------------------------------------->
+<!-- ------------------------------------------For Others Application ------Start applications_Set_div-------------------------------------->
+   <table id="div_applications_Set" style="display:none; width:100%; height:30px;" border="0" cellspacing="0" cellpadding="0">
+     <tr height="30">
+           <td  width="5">&nbsp;</td>
+            <td class="TextCol" width="150"><script>dw(str_1555);</script>&nbsp;&nbsp;&gt;</td>
+            <td class="TextCol" width="300" align="left">
+                <select class="select_priorityTextCol" id="Appqos_Priority" name="Appqos_Priority">
+                    <script>
+                        dw('<option value="Highest">'+ str_1562 +'</option>');
+        								dw('<option value="High">'+ str_1561 +'</option>');
+        								dw('<option value="Medium">'+ str_1568 +'</option>');
+        								dw('<option value="Normal">'+ str_1629 +'</option>');									
+    								</script>
+                 </select>
+             </td>           
+       </tr>
+     </table>
+<!-- ------------------------------------------------For Others Application ------End applications_Set_div-------------------------------------->
+   <table  id="App_button" name="App_button" width="100%" border="0" cellspacing="0" cellpadding="0">     
+
+        <tr>
+          <td  width="5">&nbsp;</td>
+          <td  width="100%"  align="left"> 
+									<script>
+										dw('<input id="AppQosBtn_apply" type="button" style="{width:80px;}" value="');
+										dw(str_1398);
+										dw('"onClick=" return Try_Submit(AppQos_form);" class="submitBtn">');
+										dw('    <input id="AppQosBtn_clear" type="button" value="');
+										dw(str_1399);
+										dw('" style="{width:80px;}" class="submitBtn" onclick="AppQos_form.reset();Init_Value();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">');
+									</script>
+								
+					  </td>
+        </tr>
+		</table>
+</form>
+<!--app***app***app***app***app***app***-------------For All Application -----End applications_choice_div-----***app***app****app***app***app*-->
+
+<!--mac***mac***mac***mac***mac***mac***-------------For All MAC Address -----start MAC_Address_div-----------***mac***mac****mac***mac***mac*-->
+<form style="margin:0px;" id="MacQos_form" name="MacQos_form" method="post" action="">  	       
+			  <table border="0" id="div_MAC_Address" style="display:none; width:100%; height:150px;" cellspacing="0" cellpadding="0">                  
+            
+            <tr height="30">
+              <td width="5">&nbsp;</td>
+  						<td width="150" class="TextCol" ><script>dw(str_1590);</script></td>
+              <td width="300" class="TextCol">
+              <input id="MAC_Name" name="MAC_Name" type="text" class="name_col_width" maxlength="20" value=""></td>
+            </tr>
+            
+            <tr height="30">
+              <td>&nbsp;</td>
+              <td class="TextCol"><script>dw(str_1594);</script>&nbsp;&nbsp;&gt;</td>
+              <td class="TextCol">
+							  <input id="MAC_addr1" name="MAC_addr1" type="text" class="ip_col_width" maxlength="2" value="">&nbsp;<b>-</b>
+								<input id="MAC_addr2" name="MAC_addr2" type="text" class="ip_col_width" maxlength="2" value="">&nbsp;<b>-</b>
+								<input id="MAC_addr3" name="MAC_addr3" type="text" class="ip_col_width" maxlength="2" value="">&nbsp;<b>-</b>
+								<input id="MAC_addr4" name="MAC_addr4" type="text" class="ip_col_width" maxlength="2" value="">&nbsp;<b>-</b>
+								<input id="MAC_addr5" name="MAC_addr5" type="text" class="ip_col_width" maxlength="2" value="">&nbsp;<b>-</b>
+								<input id="MAC_addr6" name="MAC_addr6" type="text" class="ip_col_width" maxlength="2" value="">		  
+							</td>
+            </tr>
+                                                   							
+             <tr height="40">
+               <td>&nbsp;</td>
+							  <td class="TextCol"><script>dw(str_1555);</script>&nbsp;&nbsp;&gt;</td>
+                <td class="TextCol">
+							     <select class="select_priorityTextCol" id="MAC_Priority" name="MAC_Priority">
+                      <script>dw('<option value="Highest">'+ str_1562 +'</option>');
+														dw('<option value="High">'+ str_1561 +'</option>');
+														dw('<option value="Medium">'+ str_1568 +'</option>');
+														dw('<option value="Normal">'+ str_1629 +'</option>');									
+												</script>
+                    </select>
+                </td>                            
+              </tr>
+               
+							<tr>
+							  <td width="5">&nbsp;</td>
+                <td width="100%" colspan="2" align="left"> 
+									<script>
+										dw('<input id="MAC_QosBtn_apply" type="button" style="{width:80px;}" value="');
+										dw(str_1398);     
+										dw('" onClick="return Try_Submit(MacQos_form);" class="submitBtn">');
+										dw('    <input id="MAC_QosBtn_clear" type="button" value="');
+										dw(str_1399);
+										dw('" style="{width:80px;}" class="submitBtn" onclick="MacQos_form.reset();Init_Value();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">');
+									</script>
+					      </td>
+            </tr>                         
+                  </table>
+
+ 
+   <input type="hidden" id="MacQos_form_data1" name="data1" value="">
+</form>
+<!--mac***mac***mac***mac***mac***mac***-------------For All MAC Address -----End MAC_Address_div-----------***mac***mac****mac***mac***mac*-->
+
+
+<!--*ip****ip****ip****ip****ip****ip***-------------For All ip Address -----start ip_Address_div-----------****ip****ip*****ip****ip****ip*-->
+<form style="margin:0px;" id="IpQos_form" name="IpQos_form" method="post" action="">  	    
+      <table id="div_IP_Address" style="display:none; width:100%; height:250px;" border="0" cellspacing="0" cellpadding="0">
+          <tr height="30">
+              <td  width="5">&nbsp;</td>
+							<td class="TextCol" width="150"><script>dw(str_1590);</script>&nbsp;&nbsp;&gt;</td>
+              <td class="TextCol"  width="300">
+              <input id="IP_Name"  class="name_col_width"  id="IP_Name" name="IP_Name" type="text" maxlength="20" value=""></td>
+          </tr>
+          
+          <tr height="30">
+              <td>&nbsp;</td>
+              <td class="TextCol"><script>dw(str_1522);</script>&nbsp;&nbsp;&gt;</td>
+              <td class="TextCol">&nbsp;</td>
+          </tr>
+          
+          <tr height="30">
+              <td>&nbsp;</td>
+							<td class="TextCol">
+      								<table width="100%">
+      								   <tr>
+      								      <td width="20">&nbsp;</td>
+      									  <td class="TextCol"><b><script>dw(str_1520);</script>&nbsp;&nbsp;&gt;</b>
+      									  </td>
+      								   </tr>
+      								 </table>
+						    </td>
+               <td class="TextCol" align="left">
+        					<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        						<tr>
+        							 <td >		 
+        									<select class="select_priorityTextCol" id="LocalAddr" name="LocalAddr" onChange="IP_RangeSelect(this.options[this.options.selectedIndex].value, this.name);">
+        												<script>dw('<option value="LocalAny">'+ str_1492 +'</option>');
+        														dw('<option value="LocalIP_addr">'+ str_760 +'</option>');
+        														dw('<option value="LocalIP_range">'+ str_1522 +'</option>');
+        												</script>
+                      			</select> 
+        								 </td>
+        	
+        						    <td id="td_Set_LocalIPaddr" style="display:none">  
+        								  <input id="IP_LocalAddr1" name="IP_LocalAddr1" type="text" class="ip_col_width" maxlength="3" value="">&nbsp;<b>.</b>
+        								  <input id="IP_LocalAddr2" name="IP_LocalAddr2" type="text" class="ip_col_width" maxlength="3" value="">&nbsp;<b>.</b>
+        								  <input id="IP_LocalAddr3" name="IP_LocalAddr3" type="text" class="ip_col_width" maxlength="3" value="">&nbsp;<b>.</b>
+        								  <input id="IP_LocalAddr4" name="IP_LocalAddr4" type="text" class="ip_col_width" maxlength="3" value="">		  
+        								</td>
+        	
+        							 <td id="td_Set_LocalIPrange" style="display:none" >  
+        								  <input id="IP_Localrange1" name="IP_Localrange1" type="text" class="ip_col_width" maxlength="3" value="">&nbsp;<b>.</b>
+        								  <input id="IP_Localrange2" name="IP_Localrange2" type="text" class="ip_col_width" maxlength="3" value="">&nbsp;<b>.</b>
+        								  <input id="IP_Localrange3" name="IP_Localrange3" type="text" class="ip_col_width" maxlength="3" value="">&nbsp;<b>.</b>
+        								  <input id="IP_Localrange4" name="IP_Localrange4" type="text" class="ip_col_width" maxlength="3" value="">&nbsp;<b>~</b>
+        								  <input id="IP_Localrange5" name="IP_Localrange5" type="text" class="ip_col_width" maxlength="3" value=""> 
+        								</td>
+        						  </tr>
+        				    </table>	
+                </td>
+            </tr>
+            
+           <tr height="30">
+                 <td>&nbsp;</td>                         
+                 <td class="TextCol" align="left">
+    							  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    								   <tr>
+    								      <td width="20">&nbsp;</td>
+    									    <td class="TextCol"><script>dw(str_1525);</script>&nbsp;&nbsp;&gt;</td>
+    								   </tr>
+    								</table>
+							  </td>
+                <td class="TextCol" align="left"> 
+							 		 <table width="100%" border="0" cellspacing="0" cellpadding="0">
+							       <tr>
+							         <td>		 
+        									<select class="select_priorityTextCol" id="RemoteAddr" name="RemoteAddr" onChange="IP_RangeSelect(this.options[this.options.selectedIndex].value, this.name);">
+        												<script>dw('<option value="RemoteAny">'+ str_1492 +'</option>');
+        														dw('<option value="RemoteIP_addr">'+ str_760 +'</option>');
+        														dw('<option value="RemoteIP_range">'+ str_1522 +'</option>');
+        												</script>
+                      			</select>
+								       </td>
+					
+								      <td id="td_Set_RemoteIPaddr" style="display:none" >  
+      								  <input id="IP_Remoteaddr1" name="IP_Remoteaddr1" type="text" class="ip_col_width" maxlength="3" value="">&nbsp;<b>.</b>
+      								  <input id="IP_Remoteaddr2" name="IP_Remoteaddr2" type="text" class="ip_col_width" maxlength="3" value="">&nbsp;<b>.</b>
+      								  <input id="IP_Remoteaddr3" name="IP_Remoteaddr3" type="text" class="ip_col_width" maxlength="3" value="">&nbsp;<b>.</b>
+      								  <input id="IP_Remoteaddr4" name="IP_Remoteaddr4" type="text" class="ip_col_width" maxlength="3" value="">		  
+								     </td>
+								     
+								    <td id="td_Set_RemoteIPrange" style="display:none">  
+      								  <input id="IP_Remoterange1" name="IP_Remoterange1" type="text" class="ip_col_width" maxlength="3" value="">&nbsp;<b>.</b>
+      								  <input id="IP_Remoterange2" name="IP_Remoterange2" type="text" class="ip_col_width" maxlength="3" value="">&nbsp;<b>.</b>
+      								  <input id="IP_Remoterange3" name="IP_Remoterange3" type="text" class="ip_col_width" maxlength="3" value="">&nbsp;<b>.</b>
+      								  <input id="IP_Remoterange4" name="IP_Remoterange4" type="text" class="ip_col_width" maxlength="3" value="">&nbsp;<b>~</b>
+      								  <input id="IP_Remoterange5" name="IP_Remoterange5" type="text" class="ip_col_width" maxlength="3" value=""> 
+								    </td>							  
+							   </tr>
+							  </table>
+              </td>
+          </tr>
+		
+            <tr height="40">
+                  <td>&nbsp;</td>     
+							    <td class="TextCol"><script>dw(str_1555);</script>&nbsp;&nbsp;&gt;</td>
+                  <td class="TextCol" align="left">
+      							  <select id="IP_Priority" class="select_priorityTextCol"  name="IP_Priority">
+                          <script>dw('<option value="Highest">'+ str_1562 +'</option>');
+      														dw('<option value="High">'+ str_1561 +'</option>');
+      														dw('<option value="Medium">'+ str_1568 +'</option>');
+      														dw('<option value="Normal">'+ str_1629 +'</option>');									
+      												</script>
+                      </select>
+                   </td>
+            </tr>
+                            
+            <tr height="30">
+                <td>&nbsp;</td>   
+							  <td class="TextCol"><script>dw(str_1533);</script>&nbsp;&nbsp;&gt;</td>
+                <td class="TextCol" align="left">
+                <select id="IP_TOS" class="select_priorityTextCol"  name="IP_TOS">
+                    <script>dw('<option value="none_remark">'+ str_1534 +'</option>');
+														dw('<option value="BE">'+ str_4108 +'</option>');
+														dw('<option value="AF1x">'+ str_4109 +'</option>');
+														dw('<option value="AF2x">'+ str_4110 +'</option>');
+														dw('<option value="AF3x">'+ str_4111 +'</option>');
+														dw('<option value="AF4x">'+ str_4112 +'</option>');
+														dw('<option value="EF">'+ str_4113 +'</option>');
+												</script>
+                    </select>
+                </td>
+          </tr>
+          
+					<tr>
+					  <td width="5">&nbsp;</td>
+            <td width="100%" colspan="2" align="left"> 
+									<script>
+										dw('<input id="IP_Qos_Btn_apply" type="button" style="{width:80px;}" value="');
+										dw(str_1398);
+										dw('" onClick="return Try_Submit(IpQos_form);" class="submitBtn">');
+										dw('    <input id="IP_Qos_Btn_clear" type="button" value="');
+										dw(str_1399);
+										dw('" style="{width:80px;}" class="submitBtn" onclick="IpQos_form.reset();Init_Value();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">');
+									</script>
+					  </td>
+          </tr>
+      </table>
+
+ 
+   <input type="hidden" id="IpQos_form_data1" name="data1" value="">
+ </form>
+<!--*ip****ip****ip****ip****ip****ip***-------------For All ip Address -----End ip_Address_div-----------****ip****ip*****ip****ip****ip*-->
+
+<!--*tcp/udp****tcp/udp****tcp/udp****tcp/udp****tcp/udp****tcp/udp***-----For All tcp/udp-----Start tcp_udp_div-----****tcp/udp****tcp/udp*****tcp/udp****tcp/udp****tcp/udp*-->
+<form style="margin:0px;" id="Tcp_Udp_Qos_form" name="Tcp_Udp_Qos_form" method="post" action="">
+ 				   
+    <table id="div_tcp_udp" border="0" style="display:none; width:100%; height:200px;" cellspacing="0" cellpadding="0">
+          <tr height="30">
+            <td  width="5">&nbsp;</td>
+						<td class="TextCol" width="150"><script>dw(str_1590);</script>&nbsp;&nbsp;&gt;</td>
+            <td class="TextCol" width="300"><input class="name_col_width" id="TCP_UDP_Name" name="TCP_UDP_Name" type="text" maxlength="20" value=""></td>
+          </tr>
+          
+          <tr height="30">
+            <td>&nbsp;</td>
+            <td class="TextCol"><script>dw(str_1591);</script>&nbsp;&nbsp;&gt;</td>
+            <td class="TextCol">
+							  1.<script>dw(str_1592);</script>&nbsp;
+							     <input id="TCP_UDP_StartPortRange1" class="port_col_width" name="TCP_UDP_StartPortRange1" type="text" value="">
+              			<script>dw(str_1593);</script>&nbsp;
+              		<input id="TCP_UDP_EndPortRange1" class="port_col_width" name="TCP_UDP_EndPortRange1" type="text" value="">
+							       <select class="mtu_select_col_width" id="TCP_UDP_Range1Protocol" name="TCP_UDP_Range1Protocol">
+               			<script>dw('<option value="BOTH">'+ str_72 +'</option>');
+														dw('<option value="TCP">'+ str_4106 +'</option>');
+														dw('<option value="UDP">'+ str_4107 +'</option>');
+										</script>
+              			</select>
+								&nbsp;</td>
+          </tr>
+          
+          <tr height="30">
+            <td>&nbsp;</td>
+						<td class="TextCol">&nbsp;</td>
+            <td class="TextCol">
+							  2.<script>dw(str_1592);</script>&nbsp;
+								  <input id="TCP_UDP_StartPortRange2" class="port_col_width" name="TCP_UDP_StartPortRange2" type="text" value="">
+								  <script>dw(str_1593);</script>&nbsp;
+								  <input id="TCP_UDP_EndPortRange2" class="port_col_width" name="TCP_UDP_EndPortRandge2" type="text" value="">
+								  <select id="TCP_UDP_Range2Protocol" class="mtu_select_col_width" name="TCP_UDP_Range2Protocol">
+												<script>dw('<option value="BOTH">'+ str_72 +'</option>');
+														dw('<option value="TCP">'+ str_4106 +'</option>');
+														dw('<option value="UDP">'+ str_4107 +'</option>');
+												</script>
+              		</select>
+           </td>
+         </tr>
+         
+        <tr height="30">
+          <td>&nbsp;</td>                         
+          <td class="TextCol">&nbsp;</td>
+          <td class="TextCol">
+							  3.<script>dw(str_1592);</script>&nbsp;
+								  <input id="TCP_UDP_StartPortRange3" class="port_col_width" name="TCP_UDP_StartPortRange3" type="text"  value="">
+								  <script>dw(str_1593);</script>&nbsp;
+								  <input id="TCP_UDP_EndPortRange3" class="port_col_width" name="TCP_UDP_EndPortRange3" type="text"  value="">
+								  <select id="TCP_UDP_Range3Protocol" class="mtu_select_col_width" name="TCP_UDP_Range3Protocol">
+												<script>dw('<option value="BOTH">'+ str_72 +'</option>');
+														dw('<option value="TCP">'+ str_4106 +'</option>');
+														dw('<option value="UDP">'+ str_4107 +'</option>');
+												</script>
+              		 </select>
+           </td>
+         </tr>
+
+        <tr height="40">
+          <td>&nbsp;</td>     
+					<td class="TextCol"><script>dw(str_1555);</script></td>
+          <td class="TextCol">
+							  <select id="New_TCP_UDP_Priority" class="select_priorityTextCol" name="New_TCP_UDP_Priority">
+                    <script>dw('<option value="Highest">'+ str_1562 +'</option>');
+														dw('<option value="High">'+ str_1561 +'</option>');
+														dw('<option value="Medium">'+ str_1568 +'</option>');
+														dw('<option value="Normal">'+ str_1629 +'</option>');									
+										</script>
+                </select>
+           </td>
+       </tr>
+                             
+        <tr>
+          <td width="5">&nbsp;</td>     
+           <td width="100%" colspan="2" align="left"> &nbsp;
+									<script>
+										dw('<input id="TCP_UDP_Btn_apply" type="button" style="{width:80px;}" value="');
+										dw(str_1398);
+										dw('" onClick="return Try_Submit(Tcp_Udp_Qos_form);" class="submitBtn">');
+										dw('    <input id="TCP_UDP_Btn_clear" type="button" value="');
+										dw(str_1399);
+										dw('" style="{width:80px;}" class="submitBtn" onclick="Tcp_Udp_Qos_form.reset();Init_Value();" onMouseOver="window.status=\'Clear\'; return true;" onMouseOut="window.status=\'\'; return true;">');
+									</script>
+					  </td>
+        </tr>
+  </table>
+      
+   <input type="hidden" id="Tcp_Udp_Qos_form_data1" name="data1" value="">
+ </form>
+<!--*tcp/udp****tcp/udp****tcp/udp****tcp/udp****tcp/udp****tcp/udp***-------------For All tcp/udp Address -----End tcp_udp_div-----------****tcp/udp****tcp/udp*****tcp/udp****tcp/udp****tcp/udp*-->
+
+	           </td>
+ 			</tr>
+		 </table>
+</body>
+</html>
+
+ 
+ 

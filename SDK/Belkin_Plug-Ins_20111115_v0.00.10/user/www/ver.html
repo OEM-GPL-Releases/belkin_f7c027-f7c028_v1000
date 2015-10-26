@@ -1,0 +1,54 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html">
+<title>Ver</title>
+</head>
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<script language="javascript">
+	function Try_Submit()
+	{
+		var f=document.forms[0];
+		f.submit();
+	}
+	
+	function Init_Value()
+	{
+		var f=document.forms[0];
+	}
+</script>
+</head>
+<body bgcolor="#ffffff" text="#000000" onLoad="Init_Value();">
+<form name="adv" action="post.cgi" method="post">
+<input type="hidden" name="command" value="device_data">
+<input type="hidden" name="cur_ipaddr" value="<%nvram_get("lan_ipaddr");%>">
+<input type="hidden" name="next_page" value="ver.html">
+<input type="hidden" name="redirect_timer" value="45000">
+<input type="hidden" name="reboot" value="1">
+<input type="hidden" name="data1" value="check_fw_hdr telnetd_enabled dhcp_gateway">
+<table cellSpacing=1 cellPadding=2 border=0>
+<tr>
+<td bgColor=#aaddff>
+Check Firmware Header &nbsp; : &nbsp;<input type="input" name="check_fw_hdr" value='<%nvram_get("check_fw_hdr");%>'>
+</td>
+</tr>
+<tr>
+<td bgColor=#aaddff>
+Start telnetd for debug &nbsp; : &nbsp;<input type="input" name="telnetd_enabled" value='<%nvram_get("telnetd_enabled");%>'>
+</td>
+</tr>
+<tr>
+<td bgColor=#aaddff>
+Force dhcp to use this gateway &nbsp; : &nbsp;<input type="input" name="dhcp_gateway" value='<%nvram_get("dhcp_gateway");%>'>
+</td>
+</tr>
+<tr>
+	<td colspan=2 align=center>
+	<input id="submitBtn_apply" type="button" value="Apply" onClick="Try_Submit();"> 
+	</td>
+</tr>
+</table>	
+</form>
+Customer Firmware Version : <%nvram_get("fw_version");%><br>
+My Firmware Verion : <%nvram_get("my_fw_version");%>
+</body>
+</html>

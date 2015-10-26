@@ -1,0 +1,87 @@
+<HTML><HEAD>
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META http-equiv=content-type content=text/html;charset=<%nvram_get("charset");%>>
+<SCRIPT language=Javascript src="language_<%nvram_get("lang_code");%>.js"></SCRIPT>
+<LINK href="styles.css" type=text/css rel=stylesheet>
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<SCRIPT language=JavaScript src="jquery-1.4.2.min.js"></SCRIPT>
+<SCRIPT>assign_var();</SCRIPT>
+<SCRIPT language=JavaScript src="showMenu.js"></SCRIPT>
+<SCRIPT>
+strHtml='<title>'+str_526+'</title>';
+dw(strHtml);
+<!--
+var helpItem 	='Restore Previous Settings';
+var menuSection	='Util';
+var menuItem	='Restore Previous Settings';
+var isAPmode = ('<%nvram_get("wan_enabled");%>' == '0') ? '1' : '0';
+var cty_lang_code='<%nvram_get("lang_code");%>';
+<%autofw_check();%>
+
+function redirect_URL(){
+	document.location.href = 'home.html';
+}
+setTimeout('redirect_URL()', 600000);
+
+function Try_Submit() 
+{	
+	if(document.forms[0].file.value.length == 0) 
+	{
+		alert(str_529);
+		return false;
+	} 
+	else 
+	{
+		if (confirm(str_530))	
+		{
+			alert(str_531);
+			document.forms[0].submit();
+			return true;
+		}
+	}
+	return false;
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff leftMargin=0 topMargin=0 marginheight="0" marginwidth="0">
+<SCRIPT language=JavaScript>
+	var wanStatus = '<%wan_status();%>';
+	showHead(wanStatus,helpItem,isAPmode);
+	var friendly_name = '<%nvram_get("friendly_name");%>';
+	showMenu(menuSection,menuItem,isAPmode, friendly_name)
+</SCRIPT>
+ <TD class=head_bold height="100%" width="99%" valign="top"><BR>&nbsp;&nbsp;
+<SCRIPT>dw(str_526);</SCRIPT>
+ <BR><BR>
+<TABLE class=copy_1 border=0>
+  <TBODY>
+  <TR>
+    <TD width=5>&nbsp;</TD>
+    <TD>
+      <TABLE class=copy_1 cellSpacing=3 cellPadding=0 width=600 align=left 
+      border=0>
+        <TBODY>
+        <TR>
+          <TD class=verdana12>
+            <DIV align=center>
+            <SCRIPT>dw(str_527);</SCRIPT>
+            </DIV></TD></TR>
+        <TR>
+          <TD align="middle"><BR><BR>
+		  	<form name="upload_cfg" enctype="multipart/form-data" action="UploadCfgFile.cgi" method="post">
+		  	<input type="file" maxLength="31" size="25" name="file">
+		  </TD></TR>
+        <TR>
+          <TD><BR><BR>
+            <DIV align=center>
+            <SCRIPT>
+				dw('<input id="submitBtn_restore" type="button" style="{width:120px;}" class="submitBtn" value="');
+				dw(str_528);
+				dw('" onclick="Try_Submit();"></div></td>');</SCRIPT>
+            </DIV>
+			</form>
+			</TD></TR></TBODY></TABLE></TR></TBODY></TABLE></TD>
+<SCRIPT language=JavaScript>showTail()</SCRIPT>
+</BODY></HTML>
